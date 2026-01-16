@@ -1,0 +1,118 @@
+export interface ProductiveConfig extends Record<string, string | undefined> {
+  apiToken?: string;
+  organizationId?: string;
+  userId?: string;
+  baseUrl?: string;
+}
+
+export interface ProductiveApiResponse<T> {
+  data: T;
+  meta?: {
+    page?: number;
+    per_page?: number;
+    total?: number;
+  };
+  included?: Array<{
+    id: string;
+    type: string;
+    attributes: Record<string, unknown>;
+  }>;
+}
+
+export interface ProductiveProject {
+  id: string;
+  type: 'projects';
+  attributes: {
+    name: string;
+    project_number?: string;
+    archived: boolean;
+    budget?: number;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: Record<string, unknown>;
+}
+
+export interface ProductiveTimeEntry {
+  id: string;
+  type: 'time_entries';
+  attributes: {
+    date: string;
+    time: number;
+    note?: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: {
+    person?: {
+      data: { type: string; id: string };
+    };
+    service?: {
+      data: { type: string; id: string };
+    };
+    project?: {
+      data: { type: string; id: string };
+    };
+  };
+}
+
+export interface ProductiveTask {
+  id: string;
+  type: 'tasks';
+  attributes: {
+    title: string;
+    description?: string;
+    completed: boolean;
+    due_date?: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: Record<string, unknown>;
+}
+
+export interface ProductivePerson {
+  id: string;
+  type: 'people';
+  attributes: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    active: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: Record<string, unknown>;
+}
+
+export interface ProductiveService {
+  id: string;
+  type: 'services';
+  attributes: {
+    name: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: Record<string, unknown>;
+}
+
+export interface ProductiveBudget {
+  id: string;
+  type: 'budgets';
+  attributes: {
+    total_time_budget?: number;
+    remaining_time_budget?: number;
+    total_monetary_budget?: number;
+    remaining_monetary_budget?: number;
+  };
+  relationships?: Record<string, unknown>;
+}
+
+// CLI output formats for AI agents
+export type OutputFormat = 'json' | 'human' | 'csv' | 'table';
+
+export interface CliOptions {
+  format?: OutputFormat;
+  quiet?: boolean;
+  verbose?: boolean;
+  noColor?: boolean;
+}

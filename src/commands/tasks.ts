@@ -1,0 +1,172 @@
+import { ProductiveApi, ProductiveApiError } from '../api.js';
+import { OutputFormatter, createSpinner } from '../output.js';
+import { colors } from '../utils/colors.js';
+import type { OutputFormat } from '../types.js';
+
+export async function handleTasksCommand(
+  subcommand: string,
+  args: string[],
+  options: Record<string, string | boolean>
+): Promise<void> {
+  const format = (options.format || options.f || 'human') as OutputFormat;
+  const formatter = new OutputFormatter(format, options['no-color'] === true);
+
+  switch (subcommand) {
+    case 'list':
+    case 'ls':
+      await tasksList(options, formatter);
+      break;
+    case 'get':
+      await tasksGet(args, options, formatter);
+      break;
+    default:
+      formatter.error(`Unknown tasks subcommand: ${subcommand}`);
+      process.exit(1);
+  }
+}
+
+async function tasksList(
+  options: Record<string, string | boolean>,
+  formatter: OutputFormatter
+): Promise<void> {
+  const spinner = createSpinner('Fetching tasks...', formatter['format']);
+  spinner.start();
+
+  try {
+    const api = new ProductiveApi();
+    const filter: Record<string, string> = {};
+
+    if (options.completed) {
+      filter.completed = 'true';
+    } else if (!options.all) {
+      filter.completed = 'false';
+    }
+
+    if (options.project) {
+      filter.project_id = String(options.project);
+    }
+
+    const response = await api.getTasks({
+      page: parseInt(String(options.page || options.p || '1')),
+      perPage: parseInt(String(options.size || options.s || '100')),
+      filter,
+      sort: String(options.sort || ''),
+    });
+
+    spinner.succeed();
+
+    if (formatter['format'] === 'json') {
+      formatter.output({
+        data: response.data.map((t) => ({
+          id: t.id,
+          title: t.attributes.title,
+          description: t.attributes.description,
+          completed: t.attributes.completed,
+          due_date: t.attributes.due_date,
+          created_at: t.attributes.created_at,
+          updated_at: t.attributes.updated_at,
+        })),
+        meta: response.meta,
+      });
+    } else if (formatter['format'] === 'csv' || formatter['format'] === 'table') {
+      const data = response.data.map((t) => ({
+        id: t.id,
+        title: t.attributes.title,
+        completed: t.attributes.completed ? 'yes' : 'no',
+        due_date: t.attributes.due_date || '',
+        created: t.attributes.created_at.split('T')[0],
+      }));
+      formatter.output(data);
+    } else {
+      response.data.forEach((task) => {
+        const status = task.attributes.completed ? colors.green('✓') : colors.gray('○');
+        console.log(`${status} ${colors.bold(task.attributes.title)}`);
+        console.log(colors.dim(`  ID: ${task.id}`));
+        if (task.attributes.due_date) {
+          console.log(colors.dim(`  Due: ${task.attributes.due_date}`));
+        }
+        if (task.attributes.description) {
+          console.log(colors.dim(`  ${task.attributes.description}`));
+        }
+        console.log();
+      });
+
+      if (response.meta?.total) {
+        const currentPage = response.meta.page || 1;
+        const perPage = response.meta.per_page || 100;
+        const totalPages = Math.ceil(response.meta.total / perPage);
+        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total} tasks)`));
+      }
+    }
+  } catch (error) {
+    spinner.fail();
+    handleError(error, formatter);
+  }
+}
+
+async function tasksGet(
+  args: string[],
+  options: Record<string, string | boolean>,
+  formatter: OutputFormatter
+): Promise<void> {
+  const [id] = args;
+
+  if (!id) {
+    formatter.error('Usage: productive tasks get <id>');
+    process.exit(1);
+  }
+
+  const spinner = createSpinner('Fetching task...', formatter['format']);
+  spinner.start();
+
+  try {
+    const api = new ProductiveApi();
+    const response = await api.getTask(id);
+    const task = response.data;
+
+    spinner.succeed();
+
+    if (formatter['format'] === 'json') {
+      formatter.output({
+        id: task.id,
+        title: task.attributes.title,
+        description: task.attributes.description,
+        completed: task.attributes.completed,
+        due_date: task.attributes.due_date,
+        created_at: task.attributes.created_at,
+        updated_at: task.attributes.updated_at,
+        relationships: task.relationships,
+      });
+    } else {
+      const status = task.attributes.completed ? colors.green('✓ Completed') : colors.gray('○ Active');
+      console.log(colors.bold(task.attributes.title));
+      console.log(colors.dim('─'.repeat(50)));
+      console.log(colors.cyan('ID:'), task.id);
+      console.log(colors.cyan('Status:'), status);
+      if (task.attributes.due_date) {
+        console.log(colors.cyan('Due Date:'), task.attributes.due_date);
+      }
+      if (task.attributes.description) {
+        console.log(colors.cyan('Description:'), task.attributes.description);
+      }
+      console.log(colors.cyan('Created:'), new Date(task.attributes.created_at).toLocaleString());
+      console.log(colors.cyan('Updated:'), new Date(task.attributes.updated_at).toLocaleString());
+    }
+  } catch (error) {
+    spinner.fail();
+    handleError(error, formatter);
+  }
+}
+
+function handleError(error: unknown, formatter: OutputFormatter): void {
+  if (error instanceof ProductiveApiError) {
+    if (formatter['format'] === 'json') {
+      formatter.output(error.toJSON());
+    } else {
+      formatter.error(error.message);
+    }
+  } else {
+    formatter.error('An unexpected error occurred', error);
+  }
+  process.exit(1);
+}
