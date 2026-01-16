@@ -23,8 +23,8 @@
     "test": "vitest",
     "test:ci": "vitest run --coverage",
     "lint": "oxlint src",
-    "format": "oxc fmt src",
-    "format:check": "oxc fmt --check src",
+    "format": "oxlint --fix src",
+    "format:check": "oxlint src",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
