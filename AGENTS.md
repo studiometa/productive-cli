@@ -1,8 +1,8 @@
-# AI Agents & Automation Guide
+# AI Agents & Automation
 
-Complete guide for integrating @studiometa/productive-cli into AI agents, automation workflows, CI/CD pipelines, and other programmatic tools.
+Integration guide for AI agents, automation workflows, CI/CD pipelines, and programmatic tools.
 
-> **For human users:** See [README.md](./README.md) for general usage documentation.
+For general usage, see [README.md](./README.md).
 
 ## Quick Start for AI Agents
 
@@ -24,11 +24,11 @@ npx @studiometa/productive-cli projects list --format json
 project_id=$(echo "$response" | jq -r '.data[0].id')
 ```
 
-## Key Features for AI Agents
+## Key Features
 
-### 1. Structured JSON Output
+### Structured JSON Output
 
-All commands support `--format json` which returns predictable, parseable data structures:
+All commands support `--format json` with predictable schemas:
 
 ```bash
 productive projects list --format json
@@ -36,7 +36,7 @@ productive time list --format json
 productive tasks list --format json
 ```
 
-**Response Structure:**
+Response structure:
 ```json
 {
   "data": [...],           // Array of resources
@@ -48,9 +48,9 @@ productive tasks list --format json
 }
 ```
 
-### 2. Consistent Error Handling
+### Consistent Error Handling
 
-Errors are returned as structured JSON when using `--format json`:
+Errors are returned as structured JSON:
 
 ```json
 {
@@ -60,27 +60,26 @@ Errors are returned as structured JSON when using `--format json`:
 }
 ```
 
-**Exit Codes:**
+Exit codes:
 - `0` - Success
-- `1` - Error (API error, validation error, etc.)
+- `1` - Error
 
-### 3. Non-Interactive Commands
+### Non-Interactive Commands
 
-All commands are fully non-interactive and suitable for automation:
-
-- No prompts or interactive inputs
+All commands are non-interactive:
+- No prompts or user input required
 - All parameters via CLI flags or environment variables
 - Deterministic output format
-- Silent execution (only output requested data)
+- Silent execution
 
-### 4. Flexible Authentication
+### Flexible Authentication
 
-Three ways to provide credentials, with clear priority:
+Three authentication methods with priority order:
 
-**Priority Order:**
-1. **CLI Arguments** (highest) - `--token`, `--org-id`, `--user-id`
-2. **Environment Variables** (middle) - `PRODUCTIVE_API_TOKEN`, `PRODUCTIVE_ORG_ID`, `PRODUCTIVE_USER_ID`
-3. **Config File** (lowest) - `~/.config/productive-cli/config.json`
+Priority order:
+1. CLI arguments: `--token`, `--org-id`, `--user-id`
+2. Environment variables: `PRODUCTIVE_API_TOKEN`, `PRODUCTIVE_ORG_ID`, `PRODUCTIVE_USER_ID`
+3. Config file: `~/.config/productive-cli/config.json`
 
 ```bash
 # CLI arguments (best for one-off commands, override everything)
@@ -332,7 +331,7 @@ productive projects list --page 2 --size 100 --format json
 # Calculate total pages from meta.total_pages
 ```
 
-**Programmatic Pagination:**
+Programmatic pagination:
 
 ```typescript
 const api = new ProductiveApi();
@@ -352,12 +351,12 @@ console.log(`Fetched ${allProjects.length} projects`);
 
 ## Rate Limiting
 
-The Productive.io API has rate limits. Best practices:
+Best practices for API rate limits:
 
-1. **Respect Rate Limits** - Add delays between requests
-2. **Batch Requests** - Request 100-200 items per page (max)
-3. **Cache Results** - Store and reuse data when possible
-4. **Handle 429 Errors** - Implement exponential backoff
+1. Add delays between requests
+2. Request 100-200 items per page (maximum)
+3. Cache results when possible
+4. Implement exponential backoff for 429 errors
 
 ```typescript
 async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
@@ -380,13 +379,15 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
 const projects = await withRetry(() => api.getProjects());
 ```
 
-## Security Best Practices
+## Security
 
-1. **Never Log Tokens** - Keep API tokens out of logs and outputs
-2. **Use Environment Variables** - Never hardcode credentials
-3. **Rotate Tokens Regularly** - Update tokens periodically
-4. **Limit Token Permissions** - Use read-only tokens when possible
-5. **Secure Storage** - Encrypt tokens in persistent storage
+Security best practices:
+
+1. Keep API tokens out of logs and outputs
+2. Never hardcode credentials
+3. Rotate tokens periodically
+4. Use read-only tokens when possible
+5. Encrypt tokens in persistent storage
 
 ```bash
 # Good: Environment variables
@@ -517,9 +518,9 @@ vi.mock('@studiometa/productive-cli', () => ({
 
 ## Support
 
-- 📖 [API Documentation](https://developer.productive.io/)
-- 🐛 [Report Issues](https://github.com/studiometa/productive-cli/issues)
-- 💬 [Discussions](https://github.com/studiometa/productive-cli/discussions)
+- [API Documentation](https://developer.productive.io/)
+- [Report Issues](https://github.com/studiometa/productive-cli/issues)
+- [Discussions](https://github.com/studiometa/productive-cli/discussions)
 
 ## License
 

@@ -1,4 +1,4 @@
-# 📊 @studiometa/productive-cli
+# @studiometa/productive-cli
 
 [![CI](https://github.com/studiometa/productive-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/studiometa/productive-cli/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/studiometa/productive-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/studiometa/productive-cli)
@@ -6,18 +6,17 @@
 [![Downloads](https://img.shields.io/npm/dm/@studiometa/productive-cli?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&colorB=3e63dd&colorA=414853)](https://opensource.org/licenses/MIT)
 
-> Powerful CLI tool for interacting with the [Productive.io](https://productive.io) API. Optimized for both AI agents and human users with zero dependencies.
+CLI tool for interacting with the [Productive.io](https://productive.io) API. Optimized for both AI agents and human users with zero dependencies.
 
-## ✨ Features
+## Features
 
-- 🤖 **AI-Optimized** — JSON output format for easy parsing by AI agents
-- 👥 **Human-Friendly** — Beautiful formatted output with colors and progress indicators
-- 📦 **Zero Dependencies** — Built entirely with native Node.js APIs (fetch, streams, file system)
-- 🚀 **Fast & Reliable** — Native implementation, no external HTTP libraries
-- 🔒 **Secure** — Credentials stored locally with XDG compliance
-- 📊 **Multiple Formats** — JSON, CSV, Table, or Human-readable output
-- ✅ **Well-Tested** — 92.38% coverage with 210 tests
-- 🔧 **Type-Safe** — Written in TypeScript with full type definitions
+- AI-optimized with structured JSON output
+- Multiple output formats (JSON, CSV, Table, Human-readable)
+- Zero runtime dependencies (native Node.js APIs only)
+- Secure credential storage with XDG compliance
+- Flexible authentication (CLI args, env vars, or config file)
+- Comprehensive test coverage (92.4%, 210 tests)
+- Full TypeScript support
 
 ## Requirements
 
@@ -329,17 +328,17 @@ Clean table format for reports:
 productive projects list --format table
 ```
 
-## 🤖 AI Agent Integration
+## AI Agent Integration
 
-This CLI is specifically optimized for AI agents and automation tools. For comprehensive documentation, see [AGENTS.md](./AGENTS.md).
+This CLI is optimized for AI agents and automation tools. For complete documentation, see [AGENTS.md](./AGENTS.md).
 
-### Key Features for AI Agents
+Key features for AI agents:
 
-1. **Structured JSON Output** — All commands support `--format json` with predictable schemas
-2. **Consistent Error Format** — Errors are returned as JSON with status codes
-3. **Exit Codes** — `0` for success, `1` for errors (scriptable)
-4. **Zero Interactivity** — All commands are non-interactive and scriptable
-5. **Environment Variables** — No need for interactive configuration
+1. Structured JSON output with predictable schemas
+2. Consistent error format with status codes
+3. Standard exit codes (0=success, 1=error)
+4. Non-interactive, fully scriptable commands
+5. Flexible authentication (CLI args, env vars, config file)
 
 ### Example AI Integration
 
@@ -636,21 +635,21 @@ DEBUG=productive:* productive projects list
 - **HTTPS Only**: All API requests use HTTPS
 - **Token-Based Auth**: Secure token authentication with Productive.io
 
-**Security Best Practices:**
-1. Never commit your API token to version control
-2. Use environment variables in CI/CD environments
-3. Regularly rotate your API tokens
-4. Restrict token permissions in Productive.io settings
+Security best practices:
+- Never commit API tokens to version control
+- Use environment variables in CI/CD environments
+- Rotate API tokens regularly
+- Restrict token permissions in Productive.io settings
 
 ## Resources
 
-- 📖 [Productive.io API Documentation](https://developer.productive.io/)
-- 🤖 [AI Agent Integration Guide](./AGENTS.md)
-- 📝 [Contributing Guide](./CONTRIBUTING.md)
-- 📋 [Changelog](./CHANGELOG.md)
-- 🐛 [Issue Tracker](https://github.com/studiometa/productive-cli/issues)
-- 💬 [Discussions](https://github.com/studiometa/productive-cli/discussions)
-- 🏢 [Studio Meta](https://www.studiometa.fr/)
+- [Productive.io API Documentation](https://developer.productive.io/)
+- [AI Agent Integration Guide](./AGENTS.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Changelog](./CHANGELOG.md)
+- [Issue Tracker](https://github.com/studiometa/productive-cli/issues)
+- [Discussions](https://github.com/studiometa/productive-cli/discussions)
+- [Studio Meta](https://www.studiometa.fr/)
 
 ## Contributing
 
@@ -658,9 +657,7 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 
 ### Contributors
 
-Thanks to all contributors who have helped improve this project!
-
-<!-- Contributors will be automatically added here -->
+Contributions are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## Changelog
 
@@ -669,9 +666,3 @@ See [CHANGELOG.md](./CHANGELOG.md) for release notes and version history.
 ## License
 
 [MIT](./LICENSE) © [Studio Meta](https://www.studiometa.fr/)
-
----
-
-<p align="center">
-  Built with ❤️ by <a href="https://www.studiometa.fr/">Studio Meta</a> using native Node.js APIs
-</p>
