@@ -9,6 +9,7 @@ import type {
   ProductiveBudget,
 } from './types.js';
 import { getConfig } from './config.js';
+import { getCache, type FileCache } from './utils/cache.js';
 
 export class ProductiveApiError extends Error {
   constructor(
@@ -34,6 +35,9 @@ export class ProductiveApi {
   private baseUrl: string;
   private apiToken: string;
   private organizationId: string;
+  private cache: FileCache;
+  private useCache: boolean;
+  private forceRefresh: boolean;
 
   constructor(options?: Record<string, string | boolean>) {
     const config = getConfig(options);
@@ -53,6 +57,11 @@ export class ProductiveApi {
     this.baseUrl = config.baseUrl || 'https://api.productive.io/api/v2';
     this.apiToken = config.apiToken;
     this.organizationId = config.organizationId;
+    
+    // Cache options
+    this.useCache = options?.['no-cache'] !== true;
+    this.forceRefresh = options?.refresh === true;
+    this.cache = getCache(this.useCache);
   }
 
   private async request<T>(
@@ -64,6 +73,14 @@ export class ProductiveApi {
     } = {}
   ): Promise<T> {
     const { method = 'GET', body, query } = options;
+
+    // Check cache for GET requests
+    if (method === 'GET' && this.useCache && !this.forceRefresh) {
+      const cached = this.cache.get<T>(endpoint, query || {}, this.organizationId);
+      if (cached) {
+        return cached;
+      }
+    }
 
     const url = new URL(`${this.baseUrl}${endpoint}`);
     if (query) {
@@ -98,7 +115,19 @@ export class ProductiveApi {
       throw new ProductiveApiError(errorMessage, response.status, errorText);
     }
 
-    return response.json() as Promise<T>;
+    const data = await response.json() as T;
+
+    // Cache GET responses
+    if (method === 'GET' && this.useCache) {
+      this.cache.set(endpoint, query || {}, this.organizationId, data);
+    }
+
+    // Invalidate cache on write operations
+    if (method !== 'GET') {
+      this.cache.invalidate(endpoint.split('/')[1]); // e.g., '/time_entries/123' -> 'time_entries'
+    }
+
+    return data;
   }
 
   // Projects

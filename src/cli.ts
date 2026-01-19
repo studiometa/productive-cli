@@ -9,8 +9,9 @@ import { handleTasksCommand, showTasksHelp } from './commands/tasks.js';
 import { handlePeopleCommand, showPeopleHelp } from './commands/people.js';
 import { handleServicesCommand, showServicesHelp } from './commands/services.js';
 import { handleBudgetsCommand, showBudgetsHelp } from './commands/budgets.js';
+import { handleCacheCommand, showCacheHelp } from './commands/cache.js';
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.4';
 
 function showHelp(): void {
   console.log(`
@@ -51,9 +52,15 @@ ${colors.bold('COMMANDS:')}
   budgets             Manage budgets
     list, ls            List budgets
 
+  cache               Manage CLI cache
+    status              Show cache statistics
+    clear [pattern]     Clear cached data
+
 ${colors.bold('OPTIONS:')}
   -f, --format <fmt>  Output format: json, human, csv, table (default: human)
   --no-color          Disable colored output
+  --no-cache          Bypass cache for this request
+  --refresh           Force refresh cached data
   -p, --page <num>    Page number for pagination
   -s, --size <num>    Page size (default: 100)
   --sort <field>      Sort by field (prefix with - for descending)
@@ -210,6 +217,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         await handleBudgetsCommand(subcommand || 'list', positional, options);
+        break;
+
+      case 'cache':
+        if (wantsHelp) {
+          showCacheHelp(subcommand);
+          process.exit(0);
+        }
+        handleCacheCommand(subcommand || 'status', positional, options);
         break;
 
       default:

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ProductiveApi, ProductiveApiError } from '../api.js';
 import { setConfig, clearConfig } from '../config.js';
+import { disableCache, resetCache } from '../utils/cache.js';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { existsSync, rmSync } from 'node:fs';
@@ -13,6 +14,10 @@ describe('ProductiveApi', () => {
     // Use temporary directory for testing
     const tempDir = join(tmpdir(), 'productive-cli-test-' + Date.now());
     process.env.XDG_CONFIG_HOME = tempDir;
+    process.env.XDG_CACHE_HOME = tempDir;
+    
+    // Disable cache for tests
+    disableCache();
     
     // Set up test configuration
     setConfig('apiToken', 'test-token');
@@ -26,6 +31,9 @@ describe('ProductiveApi', () => {
     // Restore environment
     process.env = { ...originalEnv };
     globalThis.fetch = originalFetch;
+    
+    // Reset cache singleton
+    resetCache();
     
     // Clean up test config
     if (process.env.XDG_CONFIG_HOME && existsSync(process.env.XDG_CONFIG_HOME)) {
