@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "CLI tool for interacting with Productive.io API - optimized for AI agents and humans",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "productive": "./dist/cli.js"
   },
