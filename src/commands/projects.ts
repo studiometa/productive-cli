@@ -1,6 +1,7 @@
 import { ProductiveApi, ProductiveApiError } from '../api.js';
 import { OutputFormatter, createSpinner } from '../output.js';
 import { colors } from '../utils/colors.js';
+import { linkedId } from '../utils/productive-links.js';
 import type { OutputFormat } from '../types.js';
 
 function parseFilters(filterString: string): Record<string, string> {
@@ -166,8 +167,7 @@ async function projectsList(
           ? colors.gray('[archived]')
           : colors.green('[active]');
 
-        console.log(colors.bold(project.attributes.name), status);
-        console.log(colors.dim(`  ID: ${project.id}`));
+        console.log(`${colors.bold(project.attributes.name)} ${status} ${linkedId(project.id, 'project')}`);
         if (project.attributes.project_number) {
           console.log(colors.dim(`  Number: ${project.attributes.project_number}`));
         }
@@ -226,19 +226,18 @@ async function projectsGet(
     } else {
       console.log(colors.bold(colors.cyan(project.attributes.name)));
       console.log(colors.dim('─'.repeat(50)));
-      console.log(colors.cyan('ID:'), project.id);
+      console.log(`${colors.cyan('ID:')}      ${linkedId(project.id, 'project')}`);
       if (project.attributes.project_number) {
-        console.log(colors.cyan('Number:'), project.attributes.project_number);
+        console.log(`${colors.cyan('Number:')}  ${project.attributes.project_number}`);
       }
       console.log(
-        colors.cyan('Status:'),
-        project.attributes.archived ? colors.gray('Archived') : colors.green('Active')
+        `${colors.cyan('Status:')}  ${project.attributes.archived ? colors.gray('Archived') : colors.green('Active')}`
       );
       if (project.attributes.budget) {
-        console.log(colors.cyan('Budget:'), project.attributes.budget);
+        console.log(`${colors.cyan('Budget:')}  ${project.attributes.budget}`);
       }
-      console.log(colors.cyan('Created:'), new Date(project.attributes.created_at).toLocaleString());
-      console.log(colors.cyan('Updated:'), new Date(project.attributes.updated_at).toLocaleString());
+      console.log(`${colors.cyan('Created:')} ${new Date(project.attributes.created_at).toLocaleString()}`);
+      console.log(`${colors.cyan('Updated:')} ${new Date(project.attributes.updated_at).toLocaleString()}`);
     }
   } catch (error) {
     spinner.fail();
