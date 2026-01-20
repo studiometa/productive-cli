@@ -1,6 +1,7 @@
 import { ProductiveApi, ProductiveApiError } from '../api.js';
 import { OutputFormatter, createSpinner } from '../output.js';
 import { colors } from '../utils/colors.js';
+import { linkedId } from '../utils/productive-links.js';
 import type { OutputFormat } from '../types.js';
 
 function parseFilters(filterString: string): Record<string, string> {
@@ -135,8 +136,7 @@ async function servicesList(
       formatter.output(data);
     } else {
       response.data.forEach((service) => {
-        console.log(colors.bold(service.attributes.name));
-        console.log(colors.dim(`  ID: ${service.id}`));
+        console.log(`${colors.bold(service.attributes.name)} ${linkedId(service.id, 'service')}`);
         console.log();
       });
 
