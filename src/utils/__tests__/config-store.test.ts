@@ -1,26 +1,16 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ConfigStore } from '../config-store.js';
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { tmpdir } from 'node:os';
 
 describe('ConfigStore', () => {
   let configStore: ConfigStore<{ key1: string; key2: number; key3?: string }>;
   let testConfigPath: string;
 
   beforeEach(() => {
-    // Use a temporary directory for testing
-    const tempDir = join(tmpdir(), 'productive-cli-test-' + Date.now());
-    process.env.XDG_CONFIG_HOME = tempDir;
     configStore = new ConfigStore('test-project');
-    testConfigPath = join(tempDir, 'test-project', 'config.json');
-  });
-
-  afterEach(() => {
-    // Clean up test config
-    if (process.env.XDG_CONFIG_HOME && existsSync(process.env.XDG_CONFIG_HOME)) {
-      rmSync(process.env.XDG_CONFIG_HOME, { recursive: true, force: true });
-    }
+    testConfigPath = join(homedir(), '.config', 'test-project', 'config.json');
   });
 
   it('should create config store', () => {

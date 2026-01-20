@@ -2,27 +2,19 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ProductiveApi, ProductiveApiError } from '../api.js';
 import { setConfig, clearConfig } from '../config.js';
 import { disableCache, resetCache } from '../utils/cache.js';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { existsSync, rmSync } from 'node:fs';
 
 describe('ProductiveApi', () => {
   const originalEnv = { ...process.env };
   const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
-    // Use temporary directory for testing
-    const tempDir = join(tmpdir(), 'productive-cli-test-' + Date.now());
-    process.env.XDG_CONFIG_HOME = tempDir;
-    process.env.XDG_CACHE_HOME = tempDir;
-    
     // Disable cache for tests
     disableCache();
-    
+
     // Set up test configuration
     setConfig('apiToken', 'test-token');
     setConfig('organizationId', 'test-org-id');
-    
+
     // Mock fetch
     globalThis.fetch = vi.fn();
   });
@@ -31,14 +23,9 @@ describe('ProductiveApi', () => {
     // Restore environment
     process.env = { ...originalEnv };
     globalThis.fetch = originalFetch;
-    
+
     // Reset cache singleton
     resetCache();
-    
-    // Clean up test config
-    if (process.env.XDG_CONFIG_HOME && existsSync(process.env.XDG_CONFIG_HOME)) {
-      rmSync(process.env.XDG_CONFIG_HOME, { recursive: true, force: true });
-    }
   });
 
   it('should throw error if apiToken not configured', () => {
@@ -136,7 +123,7 @@ describe('ProductiveApi', () => {
     });
 
     const api = new ProductiveApi();
-    
+
     await expect(api.getProjects()).rejects.toThrow('Invalid token');
   });
 
@@ -149,7 +136,7 @@ describe('ProductiveApi', () => {
     });
 
     const api = new ProductiveApi();
-    
+
     await expect(api.getProjects()).rejects.toThrow('500 Internal Server Error');
   });
 
@@ -312,7 +299,7 @@ describe('ProductiveApiError', () => {
   it('should serialize to JSON', () => {
     const error = new ProductiveApiError('Test error', 404, { detail: 'Not found' });
     const json = error.toJSON();
-    
+
     expect(json).toEqual({
       error: 'ProductiveApiError',
       message: 'Test error',
