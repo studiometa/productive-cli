@@ -104,6 +104,63 @@ productive config set apiToken "token"
 productive config set organizationId "org-id"
 ```
 
+## Custom API Requests
+
+When existing commands don't cover your needs, use the `api` command to make custom authenticated requests to any Productive API endpoint:
+
+```bash
+# Simple GET request
+productive api /projects
+
+# GET with query parameters
+productive api /projects --field 'filter[archived]=false'
+
+# POST request with fields (auto-detected as POST)
+productive api /time_entries \
+  --field person_id=12345 \
+  --field service_id=67890 \
+  --field date=2024-01-15 \
+  --field time=480 \
+  --raw-field note="Development work"
+
+# PATCH request
+productive api /time_entries/123456 \
+  --method PATCH \
+  --field time=240
+
+# DELETE request
+productive api /time_entries/123456 --method DELETE
+
+# Fetch all pages automatically
+productive api /time_entries --paginate
+
+# Read body from file
+productive api /time_entries \
+  --method POST \
+  --input body.json
+```
+
+### Field Type Conversion
+
+The `--field` flag performs automatic type conversion:
+- `true`, `false`, `null` → JSON boolean/null
+- Numbers → integers or floats
+- `@filename` → reads value from file
+- Other values → strings
+
+Use `--raw-field` to always treat values as strings (no conversion).
+
+### API Command Features
+
+- **Automatic authentication**: Uses configured credentials
+- **Smart method detection**: Defaults to GET, or POST when fields are provided
+- **Pagination support**: Use `--paginate` to fetch all pages
+- **Custom headers**: Add with `-H` or `--header`
+- **File input**: Use `--input` to read request body from a file
+- **Response headers**: Use `--include` to show headers in output
+
+See full documentation: `productive api --help`
+
 ## Common AI Agent Workflows
 
 ### Workflow 1: Time Entry Automation

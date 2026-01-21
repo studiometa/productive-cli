@@ -100,6 +100,7 @@ Available commands:
   people       Manage people
   services     Manage services
   budgets      Manage budgets
+  api          Make custom API requests
 ```
 
 ### Configuration
@@ -238,6 +239,81 @@ productive budgets list
 productive budgets list --project <project-id>
 ```
 
+### Custom API Requests
+
+When existing commands don't cover your needs, use the `api` command to make custom authenticated requests to any Productive API endpoint:
+
+```bash
+# Simple GET request
+productive api /projects
+
+# GET with query parameters (auto-detected as GET)
+productive api /projects --field 'filter[archived]=false'
+
+# POST request with fields (auto-detected as POST)
+productive api /time_entries \
+  --field person_id=12345 \
+  --field service_id=67890 \
+  --field date=2024-01-15 \
+  --field time=480 \
+  --raw-field note="Development work"
+
+# PATCH request (explicit method)
+productive api /time_entries/123456 \
+  --method PATCH \
+  --field time=240
+
+# DELETE request
+productive api /time_entries/123456 --method DELETE
+
+# Fetch all pages automatically
+productive api /time_entries --paginate
+
+# Read request body from file
+productive api /time_entries \
+  --method POST \
+  --input body.json
+
+# Add custom headers
+productive api /projects \
+  --header "X-Custom-Header: value"
+
+# Include response headers in output
+productive api /projects --include
+```
+
+**Field Type Conversion:**
+
+The `--field` flag performs automatic type conversion:
+- `true`, `false`, `null` → JSON boolean/null
+- Numbers (`123`, `45.67`) → integers or floats
+- `@filename` → reads value from file
+- Other values → strings
+
+Use `--raw-field` to always treat values as strings (no conversion).
+
+**API Command Options:**
+
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `-X, --method <method>` | | HTTP method (GET, POST, PATCH, DELETE, PUT) |
+| `-F, --field <key=value>` | | Add parameter with type conversion (repeatable) |
+| `-f, --raw-field <key=value>` | | Add string parameter (repeatable) |
+| `-H, --header <header>` | | Add custom header (repeatable) |
+| `--input <file>` | | Read request body from file |
+| `--paginate` | | Fetch all pages automatically |
+| `--include` | | Include response headers in output |
+
+**Features:**
+- Automatic authentication using configured credentials
+- Smart method detection (GET by default, POST when fields provided)
+- Automatic pagination with `--paginate`
+- Type-safe field parsing
+- File input support
+- Custom headers
+
+See full documentation: `productive api --help`
+
 ### Global Options
 
 | Option | Alias | Description | Default |
@@ -375,6 +451,13 @@ else
   echo "Failed"
   exit 1
 fi
+
+# Use custom API calls for unsupported endpoints
+custom_data=$(productive api /custom_endpoint \
+  --token "$TOKEN" \
+  --org-id "$ORG_ID" \
+  --field custom_param=value \
+  --format json)
 ```
 
 ### Error Handling
