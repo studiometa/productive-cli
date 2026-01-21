@@ -3,7 +3,11 @@ import { OutputFormatter, createSpinner } from "../output.js";
 import { getConfig } from "../config.js";
 import { colors } from "../utils/colors.js";
 import { stripHtml } from "../utils/html.js";
-import { linkedId } from "../utils/productive-links.js";
+import {
+  linkedId,
+  linkedProject,
+  linkedPerson,
+} from "../utils/productive-links.js";
 import type { OutputFormat } from "../types.js";
 
 function parseFilters(filterString: string): Record<string, string> {
@@ -289,12 +293,19 @@ async function tasksList(
         // Second line: project, assignee, workflow status
         const parts: string[] = [];
         if (projectData?.name) {
-          parts.push(colors.cyan(String(projectData.name)));
+          const projectId = task.relationships?.project?.data?.id;
+          const projectName = colors.cyan(String(projectData.name));
+          parts.push(
+            projectId ? linkedProject(projectName, projectId) : projectName,
+          );
         }
         if (assigneeData) {
-          parts.push(
-            `${colors.dim("→")} ${assigneeData.first_name} ${assigneeData.last_name}`,
-          );
+          const assigneeId = task.relationships?.assignee?.data?.id;
+          const assigneeName = `${assigneeData.first_name} ${assigneeData.last_name}`;
+          const assigneeText = assigneeId
+            ? linkedPerson(assigneeName, assigneeId)
+            : assigneeName;
+          parts.push(`${colors.dim("→")} ${assigneeText}`);
         }
         if (statusData?.name) {
           parts.push(colors.dim(`[${statusData.name}]`));
@@ -440,13 +451,21 @@ async function tasksGet(
       }
 
       if (projectData?.name) {
-        console.log(`${colors.cyan("Project:")}  ${projectData.name}`);
+        const projectId = task.relationships?.project?.data?.id;
+        const projectName = String(projectData.name);
+        const projectText = projectId
+          ? linkedProject(projectName, projectId)
+          : projectName;
+        console.log(`${colors.cyan("Project:")}  ${projectText}`);
       }
 
       if (assigneeData) {
-        console.log(
-          `${colors.cyan("Assignee:")} ${assigneeData.first_name} ${assigneeData.last_name}`,
-        );
+        const assigneeId = task.relationships?.assignee?.data?.id;
+        const assigneeName = `${assigneeData.first_name} ${assigneeData.last_name}`;
+        const assigneeText = assigneeId
+          ? linkedPerson(assigneeName, assigneeId)
+          : assigneeName;
+        console.log(`${colors.cyan("Assignee:")} ${assigneeText}`);
       }
 
       // Time tracking
