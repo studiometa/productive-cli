@@ -8,6 +8,9 @@
 
 CLI tool for interacting with the [Productive.io](https://productive.io) API. Optimized for both AI agents and human users with zero dependencies.
 
+> [!WARNING]
+> **AI-Generated Project** — This project was primarily built by AI coding agents (Claude). While functional and tested, it may contain bugs, security issues, or unexpected behavior. Use at your own risk, especially in production environments or with sensitive data.
+
 ## Features
 
 - AI-optimized with structured JSON output

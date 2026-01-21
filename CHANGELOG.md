@@ -7,14 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-01-21
+
 ### Added
+- **SQLite Cache** - High-performance unified cache with SQLite backend (94cc95d, 92a1e4b, de9f8de, 9616f81)
+  - Replaces file-based cache with single SQLite database
+  - Stale-while-revalidate pattern for faster responses
+  - Background refresh queue for cache updates
+  - `cache status` command shows cache statistics
+  - `cache clear` command to purge cache
+  - `cache queue` command to view pending refresh jobs
+- **Custom API Command** - `api` command for direct API requests (9ec58a9, 28a3dce)
+  - Supports GET, POST, PATCH, DELETE methods
+  - Field auto-typing with `--field` and `--raw-field`
+  - Pagination support with `--paginate`
+  - File input with `--input`
+- **Kanban View** - `tasks list --format kanban` displays tasks in columns by status (d7d1d2b)
+  - Groups tasks by workflow status name
+  - Shows task number, title, and assignee
+  - Clickable task links in terminal
+- **Enhanced Tasks Output** - Improved task list and get commands (a696ac2, 7f0e8ec)
+  - Shows task number, project, assignee, workflow status
+  - Displays worked time vs estimate with over-budget highlighting
+  - Clickable links for projects and assignees
+- **Terminal Hyperlinks** - Underlined clickable links in supported terminals (79f2858)
 - **CLI Arguments for Credentials** - Pass `--token`, `--org-id`, `--user-id` directly
-  - Supports alternative flags: `--api-token`, `--organization-id`
-  - Highest priority over environment variables and config file
-  - Perfect for one-off commands and CI/CD pipelines
 - Comprehensive AI Agent Integration Guide with CLI argument examples
-- Improved README with detailed examples and credential priority documentation
-- Badge improvements for better project visibility
+- Cache architecture documentation (8c5b8a5)
 
 ### Fixed
 - Remove unsupported API filters (archived, active, completed) that caused 400 errors
@@ -23,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tasks list works without completion filter errors
 
 ### Changed
+- Migrated from file-based cache to SQLite for better performance (de9f8de)
 - Updated documentation to match fox-pilot style guide
 - Enhanced README with better structure and examples
 - Improved error messages and API compatibility
@@ -97,5 +117,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-cli/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/studiometa/productive-cli/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/studiometa/productive-cli/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/studiometa/productive-cli/releases/tag/v0.1.0
