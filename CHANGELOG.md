@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-01-21
+
+### Added
+- **Shell Completion** - Automatic installation of tab completion for Bash, Zsh, and Fish (a634018, d9a16f7)
+  - `completion` command installs to standard directories without editing RC files
+  - Installs to `~/.local/share/bash-completion/completions/` (Bash)
+  - Installs to `~/.local/share/zsh/site-functions/` (Zsh)
+  - Installs to `~/.config/fish/completions/` (Fish)
+  - `--print` flag to output script without installing
+  - Smart directory detection with fallback to user-local paths
+  - Comprehensive help with troubleshooting instructions
+
+### Fixed
+- Suppress SQLite experimental warning globally (1e92112)
+  - Warning no longer appears on any CLI command
+  - Applied at module load time for complete coverage
+
+## [0.2.2] - 2026-01-21
+
+### Fixed
+- Suppress SQLite experimental warning during module import
+
 ## [0.2.1] - 2026-01-21
 
 ### Added
