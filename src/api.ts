@@ -272,6 +272,7 @@ export class ProductiveApi {
     perPage?: number;
     filter?: Record<string, string>;
     sort?: string;
+    include?: string[];
   }): Promise<ProductiveApiResponse<ProductiveTask[]>> {
     const query: Record<string, string> = {};
 
@@ -283,14 +284,26 @@ export class ProductiveApi {
         query[`filter[${key}]`] = value;
       });
     }
+    if (params?.include?.length) {
+      query["include"] = params.include.join(",");
+    }
 
     return this.request<ProductiveApiResponse<ProductiveTask[]>>("/tasks", {
       query,
     });
   }
 
-  async getTask(id: string): Promise<ProductiveApiResponse<ProductiveTask>> {
-    return this.request<ProductiveApiResponse<ProductiveTask>>(`/tasks/${id}`);
+  async getTask(
+    id: string,
+    params?: { include?: string[] },
+  ): Promise<ProductiveApiResponse<ProductiveTask>> {
+    const query: Record<string, string> = {};
+    if (params?.include?.length) {
+      query["include"] = params.include.join(",");
+    }
+    return this.request<ProductiveApiResponse<ProductiveTask>>(`/tasks/${id}`, {
+      query,
+    });
   }
 
   // People

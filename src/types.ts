@@ -69,12 +69,52 @@ export interface ProductiveTask {
   attributes: {
     title: string;
     description?: string;
-    completed: boolean;
+    number?: number;
+    task_number?: number;
+    private?: boolean;
     due_date?: string;
+    due_time?: string;
+    start_date?: string;
+    closed_at?: string;
     created_at: string;
     updated_at: string;
+    initial_estimate?: number;
+    remaining_time?: number;
+    billable_time?: number;
+    worked_time?: number;
+    type_id?: number;
+    closed?: boolean;
+    tag_list?: string[];
+    todo_count?: number;
+    open_todo_count?: number;
+    subtask_count?: number;
+    open_subtask_count?: number;
+    // Legacy field for backwards compatibility
+    completed?: boolean;
   };
-  relationships?: Record<string, unknown>;
+  relationships?: {
+    project?: {
+      data: { type: string; id: string } | null;
+    };
+    assignee?: {
+      data: { type: string; id: string } | null;
+    };
+    workflow_status?: {
+      data: { type: string; id: string } | null;
+    };
+    task_list?: {
+      data: { type: string; id: string } | null;
+    };
+    service?: {
+      data: { type: string; id: string } | null;
+    };
+    creator?: {
+      data: { type: string; id: string } | null;
+    };
+    parent_task?: {
+      data: { type: string; id: string } | null;
+    };
+  };
 }
 
 export interface ProductivePerson {

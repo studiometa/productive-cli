@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleTasksCommand } from '../tasks.js';
-import { ProductiveApi, ProductiveApiError } from '../../api.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { handleTasksCommand } from "../tasks.js";
+import { ProductiveApi, ProductiveApiError } from "../../api.js";
 
 // Mock dependencies
-vi.mock('../../api.js');
-vi.mock('../../output.js', () => ({
+vi.mock("../../api.js");
+vi.mock("../../output.js", () => ({
   OutputFormatter: vi.fn().mockImplementation((format, noColor) => ({
     format,
     noColor,
@@ -18,13 +18,13 @@ vi.mock('../../output.js', () => ({
   })),
 }));
 
-describe('tasks command', () => {
+describe("tasks command", () => {
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;
   let processExitSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
-    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    processExitSpy = vi.spyOn(process, 'exit').mockImplementation((code) => {
+    consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    processExitSpy = vi.spyOn(process, "exit").mockImplementation((code) => {
       throw new Error(`process.exit(${code})`);
     });
   });
@@ -33,19 +33,19 @@ describe('tasks command', () => {
     vi.clearAllMocks();
   });
 
-  describe('list command', () => {
-    it('should list open tasks by default', async () => {
+  describe("list command", () => {
+    it("should list open tasks by default", async () => {
       const mockTasks = {
         data: [
           {
-            id: '1',
+            id: "1",
             attributes: {
-              title: 'Task 1',
-              description: 'Description 1',
+              title: "Task 1",
+              description: "Description 1",
               completed: false,
-              due_date: '2024-12-31',
-              created_at: '2024-01-01T00:00:00Z',
-              updated_at: '2024-01-02T00:00:00Z',
+              due_date: "2024-12-31",
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-02T00:00:00Z",
             },
           },
         ],
@@ -57,30 +57,31 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], {});
+      await handleTasksCommand("list", [], {});
 
       expect(mockApi.getTasks).toHaveBeenCalledWith({
         page: 1,
         perPage: 100,
-        filter: { status: '1' },
-        sort: '',
+        filter: { status: "1" },
+        sort: "",
+        include: ["project", "assignee", "workflow_status"],
       });
       expect(consoleLogSpy).toHaveBeenCalled();
       expect(processExitSpy).not.toHaveBeenCalled();
     });
 
-    it('should list completed tasks with --status completed', async () => {
+    it("should list completed tasks with --status completed", async () => {
       const mockTasks = {
         data: [
           {
-            id: '1',
+            id: "1",
             attributes: {
-              title: 'Completed Task',
+              title: "Completed Task",
               description: null,
               completed: true,
               due_date: null,
-              created_at: '2024-01-01',
-              updated_at: '2024-01-02',
+              created_at: "2024-01-01",
+              updated_at: "2024-01-02",
             },
           },
         ],
@@ -92,17 +93,18 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], { status: 'completed' });
+      await handleTasksCommand("list", [], { status: "completed" });
 
       expect(mockApi.getTasks).toHaveBeenCalledWith({
         page: 1,
         perPage: 100,
-        filter: { status: '2' },
-        sort: '',
+        filter: { status: "2" },
+        sort: "",
+        include: ["project", "assignee", "workflow_status"],
       });
     });
 
-    it('should list all tasks with --status all', async () => {
+    it("should list all tasks with --status all", async () => {
       const mockTasks = {
         data: [],
         meta: { total: 0 },
@@ -113,17 +115,18 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], { status: 'all' });
+      await handleTasksCommand("list", [], { status: "all" });
 
       expect(mockApi.getTasks).toHaveBeenCalledWith({
         page: 1,
         perPage: 100,
         filter: {},
-        sort: '',
+        sort: "",
+        include: ["project", "assignee", "workflow_status"],
       });
     });
 
-    it('should filter tasks by project', async () => {
+    it("should filter tasks by project", async () => {
       const mockTasks = {
         data: [],
         meta: { total: 0 },
@@ -134,19 +137,20 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], {
-        project: '123',
+      await handleTasksCommand("list", [], {
+        project: "123",
       });
 
       expect(mockApi.getTasks).toHaveBeenCalledWith({
         page: 1,
         perPage: 100,
-        filter: { project_id: '123', status: '1' },
-        sort: '',
+        filter: { project_id: "123", status: "1" },
+        sort: "",
+        include: ["project", "assignee", "workflow_status"],
       });
     });
 
-    it('should handle pagination and sorting', async () => {
+    it("should handle pagination and sorting", async () => {
       const mockTasks = {
         data: [],
         meta: { total: 0 },
@@ -157,32 +161,33 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], {
-        page: '2',
-        size: '50',
-        sort: 'due_date',
+      await handleTasksCommand("list", [], {
+        page: "2",
+        size: "50",
+        sort: "due_date",
       });
 
       expect(mockApi.getTasks).toHaveBeenCalledWith({
         page: 2,
         perPage: 50,
-        filter: { status: '1' },
-        sort: 'due_date',
+        filter: { status: "1" },
+        sort: "due_date",
+        include: ["project", "assignee", "workflow_status"],
       });
     });
 
-    it('should list tasks in json format', async () => {
+    it("should list tasks in json format", async () => {
       const mockTasks = {
         data: [
           {
-            id: '1',
+            id: "1",
             attributes: {
-              title: 'Task 1',
-              description: 'Description 1',
+              title: "Task 1",
+              description: "Description 1",
               completed: false,
-              due_date: '2024-12-31',
-              created_at: '2024-01-01',
-              updated_at: '2024-01-02',
+              due_date: "2024-12-31",
+              created_at: "2024-01-01",
+              updated_at: "2024-01-02",
             },
           },
         ],
@@ -194,23 +199,23 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('list', [], { format: 'json' });
+      await handleTasksCommand("list", [], { format: "json" });
 
       expect(mockApi.getTasks).toHaveBeenCalled();
     });
 
-    it('should handle tasks without optional fields', async () => {
+    it("should handle tasks without optional fields", async () => {
       const mockTasks = {
         data: [
           {
-            id: '1',
+            id: "1",
             attributes: {
-              title: 'Task 1',
+              title: "Task 1",
               description: null,
               completed: false,
               due_date: null,
-              created_at: '2024-01-01T00:00:00Z',
-              updated_at: '2024-01-02T00:00:00Z',
+              created_at: "2024-01-01T00:00:00Z",
+              updated_at: "2024-01-02T00:00:00Z",
             },
           },
         ],
@@ -221,37 +226,39 @@ describe('tasks command', () => {
         () =>
           ({
             getTasks: vi.fn().mockResolvedValue(mockTasks),
-          }) as any
+          }) as any,
       );
 
-      await handleTasksCommand('list', [], {});
+      await handleTasksCommand("list", [], {});
 
       expect(consoleLogSpy).toHaveBeenCalled();
     });
 
-    it('should handle API errors', async () => {
-      const mockError = new ProductiveApiError('API Error', 500);
+    it("should handle API errors", async () => {
+      const mockError = new ProductiveApiError("API Error", 500);
       const mockApi = {
         getTasks: vi.fn().mockRejectedValue(mockError),
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await expect(() => handleTasksCommand('list', [], {})).rejects.toThrow('process.exit(1)');
+      await expect(() => handleTasksCommand("list", [], {})).rejects.toThrow(
+        "process.exit(1)",
+      );
     });
   });
 
-  describe('get command', () => {
-    it('should get a task by id', async () => {
+  describe("get command", () => {
+    it("should get a task by id", async () => {
       const mockTask = {
         data: {
-          id: '1',
+          id: "1",
           attributes: {
-            title: 'Task 1',
-            description: 'Description 1',
+            title: "Task 1",
+            description: "Description 1",
             completed: false,
-            due_date: '2024-12-31',
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-02T00:00:00Z',
+            due_date: "2024-12-31",
+            created_at: "2024-01-01T00:00:00Z",
+            updated_at: "2024-01-02T00:00:00Z",
           },
           relationships: {},
         },
@@ -262,24 +269,26 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('get', ['1'], {});
+      await handleTasksCommand("get", ["1"], {});
 
-      expect(mockApi.getTask).toHaveBeenCalledWith('1');
+      expect(mockApi.getTask).toHaveBeenCalledWith("1", {
+        include: ["project", "assignee", "workflow_status"],
+      });
       expect(consoleLogSpy).toHaveBeenCalled();
       expect(processExitSpy).not.toHaveBeenCalled();
     });
 
-    it('should get a task in json format', async () => {
+    it("should get a task in json format", async () => {
       const mockTask = {
         data: {
-          id: '1',
+          id: "1",
           attributes: {
-            title: 'Task 1',
-            description: 'Description 1',
+            title: "Task 1",
+            description: "Description 1",
             completed: true,
-            due_date: '2024-12-31',
-            created_at: '2024-01-01',
-            updated_at: '2024-01-02',
+            due_date: "2024-12-31",
+            created_at: "2024-01-01",
+            updated_at: "2024-01-02",
           },
           relationships: {},
         },
@@ -290,22 +299,24 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('get', ['1'], { format: 'json' });
+      await handleTasksCommand("get", ["1"], { format: "json" });
 
-      expect(mockApi.getTask).toHaveBeenCalledWith('1');
+      expect(mockApi.getTask).toHaveBeenCalledWith("1", {
+        include: ["project", "assignee", "workflow_status"],
+      });
     });
 
-    it('should handle tasks without optional fields', async () => {
+    it("should handle tasks without optional fields", async () => {
       const mockTask = {
         data: {
-          id: '1',
+          id: "1",
           attributes: {
-            title: 'Task 1',
+            title: "Task 1",
             description: null,
             completed: false,
             due_date: null,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-02T00:00:00Z',
+            created_at: "2024-01-01T00:00:00Z",
+            updated_at: "2024-01-02T00:00:00Z",
           },
           relationships: {},
         },
@@ -316,28 +327,32 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('get', ['1'], {});
+      await handleTasksCommand("get", ["1"], {});
 
       expect(consoleLogSpy).toHaveBeenCalled();
     });
 
-    it('should exit with error when id is missing', async () => {
-      await expect(() => handleTasksCommand('get', [], {})).rejects.toThrow('process.exit(1)');
+    it("should exit with error when id is missing", async () => {
+      await expect(() => handleTasksCommand("get", [], {})).rejects.toThrow(
+        "process.exit(1)",
+      );
     });
 
-    it('should handle API errors', async () => {
-      const mockError = new ProductiveApiError('Task not found', 404);
+    it("should handle API errors", async () => {
+      const mockError = new ProductiveApiError("Task not found", 404);
       const mockApi = {
         getTask: vi.fn().mockRejectedValue(mockError),
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await expect(() => handleTasksCommand('get', ['999'], {})).rejects.toThrow('process.exit(1)');
+      await expect(() =>
+        handleTasksCommand("get", ["999"], {}),
+      ).rejects.toThrow("process.exit(1)");
     });
   });
 
-  describe('ls alias', () => {
-    it('should work as an alias for list', async () => {
+  describe("ls alias", () => {
+    it("should work as an alias for list", async () => {
       const mockTasks = {
         data: [],
         meta: { total: 0 },
@@ -348,15 +363,17 @@ describe('tasks command', () => {
       };
       vi.mocked(ProductiveApi).mockImplementation(() => mockApi as any);
 
-      await handleTasksCommand('ls', [], {});
+      await handleTasksCommand("ls", [], {});
 
       expect(mockApi.getTasks).toHaveBeenCalled();
     });
   });
 
-  describe('unknown subcommand', () => {
-    it('should exit with error for unknown subcommand', async () => {
-      await expect(() => handleTasksCommand('unknown', [], {})).rejects.toThrow('process.exit(1)');
+  describe("unknown subcommand", () => {
+    it("should exit with error for unknown subcommand", async () => {
+      await expect(() => handleTasksCommand("unknown", [], {})).rejects.toThrow(
+        "process.exit(1)",
+      );
     });
   });
 });
