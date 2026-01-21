@@ -12,30 +12,27 @@ import { homedir } from "node:os";
 // Dynamic import to handle the experimental warning gracefully
 let DatabaseSync: typeof import("node:sqlite").DatabaseSync;
 
+// Suppress the experimental warning for SQLite globally
+const originalEmit = process.emit;
+// @ts-expect-error - Monkey-patching process.emit to suppress warning
+process.emit = function (event: string, ...args: unknown[]) {
+  if (
+    event === "warning" &&
+    args[0] &&
+    (args[0] as Error).name === "ExperimentalWarning" &&
+    (args[0] as Error).message.includes("SQLite")
+  ) {
+    return false;
+  }
+  return originalEmit.apply(process, [event, ...args] as Parameters<
+    typeof originalEmit
+  >);
+};
+
 async function loadSqlite() {
   if (!DatabaseSync) {
-    // Suppress the experimental warning for SQLite
-    const originalEmit = process.emit;
-    // @ts-expect-error - Monkey-patching process.emit to suppress warning
-    process.emit = function (event: string, ...args: unknown[]) {
-      if (
-        event === "warning" &&
-        args[0] &&
-        (args[0] as Error).name === "ExperimentalWarning" &&
-        (args[0] as Error).message.includes("SQLite")
-      ) {
-        return false;
-      }
-      return originalEmit.apply(process, [event, ...args] as Parameters<
-        typeof originalEmit
-      >);
-    };
-
     const sqlite = await import("node:sqlite");
     DatabaseSync = sqlite.DatabaseSync;
-
-    // Restore original emit
-    process.emit = originalEmit;
   }
   return DatabaseSync;
 }
