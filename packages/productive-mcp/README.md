@@ -8,21 +8,36 @@ MCP (Model Context Protocol) server for [Productive.io](https://productive.io) A
 ## Features
 
 - ✅ Full Productive.io API access via MCP
-- 🔧 Support for projects, tasks, time entries, and people
-- 🔐 Secure credential management
+- 🔧 Support for projects, tasks, time entries, services, and people
+- 🔐 Two modes: local (stdio) and remote (HTTP)
+- 🌐 Deploy once, share with your team via Claude Desktop custom connectors
 - 🐳 Docker-ready for easy deployment
 - 📦 Built on [@studiometa/productive-cli](../productive-cli)
 
-## Quick Start
+## Usage Modes
 
-### 1. Install for Claude Desktop
+This package supports two modes:
+
+| Mode | Command | Use Case |
+|------|---------|----------|
+| **Local (stdio)** | `productive-mcp` | Personal use via Claude Desktop config |
+| **Remote (HTTP)** | `productive-mcp-server` | Team use via Claude Desktop custom connector |
+
+---
+
+## Mode 1: Local (stdio) - Personal Use
+
+Use this mode when you want to run the MCP server locally on your machine.
+
+### Installation
 
 ```bash
-# Install globally
 npm install -g @studiometa/productive-mcp
 ```
 
-Configure Claude Desktop by editing:
+### Claude Desktop Configuration
+
+Edit your Claude Desktop config:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 - **Linux**: `~/.config/Claude/claude_desktop_config.json`
@@ -37,23 +52,13 @@ Configure Claude Desktop by editing:
 }
 ```
 
-Restart Claude Desktop.
-
-### 2. Configure via Claude Desktop
-
-Once Claude Desktop restarts, simply ask Claude:
+Restart Claude Desktop, then ask Claude:
 
 > "Configure my Productive.io credentials"
 
-Claude will guide you through the setup using the MCP configuration tools. You'll need:
-
-1. **Organization ID** - Found in Productive.io Settings → Integrations → API
-2. **API Token** - Generate one in Settings → Integrations → API
-3. **User ID** (optional) - For time entry operations
+Claude will guide you through the setup.
 
 ### Alternative: Environment Variables
-
-You can also configure credentials via environment variables in the Claude Desktop config:
 
 ```json
 {
@@ -61,7 +66,7 @@ You can also configure credentials via environment variables in the Claude Deskt
     "productive": {
       "command": "productive-mcp",
       "env": {
-        "PRODUCTIVE_ORGANIZATION_ID": "your-org-id",
+        "PRODUCTIVE_ORG_ID": "your-org-id",
         "PRODUCTIVE_API_TOKEN": "your-auth-token",
         "PRODUCTIVE_USER_ID": "your-user-id"
       }
@@ -70,87 +75,100 @@ You can also configure credentials via environment variables in the Claude Deskt
 }
 ```
 
-### 3. Get Your Productive.io Credentials
+---
 
-1. Log into [Productive.io](https://productive.io)
-2. Go to Settings → Integrations → API
-3. Generate an API token
-4. Note your Organization ID (visible in the API settings or URL)
-5. Note your User ID (optional, for time entries)
+## Mode 2: Remote (HTTP) - Team Use
 
-### 4. Docker Deployment (Recommended for Servers)
+Deploy once, share with your entire team via Claude Desktop's **custom connector** feature.
 
-Create a `docker-compose.yml`:
+### How It Works
+
+1. Deploy the HTTP server to a URL (e.g., `https://productive.mcp.example.com`)
+2. Each team member generates their own Bearer token with their Productive credentials
+3. Team members add the custom connector in Claude Desktop with their personal token
+
+### Deploy the Server
+
+#### Option A: Docker
+
+```bash
+# Build
+docker build -t productive-mcp-server -f packages/productive-mcp/Dockerfile .
+
+# Run
+docker run -d \
+  --name productive-mcp-server \
+  --restart unless-stopped \
+  -p 3000:3000 \
+  productive-mcp-server
+```
+
+#### Option B: Node.js
+
+```bash
+npm install -g @studiometa/productive-mcp
+
+# Start server
+PORT=3000 productive-mcp-server
+```
+
+#### Option C: Docker Compose
 
 ```yaml
 version: '3.8'
 
 services:
   productive-mcp:
-    image: node:24-alpine
-    container_name: productive-mcp
+    build:
+      context: .
+      dockerfile: packages/productive-mcp/Dockerfile
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     environment:
-      PRODUCTIVE_ORGANIZATION_ID: ${PRODUCTIVE_ORGANIZATION_ID}
-      PRODUCTIVE_API_TOKEN: ${PRODUCTIVE_API_TOKEN}
-    volumes:
-      - ./data:/data
-    command: >
-      sh -c "npm install -g @studiometa/productive-mcp &&
-             productive-mcp"
+      PORT: 3000
+      HOST: 0.0.0.0
 ```
 
-Create `.env` file with your credentials:
+### Generate Your Token
+
+Each team member generates their own token containing their Productive credentials:
 
 ```bash
-PRODUCTIVE_ORGANIZATION_ID=12345
-PRODUCTIVE_API_TOKEN=your-token-here
-PRODUCTIVE_USER_ID=67890
+# Format: base64(organizationId:apiToken:userId)
+echo -n "YOUR_ORG_ID:YOUR_API_TOKEN:YOUR_USER_ID" | base64
 ```
 
-Start the server:
-
+Example:
 ```bash
-docker-compose up -d
+echo -n "12345:pk_abc123xyz:67890" | base64
+# Output: MTIzNDU6cGtfYWJjMTIzeHl6OjY3ODkw
 ```
 
-#### Using Pre-built Image (Alternative)
+### Configure Claude Desktop Custom Connector
 
-Build a custom image for faster startup:
+1. Open Claude Desktop Settings
+2. Go to **Custom Connectors** (beta)
+3. Click **Add custom connector**
+4. Configure:
+   - **Name**: `Productive`
+   - **Remote MCP server URL**: `https://productive.mcp.example.com/mcp`
+   - Leave OAuth fields empty (we use Bearer token)
+5. When making requests, Claude will include your token in the `Authorization` header
 
-```dockerfile
-FROM node:24-alpine
+> **Note**: As of now, Claude Desktop custom connectors may require OAuth. If Bearer token auth isn't supported directly, you can use a reverse proxy to inject the Authorization header, or wait for Claude Desktop to support custom headers.
 
-# Install globally
-RUN npm install -g @studiometa/productive-mcp
+### Server Endpoints
 
-# Run as non-root user
-USER node
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/mcp` | POST | MCP JSON-RPC endpoint |
+| `/health` | GET | Health check |
+| `/` | GET | Server info |
 
-# Start the server
-CMD ["productive-mcp"]
-```
-
-Build and run:
-
-```bash
-docker build -t productive-mcp .
-
-docker run -d \
-  --name productive-mcp \
-  --restart unless-stopped \
-  -e PRODUCTIVE_ORGANIZATION_ID=12345 \
-  -e PRODUCTIVE_API_TOKEN=your-token \
-  productive-mcp
-```
+---
 
 ## Available Tools
-
-The MCP server exposes these tools to Claude:
-
-### Configuration
-- `productive_configure` - Configure credentials (organization ID, API token, user ID)
-- `productive_get_config` - View current configuration (token is masked)
 
 ### Projects
 - `productive_list_projects` - List projects with optional filters
@@ -164,46 +182,51 @@ The MCP server exposes these tools to Claude:
 - `productive_list_time_entries` - List time entries with filters
 - `productive_get_time_entry` - Get time entry details by ID
 - `productive_create_time_entry` - Create a new time entry
+- `productive_update_time_entry` - Update an existing time entry
+- `productive_delete_time_entry` - Delete a time entry
+
+### Services
+- `productive_list_services` - List services (budget line items)
 
 ### People
 - `productive_list_people` - List people in the organization
 - `productive_get_person` - Get person details by ID
+- `productive_get_current_user` - Get current authenticated user
+
+### Configuration (Local mode only)
+- `productive_configure` - Configure credentials
+- `productive_get_config` - View current configuration
+
+---
+
+## Get Your Productive.io Credentials
+
+1. Log into [Productive.io](https://productive.io)
+2. Go to **Settings → Integrations → API**
+3. Generate an API token
+4. Note your Organization ID (visible in URL or API settings)
+5. Note your User ID (click your profile, visible in URL)
+
+---
 
 ## Usage Examples
 
-### First Time Setup
-
-Ask Claude to configure your credentials:
+### First Time Setup (Local Mode)
 
 ```
 You: "Configure my Productive.io credentials"
 Claude: "I'll help you set up. Please provide your Organization ID and API Token..."
 ```
 
-Or configure directly:
-
-```
-You: "Use the productive_configure tool with organization ID 12345, API token xxx, and user ID 67890"
-```
-
-### Check Configuration
-
-```
-You: "Show me my Productive.io configuration"
-Claude: Uses productive_get_config tool
-```
-
-### Using the API
-
-Once configured, ask Claude to:
+### Common Queries
 
 - "Show me all active projects in Productive"
 - "Create a time entry for 2 hours today on project X"
 - "List all tasks assigned to me"
-- "Get details for project 12345"
-- "Show me time entries from last week"
+- "What did I work on last week?"
+- "Show me the services/budgets for project 12345"
 
-Claude will automatically use the MCP tools to interact with your Productive.io account.
+---
 
 ## Development
 
@@ -215,94 +238,106 @@ cd productive-cli
 # Install dependencies
 npm install
 
-# Build in watch mode
-npm run dev -w @studiometa/productive-mcp
+# Build all packages
+npm run build
 
-# Build for production
+# Or build only MCP package
 npm run build -w @studiometa/productive-mcp
 
-# Test the server
+# Development mode (watch)
+npm run dev -w @studiometa/productive-mcp
+
+# Test local server
 node packages/productive-mcp/dist/index.js
+
+# Test HTTP server
+node packages/productive-mcp/dist/server.js
 ```
 
-## Configuration
+### Testing the HTTP Server
 
-The server supports multiple configuration methods (in priority order):
+```bash
+# Start the server
+PORT=3000 node packages/productive-mcp/dist/server.js
 
-### 1. Interactive Configuration (Recommended)
+# Generate a test token
+TOKEN=$(echo -n "YOUR_ORG_ID:YOUR_API_TOKEN:YOUR_USER_ID" | base64)
 
-Use Claude to configure credentials interactively:
-- Ask: "Configure my Productive.io credentials"
-- Claude will guide you through the setup
-- Credentials are stored securely using the CLI's config system
+# Test health endpoint
+curl http://localhost:3000/health
 
-### 2. Environment Variables
+# Test MCP endpoint
+curl -X POST http://localhost:3000/mcp \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/list","params":{},"id":1}'
 
-Set via Claude Desktop config or shell:
+# List projects
+curl -X POST http://localhost:3000/mcp \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"productive_list_projects","arguments":{}},"id":2}'
+```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `PRODUCTIVE_ORGANIZATION_ID` | Yes | Your Productive.io organization ID |
-| `PRODUCTIVE_API_TOKEN` | Yes | Your Productive.io API token |
-| `PRODUCTIVE_USER_ID` | No | Your user ID (for time entries) |
-
-### 3. Config File
-
-The CLI stores configuration at:
-- **macOS/Linux**: `~/.config/productive-cli/config.json`
-- **Windows**: `%APPDATA%/productive-cli/config.json`
-
-Credentials can be stored in the system keychain (macOS Keychain, Linux libsecret).
+---
 
 ## Troubleshooting
 
-### Server won't start
+### Local mode: Credentials not found
 
-Check that credentials are correctly set:
 ```bash
-echo $PRODUCTIVE_ORGANIZATION_ID
+# Check environment variables
+echo $PRODUCTIVE_ORG_ID
 echo $PRODUCTIVE_API_TOKEN
+
+# Or use the configure tool via Claude
 ```
 
-### Authentication errors
+### HTTP mode: 401 Unauthorized
 
-- Verify your API token is valid
-- Check your organization ID is correct
-- Ensure the token has necessary permissions
+- Verify your token is correctly base64-encoded
+- Check that orgId:apiToken:userId are separated by colons
+- Ensure no newlines in the base64 output
 
-### Docker logs
+### Docker: View logs
 
-View server logs:
 ```bash
-docker logs productive-mcp -f
+docker logs productive-mcp-server -f
 ```
 
-### Test the server manually
+### Test server manually (local mode)
 
 ```bash
-# Send a test request
 echo '{"jsonrpc":"2.0","method":"tools/list","params":{},"id":1}' | productive-mcp
 ```
 
+---
+
 ## Requirements
 
-- Node.js 24+
+- Node.js 20+
 - Productive.io account with API access
-- Docker (for server deployment)
+- Docker (optional, for server deployment)
 
 ## Architecture
 
 ```
-productive-mcp
-├── Uses @modelcontextprotocol/sdk for MCP protocol
-├── Wraps @studiometa/productive-cli for API access
-└── Exposes tools via stdio transport
+productive-mcp/
+├── src/
+│   ├── index.ts      # Stdio transport (local mode)
+│   ├── server.ts     # HTTP transport (remote mode)
+│   ├── tools.ts      # Tool definitions (shared)
+│   ├── handlers.ts   # Tool execution (shared)
+│   └── auth.ts       # Bearer token parsing
+├── Dockerfile
+└── README.md
 ```
 
 ## Related Packages
 
 - [@studiometa/productive-cli](../productive-cli) - CLI tool for Productive.io
 - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - Official MCP SDK
+- [h3](https://github.com/unjs/h3) - HTTP framework for the server
 
 ## License
 
@@ -313,4 +348,5 @@ MIT © [Studio Meta](https://www.studiometa.fr)
 - [GitHub Repository](https://github.com/studiometa/productive-cli)
 - [Productive.io API Docs](https://developer.productive.io)
 - [MCP Documentation](https://modelcontextprotocol.io)
+- [Claude Desktop Custom Connectors](https://docs.anthropic.com)
 - [Issues](https://github.com/studiometa/productive-cli/issues)
