@@ -1,6 +1,6 @@
 {
   "name": "@studiometa/productive",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Productive.io tools - CLI and MCP server for AI agents and humans",
   "private": true,
   "type": "module",
