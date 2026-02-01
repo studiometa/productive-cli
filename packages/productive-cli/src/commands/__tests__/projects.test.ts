@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleProjectsCommand } from '../projects.js';
+import { handleProjectsCommand } from '../projects/index.js';
 import { ProductiveApi, ProductiveApiError } from '../../api.js';
 
 // Mock dependencies with proper ProductiveApiError implementation

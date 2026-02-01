@@ -6,7 +6,7 @@ import { handleConfigCommand, showConfigHelp } from "./commands/config.js";
 import {
   handleProjectsCommand,
   showProjectsHelp,
-} from "./commands/projects.js";
+} from "./commands/projects/index.js";
 import { handleTimeCommand, showTimeHelp } from "./commands/time.js";
 import { handleTasksCommand, showTasksHelp } from "./commands/tasks.js";
 import { handlePeopleCommand, showPeopleHelp } from "./commands/people.js";
