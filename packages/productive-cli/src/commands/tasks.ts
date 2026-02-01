@@ -1,15 +1,25 @@
 import { OutputFormatter } from "../output.js";
 import { colors } from "../utils/colors.js";
-import { stripHtml } from "../utils/html.js";
-import {
-  linkedId,
-  linkedProject,
-  linkedPerson,
-} from "../utils/productive-links.js";
 import type { OutputFormat } from "../types.js";
 import { exitWithValidationError, runCommand } from "../error-handler.js";
 import { createContext, type CommandContext, type CommandOptions } from "../context.js";
 import { formatTask, formatListResponse } from "../formatters/index.js";
+import {
+  render,
+  createRenderContext,
+  humanTaskDetailRenderer,
+  // Re-export helpers for backward compatibility with tests
+  formatTime as _formatTime,
+  stripAnsi as _stripAnsi,
+  truncateText as _truncateText,
+  padText as _padText,
+} from "../renderers/index.js";
+
+// Re-export helpers for backward compatibility
+export const formatTime = _formatTime;
+export const stripAnsi = _stripAnsi;
+export const truncateText = _truncateText;
+export const padText = _padText;
 
 /**
  * Parse filter string into key-value pairs
@@ -124,18 +134,6 @@ export async function handleTasksCommand(
 }
 
 /**
- * Format time in minutes to human readable format
- */
-export function formatTime(minutes: number | undefined): string {
-  if (minutes === undefined || minutes === null) return "-";
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (hours === 0) return `${mins}m`;
-  if (mins === 0) return `${hours}h`;
-  return `${hours}h${mins}m`;
-}
-
-/**
  * Get included resource by type and id from JSON:API includes
  */
 export function getIncludedResource(
@@ -147,144 +145,6 @@ export function getIncludedResource(
 ): Record<string, unknown> | undefined {
   if (!included || !id) return undefined;
   return included.find((r) => r.type === type && r.id === id)?.attributes;
-}
-
-/**
- * Strip ANSI codes for length calculation
- */
-export function stripAnsi(str: string): string {
-  // eslint-disable-next-line no-control-regex
-  return str.replace(
-    /\x1b\[[0-9;]*m|\x1b\]8;;[^\x1b]*\x1b\\|\x1b\]8;;\x1b\\/g,
-    "",
-  );
-}
-
-/**
- * Truncate text to fit width (accounting for ANSI codes)
- */
-export function truncateText(text: string, maxWidth: number): string {
-  const visibleLength = stripAnsi(text).length;
-  if (visibleLength <= maxWidth) return text;
-
-  // Simple truncation - find where to cut
-  let visibleCount = 0;
-  let cutIndex = 0;
-  for (let i = 0; i < text.length; i++) {
-    if (text[i] === "\x1b") {
-      // Skip ANSI sequence
-      const endBracket = text.indexOf("m", i);
-      const endOsc = text.indexOf("\\", i);
-      if (endBracket !== -1 && (endOsc === -1 || endBracket < endOsc)) {
-        i = endBracket;
-      } else if (endOsc !== -1) {
-        i = endOsc;
-      }
-      continue;
-    }
-    visibleCount++;
-    if (visibleCount >= maxWidth - 1) {
-      cutIndex = i;
-      break;
-    }
-  }
-  return text.slice(0, cutIndex) + "…" + "\x1b[0m";
-}
-
-/**
- * Pad text to width (accounting for ANSI codes)
- */
-export function padText(text: string, width: number): string {
-  const visibleLength = stripAnsi(text).length;
-  if (visibleLength >= width) return text;
-  return text + " ".repeat(width - visibleLength);
-}
-
-interface KanbanTask {
-  id: string;
-  number?: number;
-  title: string;
-  assignee?: string;
-  statusId?: string;
-  statusName?: string;
-}
-
-interface KanbanColumn {
-  id: string;
-  name: string;
-  tasks: KanbanTask[];
-}
-
-// Render tasks in kanban board view
-function renderKanban(columns: KanbanColumn[], terminalWidth: number): void {
-  if (columns.length === 0) {
-    console.log(colors.dim("No columns to display"));
-    return;
-  }
-
-  const columnGap = 2;
-  const minColumnWidth = 20;
-  const maxColumnWidth = 40;
-
-  // Calculate column width based on terminal width and number of columns
-  const availableWidth = terminalWidth - (columns.length - 1) * columnGap;
-  let columnWidth = Math.floor(availableWidth / columns.length);
-  columnWidth = Math.max(minColumnWidth, Math.min(maxColumnWidth, columnWidth));
-
-  // Render header row
-  const headers = columns.map((col) => {
-    const countBadge = colors.dim(`(${col.tasks.length})`);
-    const headerText = `${colors.bold(col.name)} ${countBadge}`;
-    return padText(truncateText(headerText, columnWidth), columnWidth);
-  });
-  console.log(headers.join(" ".repeat(columnGap)));
-
-  // Render separator
-  const separators = columns.map(() => colors.dim("─".repeat(columnWidth)));
-  console.log(separators.join(" ".repeat(columnGap)));
-
-  // Find max tasks in any column
-  const maxTasks = Math.max(...columns.map((col) => col.tasks.length), 0);
-
-  // Render tasks row by row
-  for (let taskIndex = 0; taskIndex < maxTasks; taskIndex++) {
-    // Task title line
-    const titleLine = columns.map((col) => {
-      const task = col.tasks[taskIndex];
-      if (!task) return " ".repeat(columnWidth);
-
-      const numberPart = task.number
-        ? linkedId(task.id, "task").replace(`#${task.id}`, `#${task.number}`) +
-          " "
-        : "";
-      const titleText = `${numberPart}${task.title}`;
-      return padText(truncateText(titleText, columnWidth), columnWidth);
-    });
-    console.log(titleLine.join(" ".repeat(columnGap)));
-
-    // Task assignee line
-    const assigneeLine = columns.map((col) => {
-      const task = col.tasks[taskIndex];
-      if (!task) return " ".repeat(columnWidth);
-
-      if (task.assignee) {
-        const assigneeText = colors.dim(`  → ${task.assignee}`);
-        return padText(truncateText(assigneeText, columnWidth), columnWidth);
-      }
-      return " ".repeat(columnWidth);
-    });
-    // Only print if there's content
-    if (assigneeLine.some((line) => line.trim() !== "")) {
-      console.log(assigneeLine.join(" ".repeat(columnGap)));
-    }
-
-    // Empty line between tasks
-    if (taskIndex < maxTasks - 1) {
-      console.log(
-        columns.map(() => " ".repeat(columnWidth)).join(" ".repeat(columnGap)),
-      );
-    }
-  }
 }
 // ============================================================================
 // Context-based command implementations (new pattern)
@@ -328,14 +188,13 @@ async function tasksListWithContext(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || "human";
-    if (format === "json") {
-      ctx.formatter.output(
-        formatListResponse(response.data, formatTask, response.meta, {
-          included: response.included,
-        })
-      );
-    } else if (format === "csv" || format === "table") {
+    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const formattedData = formatListResponse(response.data, formatTask, response.meta, {
+      included: response.included,
+    });
+
+    if (format === "csv" || format === "table") {
+      // For CSV/table, flatten the data for OutputFormatter
       const data = response.data.map((t) => {
         const projectData = getIncludedResource(
           response.included,
@@ -367,170 +226,12 @@ async function tasksListWithContext(ctx: CommandContext): Promise<void> {
         };
       });
       ctx.formatter.output(data);
-    } else if (format === "kanban") {
-      const statusMap = new Map<string, KanbanColumn>();
-      const defaultColumn: KanbanColumn = {
-        id: "unknown",
-        name: "No Status",
-        tasks: [],
-      };
-
-      for (const task of response.data) {
-        const statusId = task.relationships?.workflow_status?.data?.id;
-        const statusData = getIncludedResource(
-          response.included,
-          "workflow_statuses",
-          statusId,
-        );
-        const assigneeData = getIncludedResource(
-          response.included,
-          "people",
-          task.relationships?.assignee?.data?.id,
-        );
-
-        const statusName = statusData
-          ? String(statusData.name || "Unknown")
-          : null;
-
-        const kanbanTask: KanbanTask = {
-          id: task.id,
-          number: task.attributes.number,
-          title: task.attributes.title || "Untitled",
-          assignee: assigneeData
-            ? `${assigneeData.first_name} ${assigneeData.last_name}`
-            : undefined,
-          statusId,
-          statusName: statusName || undefined,
-        };
-
-        if (statusName) {
-          if (!statusMap.has(statusName)) {
-            statusMap.set(statusName, {
-              id: statusId || statusName,
-              name: statusName,
-              tasks: [],
-            });
-          }
-          statusMap.get(statusName)!.tasks.push(kanbanTask);
-        } else {
-          defaultColumn.tasks.push(kanbanTask);
-        }
-      }
-
-      const columns = Array.from(statusMap.values()).sort((a, b) =>
-        a.name.localeCompare(b.name),
-      );
-
-      if (defaultColumn.tasks.length > 0) {
-        columns.push(defaultColumn);
-      }
-
-      const terminalWidth = process.stdout.columns || 80;
-      renderKanban(columns, terminalWidth);
-
-      if (response.meta?.total) {
-        console.log();
-        console.log(colors.dim(`Total: ${response.meta.total} tasks`));
-      }
     } else {
-      response.data.forEach((task) => {
-        const isClosed = task.attributes.closed;
-        const statusIcon = isClosed ? colors.green("✓") : colors.yellow("○");
-        const title = task.attributes.title || "Untitled";
-        const taskNumber = task.attributes.number
-          ? `#${task.attributes.number}`
-          : "";
-
-        const projectData = getIncludedResource(
-          response.included,
-          "projects",
-          task.relationships?.project?.data?.id,
-        );
-        const assigneeData = getIncludedResource(
-          response.included,
-          "people",
-          task.relationships?.assignee?.data?.id,
-        );
-        const statusData = getIncludedResource(
-          response.included,
-          "workflow_statuses",
-          task.relationships?.workflow_status?.data?.id,
-        );
-
-        const numberPart = taskNumber ? colors.dim(taskNumber) + " " : "";
-        console.log(
-          `${statusIcon} ${numberPart}${colors.bold(title)} ${linkedId(task.id, "task")}`,
-        );
-
-        const parts: string[] = [];
-        if (projectData?.name) {
-          const projectId = task.relationships?.project?.data?.id;
-          const projectName = colors.cyan(String(projectData.name));
-          parts.push(
-            projectId ? linkedProject(projectName, projectId) : projectName,
-          );
-        }
-        if (assigneeData) {
-          const assigneeId = task.relationships?.assignee?.data?.id;
-          const assigneeName = `${assigneeData.first_name} ${assigneeData.last_name}`;
-          const assigneeText = assigneeId
-            ? linkedPerson(assigneeName, assigneeId)
-            : assigneeName;
-          parts.push(`${colors.dim("→")} ${assigneeText}`);
-        }
-        if (statusData?.name) {
-          parts.push(colors.dim(`[${statusData.name}]`));
-        }
-        if (parts.length > 0) {
-          console.log(`  ${parts.join(" ")}`);
-        }
-
-        const timeInfo: string[] = [];
-        const worked = task.attributes.worked_time;
-        const estimate = task.attributes.initial_estimate;
-        if (worked !== undefined && worked > 0) {
-          const workedStr = formatTime(worked);
-          if (estimate !== undefined && estimate > 0) {
-            const estimateStr = formatTime(estimate);
-            const isOverBudget = worked > estimate;
-            const ratio = `${workedStr}/${estimateStr}`;
-            timeInfo.push(
-              `${colors.dim("Time:")} ${isOverBudget ? colors.red(ratio) : ratio}`,
-            );
-          } else {
-            timeInfo.push(`${colors.dim("Time:")} ${workedStr}`);
-          }
-        } else if (estimate !== undefined && estimate > 0) {
-          timeInfo.push(`${colors.dim("Est:")} ${formatTime(estimate)}`);
-        }
-
-        if (task.attributes.due_date) {
-          const dueDate = new Date(task.attributes.due_date);
-          const now = new Date();
-          const isOverdue = !isClosed && dueDate < now;
-          const dueDateStr = task.attributes.due_date;
-          timeInfo.push(
-            `${colors.dim("Due:")} ${isOverdue ? colors.red(dueDateStr) : dueDateStr}`,
-          );
-        }
-
-        if (timeInfo.length > 0) {
-          console.log(`  ${timeInfo.join("  ")}`);
-        }
-
-        console.log();
+      // Use renderer for json, human, and kanban formats
+      const renderCtx = createRenderContext({
+        noColor: ctx.options["no-color"] === true,
       });
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const perPage = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / perPage);
-        console.log(
-          colors.dim(
-            `Page ${currentPage}/${totalPages} (Total: ${response.meta.total} tasks)`,
-          ),
-        );
-      }
+      render("task", format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -551,110 +252,19 @@ async function tasksGetWithContext(args: string[], ctx: CommandContext): Promise
     });
     const task = response.data;
 
-    const projectData = getIncludedResource(
-      response.included,
-      "projects",
-      task.relationships?.project?.data?.id,
-    );
-    const assigneeData = getIncludedResource(
-      response.included,
-      "people",
-      task.relationships?.assignee?.data?.id,
-    );
-    const statusData = getIncludedResource(
-      response.included,
-      "workflow_statuses",
-      task.relationships?.workflow_status?.data?.id,
-    );
-
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || "human";
+    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const formattedData = formatTask(task, { included: response.included });
+
     if (format === "json") {
-      ctx.formatter.output(formatTask(task, { included: response.included }));
+      ctx.formatter.output(formattedData);
     } else {
-      const isClosed = task.attributes.closed;
-      const statusIcon = isClosed
-        ? colors.green("✓ Completed")
-        : colors.yellow("○ Active");
-      const taskNumber = task.attributes.number
-        ? colors.dim(`#${task.attributes.number} `)
-        : "";
-
-      console.log(`${taskNumber}${colors.bold(task.attributes.title)}`);
-      console.log(colors.dim("─".repeat(50)));
-      console.log(`${colors.cyan("ID:")}       ${linkedId(task.id, "task")}`);
-      console.log(`${colors.cyan("Status:")}   ${statusIcon}`);
-
-      if (statusData?.name) {
-        console.log(
-          `${colors.cyan("Workflow:")} ${colors.dim(`[${statusData.name}]`)}`,
-        );
-      }
-
-      if (projectData?.name) {
-        const projectId = task.relationships?.project?.data?.id;
-        const projectName = String(projectData.name);
-        const projectText = projectId
-          ? linkedProject(projectName, projectId)
-          : projectName;
-        console.log(`${colors.cyan("Project:")}  ${projectText}`);
-      }
-
-      if (assigneeData) {
-        const assigneeId = task.relationships?.assignee?.data?.id;
-        const assigneeName = `${assigneeData.first_name} ${assigneeData.last_name}`;
-        const assigneeText = assigneeId
-          ? linkedPerson(assigneeName, assigneeId)
-          : assigneeName;
-        console.log(`${colors.cyan("Assignee:")} ${assigneeText}`);
-      }
-
-      const worked = task.attributes.worked_time;
-      const estimate = task.attributes.initial_estimate;
-      if (worked !== undefined && worked > 0) {
-        const workedStr = formatTime(worked);
-        if (estimate !== undefined && estimate > 0) {
-          const estimateStr = formatTime(estimate);
-          const isOverBudget = worked > estimate;
-          const ratio = `${workedStr} / ${estimateStr}`;
-          console.log(
-            `${colors.cyan("Time:")}     ${isOverBudget ? colors.red(ratio) : ratio}`,
-          );
-        } else {
-          console.log(`${colors.cyan("Time:")}     ${workedStr}`);
-        }
-      } else if (estimate !== undefined && estimate > 0) {
-        console.log(`${colors.cyan("Estimate:")} ${formatTime(estimate)}`);
-      }
-
-      if (task.attributes.due_date) {
-        const dueDate = new Date(task.attributes.due_date);
-        const now = new Date();
-        const isOverdue = !isClosed && dueDate < now;
-        const dueDateStr = task.attributes.due_date;
-        console.log(
-          `${colors.cyan("Due:")}      ${isOverdue ? colors.red(dueDateStr) : dueDateStr}`,
-        );
-      }
-
-      if (task.attributes.description) {
-        const description = stripHtml(task.attributes.description);
-        if (description) {
-          console.log();
-          console.log(`${colors.cyan("Description:")}`);
-          const lines = description.split("\n").map((line) => `  ${line}`);
-          console.log(lines.join("\n"));
-        }
-      }
-
-      console.log();
-      console.log(
-        `${colors.dim("Created:")} ${new Date(task.attributes.created_at).toLocaleString()}`,
-      );
-      console.log(
-        `${colors.dim("Updated:")} ${new Date(task.attributes.updated_at).toLocaleString()}`,
-      );
+      // Use detail renderer for human format
+      const renderCtx = createRenderContext({
+        noColor: ctx.options["no-color"] === true,
+      });
+      humanTaskDetailRenderer.render(formattedData, renderCtx);
     }
   }, ctx.formatter);
 }

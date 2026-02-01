@@ -135,6 +135,7 @@ export interface FormattedTask {
   title: string;
   closed: boolean;
   due_date: string | null;
+  description?: string | null;
   initial_estimate?: number;
   worked_time?: number;
   remaining_time?: number;

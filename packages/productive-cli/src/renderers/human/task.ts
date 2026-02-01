@@ -189,6 +189,14 @@ export class HumanTaskDetailRenderer implements Renderer<FormattedTask> {
       );
     }
 
+    // Description
+    if (task.description) {
+      console.log();
+      console.log(`${colors.cyan('Description:')}`);
+      const lines = task.description.split('\n').map((line) => `  ${line}`);
+      console.log(lines.join('\n'));
+    }
+
     // Timestamps
     console.log();
     if (task.created_at) {

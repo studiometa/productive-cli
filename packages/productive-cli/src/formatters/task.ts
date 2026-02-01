@@ -8,6 +8,7 @@ import type {
   FormattedTask,
 } from './types.js';
 import { DEFAULT_FORMAT_OPTIONS } from './types.js';
+import { stripHtml } from '../utils/html.js';
 
 /**
  * Get an included resource by type and ID
@@ -32,11 +33,16 @@ export function formatTask(
   const attrs = task.attributes;
   const rels = task.relationships;
 
+  // Process description with HTML stripping if enabled
+  const descriptionRaw = attrs.description as string | null | undefined;
+  const description = opts.stripHtml ? stripHtml(descriptionRaw) || null : descriptionRaw || null;
+
   const result: FormattedTask = {
     id: task.id,
     title: (attrs.title as string) || 'Untitled',
     closed: (attrs.closed as boolean) || false,
     due_date: (attrs.due_date as string) || null,
+    description,
   };
 
   // Include task number if present
