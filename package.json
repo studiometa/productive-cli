@@ -12,14 +12,14 @@
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "test:watch": "npm run test:watch --workspaces",
-    "test:ci": "npm run test:ci --workspace=@studiometa/productive-cli",
+    "test:ci": "npm run test:ci --workspaces --if-present",
     "lint": "npm run lint --workspaces",
     "format": "npm run format --workspaces",
     "format:check": "npm run format:check --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules",
-    "release:cli": "cd packages/productive-cli && npm publish",
-    "release:mcp": "cd packages/productive-mcp && npm publish"
+    "version": "npm version --workspaces --no-git-tag-version",
+    "preversion": "npm run build && npm run test"
   },
   "keywords": [
     "productive",
