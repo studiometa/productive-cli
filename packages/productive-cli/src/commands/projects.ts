@@ -1,9 +1,8 @@
-import { ProductiveApi, ProductiveApiError } from '../api.js';
-import { OutputFormatter, createSpinner } from '../output.js';
+import { OutputFormatter } from '../output.js';
 import { colors } from '../utils/colors.js';
 import { linkedId } from '../utils/productive-links.js';
 import type { OutputFormat } from '../types.js';
-import { handleError, exitWithValidationError, runCommand } from '../error-handler.js';
+import { exitWithValidationError, runCommand } from '../error-handler.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 
 function parseFilters(filterString: string): Record<string, string> {
@@ -113,146 +112,6 @@ export async function handleProjectsCommand(
   }
 }
 
-async function projectsList(
-  options: Record<string, string | boolean>,
-  formatter: OutputFormatter
-): Promise<void> {
-  const spinner = createSpinner('Fetching projects...', formatter['format']);
-  spinner.start();
-
-  try {
-    const api = new ProductiveApi(options);
-    const filter: Record<string, string> = {};
-
-    // Parse generic filters first
-    if (options.filter) {
-      Object.assign(filter, parseFilters(String(options.filter)));
-    }
-
-    // Specific filter options (override generic filters)
-    if (options.company) {
-      filter.company_id = String(options.company);
-    }
-
-    const response = await api.getProjects({
-      page: parseInt(String(options.page || options.p || '1')),
-      perPage: parseInt(String(options.size || options.s || '100')),
-      filter,
-      sort: String(options.sort || ''),
-    });
-
-    spinner.succeed();
-
-    if (formatter['format'] === 'json') {
-      formatter.output({
-        data: response.data.map((p) => ({
-          id: p.id,
-          name: p.attributes.name,
-          project_number: p.attributes.project_number,
-          archived: p.attributes.archived,
-          budget: p.attributes.budget,
-          created_at: p.attributes.created_at,
-          updated_at: p.attributes.updated_at,
-        })),
-        meta: response.meta,
-      });
-    } else if (formatter['format'] === 'csv' || formatter['format'] === 'table') {
-      const data = response.data.map((p) => ({
-        id: p.id,
-        name: p.attributes.name,
-        number: p.attributes.project_number || '',
-        archived: p.attributes.archived ? 'yes' : 'no',
-        budget: p.attributes.budget || '',
-        created: p.attributes.created_at.split('T')[0],
-      }));
-      formatter.output(data);
-    } else {
-      response.data.forEach((project) => {
-        const status = project.attributes.archived
-          ? colors.gray('[archived]')
-          : colors.green('[active]');
-
-        console.log(`${colors.bold(project.attributes.name)} ${status} ${linkedId(project.id, 'project')}`);
-        if (project.attributes.project_number) {
-          console.log(colors.dim(`  Number: ${project.attributes.project_number}`));
-        }
-        if (project.attributes.budget) {
-          console.log(colors.dim(`  Budget: ${project.attributes.budget}`));
-        }
-        console.log();
-      });
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const perPage = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / perPage);
-        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total})`));
-      }
-    }
-  } catch (error) {
-    spinner.fail();
-    handleError(error, formatter);
-  }
-}
-
-async function projectsGet(
-  args: string[],
-  options: Record<string, string | boolean>,
-  formatter: OutputFormatter
-): Promise<void> {
-  const [id] = args;
-
-  if (!id) {
-    formatter.error('Usage: productive projects get <id>');
-    process.exit(1);
-  }
-
-  const spinner = createSpinner('Fetching project...', formatter['format']);
-  spinner.start();
-
-  try {
-    const api = new ProductiveApi(options);
-    const response = await api.getProject(id);
-    const project = response.data;
-
-    spinner.succeed();
-
-    if (formatter['format'] === 'json') {
-      formatter.output({
-        id: project.id,
-        name: project.attributes.name,
-        project_number: project.attributes.project_number,
-        archived: project.attributes.archived,
-        budget: project.attributes.budget,
-        created_at: project.attributes.created_at,
-        updated_at: project.attributes.updated_at,
-        relationships: project.relationships,
-      });
-    } else {
-      console.log(colors.bold(colors.cyan(project.attributes.name)));
-      console.log(colors.dim('─'.repeat(50)));
-      console.log(`${colors.cyan('ID:')}      ${linkedId(project.id, 'project')}`);
-      if (project.attributes.project_number) {
-        console.log(`${colors.cyan('Number:')}  ${project.attributes.project_number}`);
-      }
-      console.log(
-        `${colors.cyan('Status:')}  ${project.attributes.archived ? colors.gray('Archived') : colors.green('Active')}`
-      );
-      if (project.attributes.budget) {
-        console.log(`${colors.cyan('Budget:')}  ${project.attributes.budget}`);
-      }
-      console.log(`${colors.cyan('Created:')} ${new Date(project.attributes.created_at).toLocaleString()}`);
-      console.log(`${colors.cyan('Updated:')} ${new Date(project.attributes.updated_at).toLocaleString()}`);
-    }
-  } catch (error) {
-    spinner.fail();
-    handleError(error, formatter);
-  }
-}
-
-// ============================================================================
-// Context-based command implementations (new pattern)
-// ============================================================================
 
 /**
  * List projects using context-based dependency injection.

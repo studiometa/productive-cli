@@ -1,8 +1,7 @@
-import { ProductiveApi, ProductiveApiError } from '../api.js';
-import { OutputFormatter, createSpinner } from '../output.js';
+import { OutputFormatter } from '../output.js';
 import { colors } from '../utils/colors.js';
 import type { OutputFormat } from '../types.js';
-import { handleError, runCommand } from '../error-handler.js';
+import { runCommand } from '../error-handler.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 
 function parseFilters(filterString: string): Record<string, string> {

@@ -40,7 +40,6 @@ describe('handleTimeCommand', () => {
   let mockApi: any;
   let consoleLogSpy: any;
   let consoleErrorSpy: any;
-  let processExitSpy: any;
 
   beforeEach(() => {
     mockApi = {
@@ -54,7 +53,7 @@ describe('handleTimeCommand', () => {
 
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    processExitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: any) => {
+    vi.spyOn(process, 'exit').mockImplementation((code?: any) => {
       throw new Error(`process.exit(${code})`);
     });
   });

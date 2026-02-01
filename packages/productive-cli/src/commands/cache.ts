@@ -10,7 +10,7 @@ import type {
   ProductivePerson,
   ProductiveService,
 } from "../types.js";
-import { handleError, runCommand } from "../error-handler.js";
+import { runCommand } from "../error-handler.js";
 import { ConfigError, CommandError } from "../errors.js";
 
 export function showCacheHelp(subcommand?: string): void {

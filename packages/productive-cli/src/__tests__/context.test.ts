@@ -1,10 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   createContext,
   createTestContext,
   withContext,
   type CommandContext,
-  type CommandOptions,
 } from '../context.js';
 import { OutputFormatter } from '../output.js';
 

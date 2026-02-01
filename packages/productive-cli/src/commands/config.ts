@@ -3,13 +3,11 @@ import {
   setConfig,
   clearConfig,
   validateConfig,
-  isKeychainAvailable,
-  getKeychainBackend,
 } from "../config.js";
 import { OutputFormatter } from "../output.js";
 import { colors } from "../utils/colors.js";
 import type { OutputFormat } from "../types.js";
-import { handleError, exitWithValidationError } from "../error-handler.js";
+import { handleError } from "../error-handler.js";
 import { ValidationError, ConfigError, CommandError } from "../errors.js";
 
 export function showConfigHelp(subcommand?: string): void {

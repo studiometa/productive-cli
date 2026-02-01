@@ -1,16 +1,10 @@
 import { readFileSync } from "node:fs";
-import { ProductiveApiError } from "../api.js";
 import { getConfig } from "../config.js";
 import { OutputFormatter, createSpinner } from "../output.js";
 import { colors } from "../utils/colors.js";
 import type { OutputFormat } from "../types.js";
-import { handleError, runCommand, exitWithValidationError, exitWithConfigError } from "../error-handler.js";
+import { runCommand, exitWithValidationError } from "../error-handler.js";
 import { ConfigError, ValidationError, ApiError } from "../errors.js";
-
-interface FieldValue {
-  key: string;
-  value: unknown;
-}
 
 function parseFieldValue(value: string): unknown {
   // Handle special values
@@ -42,7 +36,7 @@ function parseFieldValue(value: string): unknown {
         // Return as string if not valid JSON
         return content.trim();
       }
-    } catch (error) {
+    } catch {
       throw new ValidationError(`Failed to read file: ${filename}`, "field", value);
     }
   }
