@@ -39,3 +39,6 @@ export {
 export { JsonRenderer, jsonRenderer } from './json.js';
 export { CsvRenderer, csvRenderer } from './csv.js';
 export { TableRenderer, tableRenderer } from './table.js';
+
+// Human renderers
+export * from './human/index.js';

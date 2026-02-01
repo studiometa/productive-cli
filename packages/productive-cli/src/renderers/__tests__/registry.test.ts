@@ -9,6 +9,9 @@ import {
 import { jsonRenderer } from '../json.js';
 import { csvRenderer } from '../csv.js';
 import { tableRenderer } from '../table.js';
+import { humanTimeEntryListRenderer } from '../human/time-entry.js';
+import { humanTaskListRenderer } from '../human/task.js';
+import { kanbanRenderer } from '../human/kanban.js';
 import type { GenericRenderer, RenderContext } from '../types.js';
 
 const defaultCtx: RenderContext = {
@@ -34,9 +37,13 @@ describe('renderer registry', () => {
       expect(getRenderer('project', 'table')).toBe(tableRenderer);
     });
 
-    it('should return undefined for unregistered format', () => {
-      // Human format is not registered yet (will be added later)
-      expect(getRenderer('time_entry', 'human')).toBeUndefined();
+    it('should return human renderer for registered resource types', () => {
+      expect(getRenderer('time_entry', 'human')).toBe(humanTimeEntryListRenderer);
+      expect(getRenderer('task', 'human')).toBe(humanTaskListRenderer);
+    });
+
+    it('should return kanban renderer for tasks', () => {
+      expect(getRenderer('task', 'kanban')).toBe(kanbanRenderer);
     });
   });
 
@@ -82,10 +89,16 @@ describe('renderer registry', () => {
       expect(consoleSpy).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
     });
 
-    it('should throw error for unregistered format', () => {
-      expect(() => {
-        render('project', 'human', {}, defaultCtx);
-      }).toThrow('No renderer found for project:human');
+    it('should render human format for registered resource types', () => {
+      const data = {
+        data: [{ id: '1', date: '2024-01-15', time_minutes: 480, time_hours: '8.00', note: null }],
+        meta: { page: 1, total_pages: 1, total_count: 1 },
+      };
+
+      render('time_entry', 'human', data, defaultCtx);
+
+      // Should output time entry in human format
+      expect(consoleSpy).toHaveBeenCalled();
     });
   });
 
@@ -96,9 +109,14 @@ describe('renderer registry', () => {
       expect(hasRenderer('project', 'table')).toBe(true);
     });
 
-    it('should return false for unregistered formats', () => {
-      expect(hasRenderer('time_entry', 'human')).toBe(false);
-      expect(hasRenderer('task', 'kanban')).toBe(false);
+    it('should return true for human renderers', () => {
+      expect(hasRenderer('time_entry', 'human')).toBe(true);
+      expect(hasRenderer('task', 'human')).toBe(true);
+      expect(hasRenderer('project', 'human')).toBe(true);
+    });
+
+    it('should return true for kanban renderer', () => {
+      expect(hasRenderer('task', 'kanban')).toBe(true);
     });
   });
 

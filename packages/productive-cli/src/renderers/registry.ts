@@ -9,6 +9,13 @@ import type { GenericRenderer, OutputFormat, ResourceType, RenderContext } from 
 import { jsonRenderer } from './json.js';
 import { csvRenderer } from './csv.js';
 import { tableRenderer } from './table.js';
+import { humanTimeEntryListRenderer } from './human/time-entry.js';
+import { humanProjectListRenderer } from './human/project.js';
+import { humanTaskListRenderer } from './human/task.js';
+import { kanbanRenderer } from './human/kanban.js';
+import { humanPersonListRenderer } from './human/person.js';
+import { humanServiceListRenderer } from './human/service.js';
+import { humanBudgetListRenderer } from './human/budget.js';
 
 /**
  * Registry key format: "resourceType:format" or "*:format" for fallbacks
@@ -117,3 +124,12 @@ export function getFormatsForResource(resourceType: ResourceType): OutputFormat[
 registerRenderer('*', 'json', jsonRenderer);
 registerRenderer('*', 'csv', csvRenderer);
 registerRenderer('*', 'table', tableRenderer);
+
+// Human renderers (resource-specific)
+registerRenderer('time_entry', 'human', humanTimeEntryListRenderer);
+registerRenderer('project', 'human', humanProjectListRenderer);
+registerRenderer('task', 'human', humanTaskListRenderer);
+registerRenderer('task', 'kanban', kanbanRenderer);
+registerRenderer('person', 'human', humanPersonListRenderer);
+registerRenderer('service', 'human', humanServiceListRenderer);
+registerRenderer('budget', 'human', humanBudgetListRenderer);
