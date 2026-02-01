@@ -4,6 +4,11 @@ import type { OutputFormat } from '../types.js';
 import { exitWithValidationError, runCommand } from '../error-handler.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 import { formatPerson, formatListResponse } from '../formatters/index.js';
+import {
+  render,
+  createRenderContext,
+  humanPersonDetailRenderer,
+} from '../renderers/index.js';
 
 function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
@@ -136,10 +141,11 @@ async function peopleListWithContext(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
-    if (format === 'json') {
-      ctx.formatter.output(formatListResponse(response.data, formatPerson, response.meta));
-    } else if (format === 'csv' || format === 'table') {
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatListResponse(response.data, formatPerson, response.meta);
+
+    if (format === 'csv' || format === 'table') {
+      // For CSV/table, flatten the data for OutputFormatter
       const data = response.data.map((p) => ({
         id: p.id,
         first_name: p.attributes.first_name,
@@ -149,21 +155,11 @@ async function peopleListWithContext(ctx: CommandContext): Promise<void> {
       }));
       ctx.formatter.output(data);
     } else {
-      response.data.forEach((person) => {
-        const status = person.attributes.active ? colors.green('[active]') : colors.gray('[inactive]');
-        const name = `${person.attributes.first_name} ${person.attributes.last_name}`;
-        console.log(`${colors.bold(name)} ${status}`);
-        console.log(colors.dim(`  ID: ${person.id}`));
-        console.log(colors.dim(`  Email: ${person.attributes.email}`));
-        console.log();
+      // Use renderer for json and human formats
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
       });
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const perPage = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / perPage);
-        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total} people)`));
-      }
+      render('person', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -184,21 +180,17 @@ async function peopleGetWithContext(args: string[], ctx: CommandContext): Promis
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatPerson(person);
+
     if (format === 'json') {
-      ctx.formatter.output(formatPerson(person));
+      ctx.formatter.output(formattedData);
     } else {
-      const name = `${person.attributes.first_name} ${person.attributes.last_name}`;
-      console.log(colors.bold(colors.cyan(name)));
-      console.log(colors.dim('─'.repeat(50)));
-      console.log(colors.cyan('ID:'), person.id);
-      console.log(colors.cyan('Email:'), person.attributes.email);
-      console.log(
-        colors.cyan('Status:'),
-        person.attributes.active ? colors.green('Active') : colors.gray('Inactive')
-      );
-      console.log(colors.cyan('Created:'), new Date(person.attributes.created_at).toLocaleString());
-      console.log(colors.cyan('Updated:'), new Date(person.attributes.updated_at).toLocaleString());
+      // Use detail renderer for human format
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
+      });
+      humanPersonDetailRenderer.render(formattedData, renderCtx);
     }
   }, ctx.formatter);
 }

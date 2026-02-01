@@ -1,10 +1,10 @@
 import { OutputFormatter } from '../output.js';
 import { colors } from '../utils/colors.js';
-import { linkedId } from '../utils/productive-links.js';
 import type { OutputFormat } from '../types.js';
 import { runCommand } from '../error-handler.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 import { formatService, formatListResponse } from '../formatters/index.js';
+import { render, createRenderContext } from '../renderers/index.js';
 
 function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
@@ -121,27 +121,22 @@ async function servicesListWithContext(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
-    if (format === 'json') {
-      ctx.formatter.output(formatListResponse(response.data, formatService, response.meta));
-    } else if (format === 'csv' || format === 'table') {
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatListResponse(response.data, formatService, response.meta);
+
+    if (format === 'csv' || format === 'table') {
+      // For CSV/table, flatten the data for OutputFormatter
       const data = response.data.map((s) => ({
         id: s.id,
         name: s.attributes.name,
       }));
       ctx.formatter.output(data);
     } else {
-      response.data.forEach((service) => {
-        console.log(`${colors.bold(service.attributes.name)} ${linkedId(service.id, 'service')}`);
-        console.log();
+      // Use renderer for json and human formats
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
       });
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const perPage = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / perPage);
-        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total} services)`));
-      }
+      render('service', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }

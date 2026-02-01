@@ -4,6 +4,7 @@ import type { OutputFormat } from '../types.js';
 import { runCommand } from '../error-handler.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 import { formatBudget, formatListResponse } from '../formatters/index.js';
+import { render, createRenderContext } from '../renderers/index.js';
 
 function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
@@ -117,10 +118,11 @@ async function budgetsListWithContext(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
-    if (format === 'json') {
-      ctx.formatter.output(formatListResponse(response.data, formatBudget, response.meta));
-    } else if (format === 'csv' || format === 'table') {
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatListResponse(response.data, formatBudget, response.meta);
+
+    if (format === 'csv' || format === 'table') {
+      // For CSV/table, flatten the data for OutputFormatter
       const data = response.data.map((b) => ({
         id: b.id,
         time_total: b.attributes.total_time_budget || 0,
@@ -130,32 +132,11 @@ async function budgetsListWithContext(ctx: CommandContext): Promise<void> {
       }));
       ctx.formatter.output(data);
     } else {
-      response.data.forEach((budget) => {
-        console.log(colors.bold(`Budget ID: ${budget.id}`));
-        if (budget.attributes.total_time_budget) {
-          const used =
-            (budget.attributes.total_time_budget || 0) - (budget.attributes.remaining_time_budget || 0);
-          console.log(
-            colors.dim(`  Time: ${used}/${budget.attributes.total_time_budget} hours`)
-          );
-        }
-        if (budget.attributes.total_monetary_budget) {
-          const used =
-            (budget.attributes.total_monetary_budget || 0) -
-            (budget.attributes.remaining_monetary_budget || 0);
-          console.log(
-            colors.dim(`  Money: ${used}/${budget.attributes.total_monetary_budget}`)
-          );
-        }
-        console.log();
+      // Use renderer for json and human formats
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
       });
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const perPage = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / perPage);
-        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total} budgets)`));
-      }
+      render('budget', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
