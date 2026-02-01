@@ -4,13 +4,24 @@ import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
+function getConfigDir(): string {
+  const platform = process.platform;
+  if (platform === 'win32') {
+    return process.env.APPDATA || join(homedir(), 'AppData', 'Roaming');
+  } else if (platform === 'darwin') {
+    return process.env.XDG_CONFIG_HOME || join(homedir(), 'Library', 'Application Support');
+  } else {
+    return process.env.XDG_CONFIG_HOME || join(homedir(), '.config');
+  }
+}
+
 describe('ConfigStore', () => {
   let configStore: ConfigStore<{ key1: string; key2: number; key3?: string }>;
   let testConfigPath: string;
 
   beforeEach(() => {
     configStore = new ConfigStore('test-project');
-    testConfigPath = join(homedir(), '.config', 'test-project', 'config.json');
+    testConfigPath = join(getConfigDir(), 'test-project', 'config.json');
   });
 
   it('should create config store', () => {
