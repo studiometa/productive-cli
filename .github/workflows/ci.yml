@@ -28,6 +28,9 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
+      - name: Build CLI (required for MCP typecheck)
+        run: npm run build --workspace=@studiometa/productive-cli
+
       - name: Type check
         run: npm run typecheck
 
