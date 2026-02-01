@@ -8,7 +8,7 @@ import {
   stripAnsi,
   truncateText,
   padText,
-} from "../tasks.js";
+} from "../tasks/index.js";
 import { ProductiveApi, ProductiveApiError } from "../../api.js";
 
 // Mock API

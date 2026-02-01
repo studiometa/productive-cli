@@ -8,7 +8,7 @@ import {
   showProjectsHelp,
 } from "./commands/projects/index.js";
 import { handleTimeCommand, showTimeHelp } from "./commands/time/index.js";
-import { handleTasksCommand, showTasksHelp } from "./commands/tasks.js";
+import { handleTasksCommand, showTasksHelp } from "./commands/tasks/index.js";
 import { handlePeopleCommand, showPeopleHelp } from "./commands/people.js";
 import {
   handleServicesCommand,
