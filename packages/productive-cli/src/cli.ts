@@ -14,7 +14,7 @@ import {
   handleServicesCommand,
   showServicesHelp,
 } from "./commands/services/index.js";
-import { handleBudgetsCommand, showBudgetsHelp } from "./commands/budgets.js";
+import { handleBudgetsCommand, showBudgetsHelp } from "./commands/budgets/index.js";
 import { handleCacheCommand, showCacheHelp } from "./commands/cache.js";
 import { handleApiCommand, showApiHelp } from "./commands/api.js";
 import {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleBudgetsCommand } from '../budgets.js';
+import { handleBudgetsCommand } from '../budgets/index.js';
 import { ProductiveApi, ProductiveApiError } from '../../api.js';
 
 // Mock dependencies
