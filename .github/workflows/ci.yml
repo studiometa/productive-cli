@@ -52,6 +52,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build CLI (required for MCP tests)
+        run: npm run build --workspace=@studiometa/productive-cli
+
       - name: Run tests with coverage
         run: npm run test:ci
 
