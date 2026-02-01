@@ -1,13 +1,16 @@
 import { OutputFormatter } from '../output.js';
 import { colors } from '../utils/colors.js';
 import { parseDate, parseDateRange } from '../utils/date.js';
-import { stripHtml, link } from '../utils/html.js';
-import { timeEntriesUrl } from '../utils/productive-links.js';
 import type { OutputFormat } from '../types.js';
 import { handleError, exitWithValidationError, runCommand } from '../error-handler.js';
 import { ValidationError, ConfigError } from '../errors.js';
 import { createContext, type CommandContext, type CommandOptions } from '../context.js';
 import { formatTimeEntry, formatListResponse } from '../formatters/index.js';
+import {
+  render,
+  createRenderContext,
+  humanTimeEntryDetailRenderer,
+} from '../renderers/index.js';
 
 export function showTimeHelp(subcommand?: string): void {
   if (subcommand === 'list' || subcommand === 'ls') {
@@ -260,10 +263,11 @@ async function timeListWithContext(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
-    if (format === 'json') {
-      ctx.formatter.output(formatListResponse(response.data, formatTimeEntry, response.meta));
-    } else if (format === 'csv' || format === 'table') {
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatListResponse(response.data, formatTimeEntry, response.meta);
+
+    if (format === 'csv' || format === 'table') {
+      // For CSV/table, flatten the data for OutputFormatter
       const data = response.data.map((e) => ({
         id: e.id,
         date: e.attributes.date,
@@ -274,40 +278,11 @@ async function timeListWithContext(ctx: CommandContext): Promise<void> {
       }));
       ctx.formatter.output(data);
     } else {
-      let totalMinutes = 0;
-      response.data.forEach((entry) => {
-        const hours = Math.floor(entry.attributes.time / 60);
-        const minutes = entry.attributes.time % 60;
-        const duration = colors.green(`${hours}h ${minutes.toString().padStart(2, '0')}m`);
-        totalMinutes += entry.attributes.time;
-
-        const dateUrl = timeEntriesUrl(entry.attributes.date);
-        const dateDisplay = dateUrl
-          ? link(colors.bold(entry.attributes.date), dateUrl)
-          : colors.bold(entry.attributes.date);
-
-        console.log(`${dateDisplay}  ${duration}  ${colors.dim(`#${entry.id}`)}`);
-        if (entry.attributes.note) {
-          const note = stripHtml(entry.attributes.note);
-          if (note) {
-            console.log(`  ${colors.dim(note)}`);
-          }
-        }
-        console.log();
+      // Use renderer for json and human formats
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
       });
-
-      if (response.data.length > 0) {
-        const totalHours = Math.floor(totalMinutes / 60);
-        const totalMins = totalMinutes % 60;
-        console.log(colors.bold(colors.cyan(`Total: ${totalHours}h ${totalMins.toString().padStart(2, '0')}m`)));
-      }
-
-      if (response.meta?.total) {
-        const currentPage = response.meta.page || 1;
-        const pageSize = response.meta.per_page || 100;
-        const totalPages = Math.ceil(response.meta.total / pageSize);
-        console.log(colors.dim(`Page ${currentPage}/${totalPages} (Total: ${response.meta.total} entries)`));
-      }
+      render('time_entry', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -331,23 +306,17 @@ async function timeGetWithContext(args: string[], ctx: CommandContext): Promise<
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || 'human';
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatTimeEntry(entry);
+
     if (format === 'json') {
-      ctx.formatter.output(formatTimeEntry(entry));
+      ctx.formatter.output(formattedData);
     } else {
-      const hours = Math.floor(entry.attributes.time / 60);
-      const minutes = entry.attributes.time % 60;
-      console.log(colors.bold('Time Entry'));
-      console.log(colors.dim('─'.repeat(50)));
-      console.log(`${colors.cyan('ID:')}       ${entry.id}`);
-      console.log(`${colors.cyan('Date:')}     ${entry.attributes.date}`);
-      console.log(`${colors.cyan('Duration:')} ${colors.green(`${hours}h ${minutes.toString().padStart(2, '0')}m`)} ${colors.dim(`(${entry.attributes.time} minutes)`)}`);
-      if (entry.attributes.note) {
-        const note = stripHtml(entry.attributes.note);
-        if (note) {
-          console.log(`${colors.cyan('Note:')}     ${note}`);
-        }
-      }
+      // Use detail renderer for human format
+      const renderCtx = createRenderContext({
+        noColor: ctx.options['no-color'] === true,
+      });
+      humanTimeEntryDetailRenderer.render(formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
