@@ -35,6 +35,7 @@ import {
   handleToolCall,
   handlePrompt,
 } from './stdio.js';
+import { VERSION } from './version.js';
 
 /**
  * Create and configure the MCP server
@@ -43,7 +44,7 @@ export function createStdioServer(): Server {
   const server = new Server(
     {
       name: 'productive-mcp',
-      version: '0.1.0',
+      version: VERSION,
     },
     {
       capabilities: {

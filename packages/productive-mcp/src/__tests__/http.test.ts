@@ -22,6 +22,7 @@ import {
   handleToolsList,
 } from '../http.js';
 import { executeToolWithCredentials } from '../handlers.js';
+import { VERSION } from '../version.js';
 
 describe('http module', () => {
   describe('jsonRpcError', () => {
@@ -70,7 +71,7 @@ describe('http module', () => {
 
       expect(result.protocolVersion).toBe('2024-11-05');
       expect(result.serverInfo.name).toBe('productive-mcp');
-      expect(result.serverInfo.version).toBe('0.1.0');
+      expect(result.serverInfo.version).toBe(VERSION);
       expect(result.capabilities.tools).toEqual({});
     });
   });
@@ -135,7 +136,7 @@ describe('HTTP Server Integration', () => {
       expect(data).toEqual({
         status: 'ok',
         service: 'productive-mcp',
-        version: '0.1.0',
+        version: VERSION,
       });
     });
 

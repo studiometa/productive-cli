@@ -18,6 +18,7 @@ import {
 import { TOOLS } from './tools.js';
 import { executeToolWithCredentials } from './handlers.js';
 import { parseAuthHeader } from './auth.js';
+import { VERSION } from './version.js';
 import {
   oauthMetadataHandler,
   registerHandler,
@@ -56,7 +57,7 @@ export function handleInitialize() {
     protocolVersion: '2024-11-05',
     serverInfo: {
       name: 'productive-mcp',
-      version: '0.1.0',
+      version: VERSION,
     },
     capabilities: {
       tools: {},
@@ -89,7 +90,7 @@ export function createHttpApp(): App {
   router.get(
     '/',
     defineEventHandler(() => {
-      return { status: 'ok', service: 'productive-mcp', version: '0.1.0' };
+      return { status: 'ok', service: 'productive-mcp', version: VERSION };
     })
   );
 
