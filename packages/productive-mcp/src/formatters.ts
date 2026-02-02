@@ -171,7 +171,7 @@ export function formatComment(
  */
 export function formatTimer(
   timer: JsonApiResource,
-  options?: McpFormatOptions
+  _options?: McpFormatOptions
 ): Record<string, unknown> {
   const result = cliFormatTimer(timer, MCP_FORMAT_OPTIONS);
   return result;

@@ -205,19 +205,14 @@ describe('handlers', () => {
         expect(mockApi.updateTimeEntry).toHaveBeenCalledWith('789', { time: 240 });
       });
 
-      it('should handle delete action', async () => {
-        mockApi.deleteTimeEntry.mockResolvedValue(undefined);
-
+      it('should reject invalid action', async () => {
         const result = await executeToolWithCredentials(
           'productive',
-          { resource: 'time', action: 'delete', id: '789' },
+          { resource: 'time', action: 'invalid' as never, id: '789' },
           credentials
         );
 
-        expect(result.isError).toBeUndefined();
-        const content = JSON.parse(result.content[0].text as string);
-        expect(content.success).toBe(true);
-        expect(mockApi.deleteTimeEntry).toHaveBeenCalledWith('789');
+        expect(result.isError).toBe(true);
       });
     });
 
