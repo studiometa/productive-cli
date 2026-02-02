@@ -83,3 +83,11 @@ export {
   humanTimerListRenderer,
   humanTimerDetailRenderer,
 } from './timer.js';
+
+// Deals
+export {
+  HumanDealListRenderer,
+  HumanDealDetailRenderer,
+  humanDealListRenderer,
+  humanDealDetailRenderer,
+} from './deal.js';

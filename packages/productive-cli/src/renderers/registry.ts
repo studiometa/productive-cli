@@ -19,6 +19,7 @@ import { humanBudgetListRenderer } from './human/budget.js';
 import { humanCompanyListRenderer } from './human/company.js';
 import { humanCommentListRenderer } from './human/comment.js';
 import { humanTimerListRenderer } from './human/timer.js';
+import { humanDealListRenderer } from './human/deal.js';
 
 /**
  * Registry key format: "resourceType:format" or "*:format" for fallbacks
@@ -139,3 +140,4 @@ registerRenderer('budget', 'human', humanBudgetListRenderer);
 registerRenderer('company', 'human', humanCompanyListRenderer);
 registerRenderer('comment', 'human', humanCommentListRenderer);
 registerRenderer('timer', 'human', humanTimerListRenderer);
+registerRenderer('deal', 'human', humanDealListRenderer);

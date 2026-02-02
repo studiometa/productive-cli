@@ -27,6 +27,10 @@ import {
   handleTimersCommand,
   showTimersHelp,
 } from "./commands/timers/index.js";
+import {
+  handleDealsCommand,
+  showDealsHelp,
+} from "./commands/deals/index.js";
 import { handleCacheCommand, showCacheHelp } from "./commands/cache.js";
 import { handleApiCommand, showApiHelp } from "./commands/api.js";
 import {
@@ -97,6 +101,12 @@ ${colors.bold("COMMANDS:")}
     get <id>            Get timer details
     start               Start a timer
     stop <id>           Stop a timer
+
+  deals               Manage deals and budgets
+    list, ls            List deals
+    get <id>            Get deal details
+    add                 Create deal/budget
+    update <id>         Update deal
 
   cache               Manage CLI cache
     status              Show cache statistics
@@ -301,6 +311,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         await handleTimersCommand(subcommand || "list", positional, options);
+        break;
+
+      case "deals":
+        if (wantsHelp) {
+          showDealsHelp(subcommand);
+          process.exit(0);
+        }
+        await handleDealsCommand(subcommand || "list", positional, options);
         break;
 
       case "cache":

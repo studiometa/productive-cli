@@ -174,6 +174,32 @@ export interface ProductiveCompany {
   relationships?: Record<string, RelationshipData>;
 }
 
+export interface ProductiveDeal {
+  id: string;
+  type: "deals";
+  attributes: {
+    name: string;
+    date?: string;
+    end_date?: string;
+    number?: string;
+    deal_number?: string;
+    budget: boolean;
+    tag_list?: string[];
+    profit_margin?: number;
+    closed_at?: string;
+    won_at?: string;
+    lost_at?: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: {
+    company?: RelationshipData;
+    deal_status?: RelationshipData;
+    project?: RelationshipData;
+    responsible?: RelationshipData;
+  };
+}
+
 export interface ProductiveTimer {
   id: string;
   type: "timers";

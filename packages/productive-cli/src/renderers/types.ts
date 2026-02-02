@@ -79,4 +79,5 @@ export type ResourceType =
   | 'budget'
   | 'company'
   | 'comment'
-  | 'timer';
+  | 'timer'
+  | 'deal';

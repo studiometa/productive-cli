@@ -10,6 +10,7 @@ import type {
   ProductiveCompany,
   ProductiveComment,
   ProductiveTimer,
+  ProductiveDeal,
 } from "./types.js";
 import { getConfig } from "./config.js";
 import { getCache, type CacheStore } from "./utils/cache.js";
@@ -769,6 +770,127 @@ export class ProductiveApi {
       `/timers/${id}/stop`,
       {
         method: "PATCH",
+      },
+    );
+  }
+
+  // Deals
+  async getDeals(params?: {
+    page?: number;
+    perPage?: number;
+    filter?: Record<string, string>;
+    sort?: string;
+    include?: string[];
+  }): Promise<ProductiveApiResponse<ProductiveDeal[]>> {
+    const query: Record<string, string> = {};
+
+    if (params?.page) query["page[number]"] = String(params.page);
+    if (params?.perPage) query["page[size]"] = String(params.perPage);
+    if (params?.sort) query["sort"] = params.sort;
+    if (params?.filter) {
+      Object.entries(params.filter).forEach(([key, value]) => {
+        query[`filter[${key}]`] = value;
+      });
+    }
+    if (params?.include?.length) {
+      query["include"] = params.include.join(",");
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveDeal[]>>(
+      "/deals",
+      { query },
+    );
+  }
+
+  async getDeal(
+    id: string,
+    params?: { include?: string[] },
+  ): Promise<ProductiveApiResponse<ProductiveDeal>> {
+    const query: Record<string, string> = {};
+    if (params?.include?.length) {
+      query["include"] = params.include.join(",");
+    }
+    return this.request<ProductiveApiResponse<ProductiveDeal>>(
+      `/deals/${id}`,
+      { query },
+    );
+  }
+
+  async createDeal(data: {
+    name: string;
+    company_id: string;
+    date?: string;
+    budget?: boolean;
+    responsible_id?: string;
+  }): Promise<ProductiveApiResponse<ProductiveDeal>> {
+    const relationships: Record<string, { data: { type: string; id: string } }> = {
+      company: { data: { type: "companies", id: data.company_id } },
+    };
+
+    if (data.responsible_id) {
+      relationships.responsible = { data: { type: "people", id: data.responsible_id } };
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveDeal>>("/deals", {
+      method: "POST",
+      body: {
+        data: {
+          type: "deals",
+          attributes: {
+            name: data.name,
+            date: data.date || new Date().toISOString().split("T")[0],
+            budget: data.budget || false,
+          },
+          relationships,
+        },
+      },
+    });
+  }
+
+  async updateDeal(
+    id: string,
+    data: {
+      name?: string;
+      date?: string;
+      end_date?: string;
+      responsible_id?: string;
+      deal_status_id?: string;
+    },
+  ): Promise<ProductiveApiResponse<ProductiveDeal>> {
+    const attributes: Record<string, unknown> = {};
+    if (data.name !== undefined) attributes.name = data.name;
+    if (data.date !== undefined) attributes.date = data.date;
+    if (data.end_date !== undefined) attributes.end_date = data.end_date;
+
+    const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
+    if (data.responsible_id !== undefined) {
+      relationships.responsible = data.responsible_id
+        ? { data: { type: "people", id: data.responsible_id } }
+        : { data: null };
+    }
+    if (data.deal_status_id !== undefined) {
+      relationships.deal_status = data.deal_status_id
+        ? { data: { type: "deal_statuses", id: data.deal_status_id } }
+        : { data: null };
+    }
+
+    const body: Record<string, unknown> = {
+      data: {
+        type: "deals",
+        id,
+        attributes,
+      },
+    };
+
+    if (Object.keys(relationships).length > 0) {
+      (body.data as Record<string, unknown>).relationships = relationships;
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveDeal>>(
+      `/deals/${id}`,
+      {
+        method: "PATCH",
+        body,
       },
     );
   }
