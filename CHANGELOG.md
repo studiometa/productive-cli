@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-02-02
+
 ### Added
 
 - **MCP**: `include` parameter to fetch related resources in a single request ([34019d6], [#12])
@@ -336,7 +338,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.6.4...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/studiometa/productive-tools/compare/0.6.4...0.7.0
 [0.6.4]: https://github.com/studiometa/productive-tools/compare/0.6.3...0.6.4
 [0.6.3]: https://github.com/studiometa/productive-tools/compare/0.6.2...0.6.3
 [0.6.2]: https://github.com/studiometa/productive-tools/compare/0.6.1...0.6.2
