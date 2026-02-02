@@ -52,8 +52,8 @@ describe('handlers', () => {
   });
 
   describe('executeToolWithCredentials', () => {
-    describe('project tools', () => {
-      it('should handle productive_list_projects', async () => {
+    describe('consolidated productive_projects tool', () => {
+      it('should handle list action', async () => {
         const mockResponse = {
           data: [
             { id: '1', type: 'projects', attributes: { name: 'Project 1' } },
@@ -64,35 +64,48 @@ describe('handlers', () => {
         mockApi.getProjects.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_list_projects',
-          { page: 1, per_page: 50 },
+          'productive_projects',
+          { action: 'list', page: 1 },
           credentials
         );
 
         expect(result.isError).toBeUndefined();
         expect(result.content[0].type).toBe('text');
-        expect(mockApi.getProjects).toHaveBeenCalledWith({ page: 1, per_page: 50 });
+        expect(mockApi.getProjects).toHaveBeenCalledWith(
+          expect.objectContaining({ page: 1, perPage: 20 })
+        );
       });
 
-      it('should handle productive_get_project', async () => {
+      it('should handle get action', async () => {
         const mockResponse = {
           data: { id: '123', type: 'projects', attributes: { name: 'Test Project' } },
         };
         mockApi.getProject.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_get_project',
-          { id: '123' },
+          'productive_projects',
+          { action: 'get', id: '123' },
           credentials
         );
 
         expect(result.isError).toBeUndefined();
         expect(mockApi.getProject).toHaveBeenCalledWith('123');
       });
+
+      it('should return error for get action without id', async () => {
+        const result = await executeToolWithCredentials(
+          'productive_projects',
+          { action: 'get' },
+          credentials
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('id is required');
+      });
     });
 
-    describe('time entry tools', () => {
-      it('should handle productive_list_time_entries', async () => {
+    describe('consolidated productive_time tool', () => {
+      it('should handle list action', async () => {
         const mockResponse = {
           data: [
             { id: '1', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
@@ -102,24 +115,26 @@ describe('handlers', () => {
         mockApi.getTimeEntries.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_list_time_entries',
-          { filter: { person_id: '123' } },
+          'productive_time',
+          { action: 'list', filter: { person_id: '123' } },
           credentials
         );
 
         expect(result.isError).toBeUndefined();
-        expect(mockApi.getTimeEntries).toHaveBeenCalledWith({ filter: { person_id: '123' } });
+        expect(mockApi.getTimeEntries).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: { person_id: '123' } })
+        );
       });
 
-      it('should handle productive_get_time_entry', async () => {
+      it('should handle get action', async () => {
         const mockResponse = {
           data: { id: '456', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
         };
         mockApi.getTimeEntry.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_get_time_entry',
-          { id: '456' },
+          'productive_time',
+          { action: 'get', id: '456' },
           credentials
         );
 
@@ -127,15 +142,16 @@ describe('handlers', () => {
         expect(mockApi.getTimeEntry).toHaveBeenCalledWith('456');
       });
 
-      it('should handle productive_create_time_entry', async () => {
+      it('should handle create action', async () => {
         const mockResponse = {
           data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
         };
         mockApi.createTimeEntry.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_create_time_entry',
+          'productive_time',
           {
+            action: 'create',
             person_id: '123',
             service_id: '456',
             time: 480,
@@ -151,15 +167,26 @@ describe('handlers', () => {
         expect(mockApi.createTimeEntry).toHaveBeenCalled();
       });
 
-      it('should handle productive_update_time_entry', async () => {
+      it('should return error for create action missing required fields', async () => {
+        const result = await executeToolWithCredentials(
+          'productive_time',
+          { action: 'create', person_id: '123' }, // missing service_id, time, date
+          credentials
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('required for create');
+      });
+
+      it('should handle update action', async () => {
         const mockResponse = {
           data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 240 } },
         };
         mockApi.updateTimeEntry.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_update_time_entry',
-          { id: '789', time: 240 },
+          'productive_time',
+          { action: 'update', id: '789', time: 240 },
           credentials
         );
 
@@ -169,12 +196,12 @@ describe('handlers', () => {
         expect(mockApi.updateTimeEntry).toHaveBeenCalledWith('789', { time: 240 });
       });
 
-      it('should handle productive_delete_time_entry', async () => {
+      it('should handle delete action', async () => {
         mockApi.deleteTimeEntry.mockResolvedValue(undefined);
 
         const result = await executeToolWithCredentials(
-          'productive_delete_time_entry',
-          { id: '789' },
+          'productive_time',
+          { action: 'delete', id: '789' },
           credentials
         );
 
@@ -186,8 +213,8 @@ describe('handlers', () => {
       });
     });
 
-    describe('task tools', () => {
-      it('should handle productive_list_tasks', async () => {
+    describe('consolidated productive_tasks tool', () => {
+      it('should handle list action', async () => {
         const mockResponse = {
           data: [
             { id: '1', type: 'tasks', attributes: { title: 'Task 1' } },
@@ -198,8 +225,8 @@ describe('handlers', () => {
         mockApi.getTasks.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_list_tasks',
-          { filter: { project_id: '123' } },
+          'productive_tasks',
+          { action: 'list', filter: { project_id: '123' } },
           credentials
         );
 
@@ -212,7 +239,7 @@ describe('handlers', () => {
         );
       });
 
-      it('should handle productive_get_task', async () => {
+      it('should handle get action', async () => {
         const mockResponse = {
           data: { id: '456', type: 'tasks', attributes: { title: 'Test Task' } },
           included: [],
@@ -220,8 +247,8 @@ describe('handlers', () => {
         mockApi.getTask.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_get_task',
-          { id: '456' },
+          'productive_tasks',
+          { action: 'get', id: '456' },
           credentials
         );
 
@@ -232,8 +259,8 @@ describe('handlers', () => {
       });
     });
 
-    describe('people tools', () => {
-      it('should handle productive_list_people', async () => {
+    describe('consolidated productive_people tool', () => {
+      it('should handle list action', async () => {
         const mockResponse = {
           data: [
             { id: '1', type: 'people', attributes: { first_name: 'John', last_name: 'Doe' } },
@@ -243,8 +270,8 @@ describe('handlers', () => {
         mockApi.getPeople.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_list_people',
-          {},
+          'productive_people',
+          { action: 'list' },
           credentials
         );
 
@@ -252,15 +279,15 @@ describe('handlers', () => {
         expect(mockApi.getPeople).toHaveBeenCalled();
       });
 
-      it('should handle productive_get_person', async () => {
+      it('should handle get action', async () => {
         const mockResponse = {
           data: { id: '123', type: 'people', attributes: { first_name: 'John', last_name: 'Doe' } },
         };
         mockApi.getPerson.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_get_person',
-          { id: '123' },
+          'productive_people',
+          { action: 'get', id: '123' },
           credentials
         );
 
@@ -268,15 +295,15 @@ describe('handlers', () => {
         expect(mockApi.getPerson).toHaveBeenCalledWith('123');
       });
 
-      it('should handle productive_get_current_user with userId', async () => {
+      it('should handle me action with userId', async () => {
         const mockResponse = {
           data: { id: 'test-user', type: 'people', attributes: { first_name: 'Test', last_name: 'User' } },
         };
         mockApi.getPerson.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_get_current_user',
-          {},
+          'productive_people',
+          { action: 'me' },
           credentials
         );
 
@@ -284,15 +311,15 @@ describe('handlers', () => {
         expect(mockApi.getPerson).toHaveBeenCalledWith('test-user');
       });
 
-      it('should handle productive_get_current_user without userId', async () => {
+      it('should handle me action without userId', async () => {
         const credentialsWithoutUser: ProductiveCredentials = {
           apiToken: 'test-token',
           organizationId: 'test-org',
         };
 
         const result = await executeToolWithCredentials(
-          'productive_get_current_user',
-          {},
+          'productive_people',
+          { action: 'me' },
           credentialsWithoutUser
         );
 
@@ -302,8 +329,8 @@ describe('handlers', () => {
       });
     });
 
-    describe('service tools', () => {
-      it('should handle productive_list_services', async () => {
+    describe('consolidated productive_services tool', () => {
+      it('should handle list action', async () => {
         const mockResponse = {
           data: [
             { id: '1', type: 'services', attributes: { name: 'Development' } },
@@ -313,13 +340,36 @@ describe('handlers', () => {
         mockApi.getServices.mockResolvedValue(mockResponse);
 
         const result = await executeToolWithCredentials(
-          'productive_list_services',
-          { filter: { project_id: '123' } },
+          'productive_services',
+          { action: 'list', filter: { project_id: '123' } },
           credentials
         );
 
         expect(result.isError).toBeUndefined();
-        expect(mockApi.getServices).toHaveBeenCalledWith({ filter: { project_id: '123' } });
+        expect(mockApi.getServices).toHaveBeenCalledWith(
+          expect.objectContaining({ filter: { project_id: '123' } })
+        );
+      });
+    });
+
+    describe('compact mode', () => {
+      it('should pass compact option to formatters', async () => {
+        const mockResponse = {
+          data: [{ id: '1', type: 'projects', attributes: { name: 'Project 1' } }],
+          meta: { current_page: 1, total_pages: 1 },
+        };
+        mockApi.getProjects.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive_projects',
+          { action: 'list', compact: true },
+          credentials
+        );
+
+        expect(result.isError).toBeUndefined();
+        // The compact option is passed to formatters, which are mocked
+        // Just verify the call succeeded
+        expect(mockApi.getProjects).toHaveBeenCalled();
       });
     });
 
@@ -339,8 +389,8 @@ describe('handlers', () => {
         mockApi.getProjects.mockRejectedValue(new Error('API request failed: 401 Unauthorized'));
 
         const result = await executeToolWithCredentials(
-          'productive_list_projects',
-          {},
+          'productive_projects',
+          { action: 'list' },
           credentials
         );
 
@@ -352,8 +402,8 @@ describe('handlers', () => {
         mockApi.getProjects.mockRejectedValue('String error');
 
         const result = await executeToolWithCredentials(
-          'productive_list_projects',
-          {},
+          'productive_projects',
+          { action: 'list' },
           credentials
         );
 

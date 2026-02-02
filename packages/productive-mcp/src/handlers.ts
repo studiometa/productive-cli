@@ -94,7 +94,7 @@ export async function executeToolWithCredentials(
     'user-id': credentials.userId,
   } as Record<string, string>);
 
-  const { action, id, filter, page, per_page, compact, ...restArgs } = args as ConsolidatedArgs;
+  const { action, id, filter, page, per_page, compact = true, ...restArgs } = args as ConsolidatedArgs;
   const formatOptions: McpFormatOptions = { compact };
   const stringFilter = toStringFilter(filter);
 
@@ -251,110 +251,6 @@ export async function executeToolWithCredentials(
         return jsonResult(
           formatListResponse(result.data, formatPerson, result.meta, formatOptions)
         );
-      }
-
-      // ========================================================================
-      // Legacy tool names (for backward compatibility during transition)
-      // ========================================================================
-      case 'productive_list_projects': {
-        const result = await api.getProjects({ filter: stringFilter, page, perPage });
-        return jsonResult(formatListResponse(result.data, formatProject, result.meta, formatOptions));
-      }
-
-      case 'productive_get_project': {
-        const projectId = (args as { id: string }).id;
-        if (!projectId) return errorResult('id is required');
-        const result = await api.getProject(projectId);
-        return jsonResult(formatProject(result.data, formatOptions));
-      }
-
-      case 'productive_list_time_entries': {
-        const result = await api.getTimeEntries({ filter: stringFilter, page, perPage });
-        return jsonResult(formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions));
-      }
-
-      case 'productive_get_time_entry': {
-        const entryId = (args as { id: string }).id;
-        if (!entryId) return errorResult('id is required');
-        const result = await api.getTimeEntry(entryId);
-        return jsonResult(formatTimeEntry(result.data, formatOptions));
-      }
-
-      case 'productive_create_time_entry': {
-        const createArgs = args as {
-          person_id: string;
-          service_id: string;
-          time: number;
-          date: string;
-          note?: string;
-        };
-        const result = await api.createTimeEntry(createArgs);
-        return jsonResult({ success: true, ...formatTimeEntry(result.data, formatOptions) });
-      }
-
-      case 'productive_update_time_entry': {
-        const { id: entryId, ...data } = args as { id: string } & Record<string, unknown>;
-        if (!entryId) return errorResult('id is required');
-        const updateData: Parameters<typeof api.updateTimeEntry>[1] = {};
-        if (data.time !== undefined) updateData.time = data.time as number;
-        if (data.date !== undefined) updateData.date = data.date as string;
-        if (data.note !== undefined) updateData.note = data.note as string;
-        // Note: service_id and task_id cannot be updated via PATCH (API limitation)
-        const result = await api.updateTimeEntry(entryId, updateData);
-        return jsonResult({ success: true, ...formatTimeEntry(result.data, formatOptions) });
-      }
-
-      case 'productive_delete_time_entry': {
-        const entryId = (args as { id: string }).id;
-        if (!entryId) return errorResult('id is required');
-        await api.deleteTimeEntry(entryId);
-        return jsonResult({ success: true, message: 'Time entry deleted' });
-      }
-
-      case 'productive_list_tasks': {
-        const params = { filter: stringFilter, page, perPage, include: ['project', 'project.company'] };
-        const result = await api.getTasks(params);
-        return jsonResult(
-          formatListResponse(result.data, formatTask, result.meta, {
-            ...formatOptions,
-            included: result.included,
-          })
-        );
-      }
-
-      case 'productive_get_task': {
-        const taskId = (args as { id: string }).id;
-        if (!taskId) return errorResult('id is required');
-        const result = await api.getTask(taskId, { include: ['project', 'project.company'] });
-        return jsonResult(formatTask(result.data, { ...formatOptions, included: result.included }));
-      }
-
-      case 'productive_list_services': {
-        const result = await api.getServices({ filter: stringFilter, page, perPage });
-        return jsonResult(formatListResponse(result.data, formatService, result.meta, formatOptions));
-      }
-
-      case 'productive_list_people': {
-        const result = await api.getPeople({ filter: stringFilter, page, perPage });
-        return jsonResult(formatListResponse(result.data, formatPerson, result.meta, formatOptions));
-      }
-
-      case 'productive_get_person': {
-        const personId = (args as { id: string }).id;
-        if (!personId) return errorResult('id is required');
-        const result = await api.getPerson(personId);
-        return jsonResult(formatPerson(result.data, formatOptions));
-      }
-
-      case 'productive_get_current_user': {
-        if (credentials.userId) {
-          const result = await api.getPerson(credentials.userId);
-          return jsonResult(formatPerson(result.data, formatOptions));
-        }
-        return jsonResult({
-          message: 'User ID not configured. Set userId in credentials to use this tool.',
-          organizationId: credentials.organizationId,
-        });
       }
 
       default:
