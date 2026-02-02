@@ -7,6 +7,15 @@
 - **Tags**: Do NOT use `v` prefix (use `0.4.0` not `v0.4.0`)
 - **Releases**: Do NOT create GitHub releases manually with `gh release create` - they are created automatically by GitHub Actions when a tag is pushed
 
+## Changelog
+
+- Use `[hash]` format for commit references (not bare hashes)
+- Use `[#N]` format for PR references (GitHub style, not `!N` GitLab style)
+- Add link definitions at the bottom of the file:
+  - Commits: `[hash]: https://github.com/studiometa/productive-tools/commit/hash`
+  - PRs: `[#N]: https://github.com/studiometa/productive-tools/pull/N`
+- Keep entries concise, single line with references at the end
+
 ## Versioning
 
 - Use root npm scripts to bump version across all packages:
