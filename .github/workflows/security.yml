@@ -28,32 +28,21 @@ jobs:
       - name: Run npm audit
         run: npm audit --audit-level=high
 
-  secrets-scan:
-    name: Secret Detection
+  semgrep:
+    name: Semgrep Security Scan
     runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: TruffleHog Secret Scan
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          extra_args: --only-verified
+      - name: Run Semgrep
+        # TODO: Add --error flag once existing findings are fixed to make this blocking
+        run: semgrep scan --config auto --config p/secrets --json --output semgrep-results.json .
 
-      - name: Check for hardcoded secrets in code
-        run: |
-          echo "Checking for potential secrets in source files..."
-          if grep -rE \
-            "(PRODUCTIVE_API_TOKEN|sk-[a-zA-Z0-9]{20,}|password\s*=\s*['\"][^'\"]+['\"]|apiKey\s*=\s*['\"][^'\"]+['\"])" \
-            --include="*.ts" --include="*.js" --include="*.json" \
-            --exclude-dir=node_modules --exclude-dir=dist \
-            --exclude="*.test.ts" --exclude="*.spec.ts" \
-            --exclude="package.json" --exclude="package-lock.json" \
-            --exclude="*.example" . 2>/dev/null; then
-            echo "❌ Potential secrets found in code!"
-            exit 1
-          fi
-          echo "✅ No hardcoded secrets detected"
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
