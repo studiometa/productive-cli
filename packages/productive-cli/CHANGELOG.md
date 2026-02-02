@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-02-02
+
 ### Changed
-- Version is now dynamically injected from package.json at build time
+- Version is now dynamically injected from package.json at build time (9f66138)
 
 ### Added
 - **Monorepo Structure** - Restructured as npm workspace with separate packages (f74945b)
@@ -186,7 +188,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-cli/compare/0.2.1...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.4.4...HEAD
+[0.4.4]: https://github.com/studiometa/productive-tools/compare/0.4.3...0.4.4
 [0.2.1]: https://github.com/studiometa/productive-cli/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/studiometa/productive-cli/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/studiometa/productive-cli/releases/tag/0.1.0

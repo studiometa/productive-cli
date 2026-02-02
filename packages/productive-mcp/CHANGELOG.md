@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-02-02
+
 ### Changed
-- Version is now dynamically injected from package.json at build time
+- Version is now dynamically injected from package.json at build time (9f66138)
 
 ## [0.4.3] - 2026-02-02
 
@@ -86,7 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive deployment documentation
 - Server deployment options (PM2, systemd, Docker)
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.4.3...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.4.4...HEAD
+[0.4.4]: https://github.com/studiometa/productive-tools/compare/0.4.3...0.4.4
 [0.4.3]: https://github.com/studiometa/productive-tools/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/studiometa/productive-tools/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/studiometa/productive-tools/compare/0.4.0...0.4.1
