@@ -1,0 +1,59 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly security scan on Sundays at midnight
+    - cron: '0 0 * * 0'
+
+jobs:
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+
+  secrets-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          extra_args: --only-verified
+
+      - name: Check for hardcoded secrets in code
+        run: |
+          echo "Checking for potential secrets in source files..."
+          if grep -rE \
+            "(PRODUCTIVE_API_TOKEN|sk-[a-zA-Z0-9]{20,}|password\s*=\s*['\"][^'\"]+['\"]|apiKey\s*=\s*['\"][^'\"]+['\"])" \
+            --include="*.ts" --include="*.js" --include="*.json" \
+            --exclude-dir=node_modules --exclude-dir=dist \
+            --exclude="*.test.ts" --exclude="*.spec.ts" \
+            --exclude="package.json" --exclude="package-lock.json" \
+            --exclude="*.example" . 2>/dev/null; then
+            echo "❌ Potential secrets found in code!"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
