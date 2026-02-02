@@ -7,91 +7,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- **JUnit Test Reports** - Vitest generates JUnit XML reports in CI for Codecov test results ([8880538], [#10])
-- **Security Workflow** - Automated security scanning in CI ([e0e5197], [db471fa])
-  - npm audit for dependency vulnerabilities (fails on high severity)
-  - Semgrep for code security analysis and secret detection (blocking)
-  - Weekly scheduled scans on Sundays
-- **Renovate Configuration** - Automated dependency management ([12f79cf])
-  - Weekly updates with auto-merge for security patches
-  - Grouped PRs for dev dependencies and GitHub Actions
-- **CODEOWNERS** - Required reviews for security-sensitive files ([d9d8dc5])
-- **Pre-commit Hooks** - Code quality and secret detection ([2462b82])
-  - husky + lint-staged for automated linting and formatting
-  - Semgrep secret detection (when installed locally)
-- **Security Lint Rules** - Enhanced oxlint configuration ([3f4cb09])
-  - Block eval, new Function, script URLs
-  - Detect deprecated APIs and unsafe Buffer usage
-
-### Fixed
-
-- **Dockerfile** - Run container as non-root user for security ([781dd4b])
-- **postbuild.js** - Use safe format strings to prevent log injection ([f20c87d])
-- **crypto.ts** - Specify GCM auth tag length to prevent truncation attacks ([e75a3f5])
+## [0.6.0] - 2026-02-02
 
 ### Added
 
-- **Companies Resource** - Full CRUD support for companies/clients ([86ba32e])
-  - `companies list/get/add/update` commands
-  - Human-readable and JSON output formats
-- **Comments Resource** - Comment management on tasks, deals, and companies ([bf263a7])
-  - `comments list/get/add/update` commands
-  - Includes creator information in output
-- **Timers Resource** - Real-time tracking support ([8e19f00])
-  - `timers list/get/start/stop` commands
-  - Start timers from service or existing time entry
-- **Deals Resource** - Sales pipeline management ([1496a9d])
-  - `deals list/get/add/update` commands
-  - Includes company, status, and responsible person
-- **Bookings Resource** - Resource scheduling ([381a9df])
-  - `bookings list/get/add/update` commands
-  - Support for service and event bookings
-- **Reports Resource** - Report generation ([c6c0cd4])
-  - `reports time/project/budget/person` commands
-  - Run and retrieve report data
-- **Task Create/Update** - Enhanced task management ([f28defc])
-  - `tasks add` command to create tasks
-  - `tasks update` command to modify tasks
-- **Type-Aware Linting** - oxlint with TypeScript type checking ([d68dc10])
-  - New script: `npm run lint:types`
-  - Requires `oxlint-tsgolint` package
+- **CLI**: Companies resource with full CRUD support ([86ba32e], [#8])
+- **CLI**: Comments resource for tasks, deals, and companies ([bf263a7], [#8])
+- **CLI**: Timers resource for real-time tracking ([8e19f00], [#8])
+- **CLI**: Deals resource for sales pipeline management ([1496a9d], [#8])
+- **CLI**: Bookings resource for scheduling ([381a9df], [#8])
+- **CLI**: Reports resource for time/project/budget/person reports ([c6c0cd4], [#8])
+- **CLI**: Task create/update commands ([f28defc], [#8])
+- **MCP**: Success page after OAuth authorization ([537a598], [#6])
+- **CI**: JUnit test reports for Codecov ([8880538], [#10])
+- **CI**: Security workflow with npm audit and Semgrep ([e0e5197], [db471fa], [#9])
+- **CI**: Renovate configuration for automated dependency updates ([12f79cf], [#9])
+- **CI**: CODEOWNERS for security-sensitive files ([d9d8dc5], [#9])
+- Pre-commit hooks with husky, lint-staged, and Semgrep ([2462b82], [#9])
+- Type-aware linting with oxlint ([d68dc10], [#8])
 
 ### Changed
 
-- **oxlint Configuration** - Upgraded to v1.43.0 with enhanced rules ([d68dc10])
-  - Added plugins: typescript, import, vitest, promise, node
-  - Configured complexity rules (max: 50, depth: 5, lines: 200)
-  - Enabled suspicious category as warnings
-- **oxfmt Configuration** - Code formatting with Studio Meta preferences ([294b323])
-  - printWidth: 100, singleQuote: true, trailingComma: all
-  - Experimental import sorting with grouped imports
-  - Markdown file formatting support
-- **MCP Handlers Refactoring** - Improved maintainability ([8a10051])
-  - Split 532-line handler into 13 focused modules
-  - Reduced cyclomatic complexity from 102 to ~10 per handler
-  - New `handlers/` directory structure
+- **MCP**: Refactored handlers into 13 focused modules ([8a10051], [#8])
+- oxlint upgraded to v1.43.0 with typescript, import, vitest, promise, node plugins ([d68dc10], [#8])
+- oxfmt configured with Studio Meta preferences ([294b323], [#8])
+- Consolidated to single root CHANGELOG.md ([ca186cc])
+
+### Fixed
+
+- Dockerfile runs as non-root user ([781dd4b], [#9])
+- postbuild.js uses safe format strings ([f20c87d], [#9])
+- crypto.ts specifies GCM auth tag length ([e75a3f5], [#9])
+
+## [0.5.0] - 2026-02-02
+
+### Changed
+
+- **MCP**: Consolidated 13 tools into single `productive` tool with `resource` and `action` parameters ([a622bc1], [#4])
+- **MCP**: Token overhead reduced by 86% (~1,300 → ~180 tokens) ([#4])
+- **MCP**: Compact output mode enabled by default for list responses ([#4])
+- **MCP**: Default page size reduced from 50 to 20 items ([#4])
+
+### Fixed
+
+- **CI**: Simplified GitHub release notes ([f0ef187], [#5])
+
+## [0.4.6] - 2026-02-02
+
+### Fixed
+
+- **MCP**: Tool execution correctly passes credentials to ProductiveApi ([e50803d])
+
+## [0.4.5] - 2026-02-02
+
+### Fixed
+
+- Repository URL now points to productive-tools monorepo ([ce27b36])
+
+## [0.4.4] - 2026-02-02
+
+### Changed
+
+- Version is now dynamically injected from package.json at build time ([9f66138])
+
+## [0.4.3] - 2026-02-02
+
+### Fixed
+
+- **CI**: Tag pattern updated to match tags without v prefix ([fff06a8])
+
+## [0.4.2] - 2026-02-02
+
+### Added
+
+- **MCP**: Version info in server startup logs ([db8bea3])
+
+### Fixed
+
+- **MCP**: Use centralized version constant ([b51d506])
+
+## [0.4.1] - 2026-02-02
+
+### Fixed
+
+- **MCP**: Use centralized version constant ([b51d506])
+
+## [0.4.0] - 2026-02-01
+
+### Added
+
+- **MCP**: OAuth 2.0 support for Claude Desktop ([f46e8bd], [#3])
 
 ## [0.3.0] - 2026-02-01
 
 ### Added
 
-- **Renderer Infrastructure** - Pluggable output rendering system ([e5fa4fc], [cc93bf8])
-  - Base renderers for JSON, CSV, and table formats
-  - Human-readable renderers for all resource types (projects, tasks, time, people, services, budgets)
-  - Extensible registry for custom renderers
-- **Budget Links** - Clickable links to budgets in terminal output ([76966a4])
+- **CLI**: Renderer infrastructure with pluggable output rendering system ([e5fa4fc], [cc93bf8])
+- **CLI**: Budget links - clickable links to budgets in terminal output ([76966a4])
 
 ### Changed
 
-- **Command Architecture** - Split commands into modular files ([14ad00b], [6df0e37], [0538e59], [fcfd100], [1e8df6e], [1535a27])
-  - Each command now has separate `command.ts`, `handlers.ts`, `help.ts` files
-  - Improved code organization and maintainability
-- **Centralized Error Handling** - Context/DI pattern for better testability ([07c5302], [1b399c4])
-  - Typed errors: `AppError`, `ConfigurationError`, `ApiError`
-  - Result type utilities for functional error handling
-- Refactored all commands to use new renderer system ([bad60f9], [fdcdd3f], [33ea6cb], [5251a31])
+- **CLI**: Command architecture split into modular files ([14ad00b], [6df0e37], [0538e59], [fcfd100], [1e8df6e], [1535a27])
+- **CLI**: Centralized error handling with Context/DI pattern ([07c5302], [1b399c4])
+- **CLI**: Refactored all commands to use new renderer system ([bad60f9], [fdcdd3f], [33ea6cb], [5251a31])
 
 ### Fixed
 
@@ -266,14 +284,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.3.0...HEAD
-[0.3.0]: https://github.com/studiometa/productive-tools/compare/0.2.4...0.3.0
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/studiometa/productive-tools/compare/0.5.0...0.6.0
+[0.5.0]: https://github.com/studiometa/productive-tools/compare/0.4.6...0.5.0
+[0.4.6]: https://github.com/studiometa/productive-tools/compare/0.4.5...0.4.6
+[0.4.5]: https://github.com/studiometa/productive-tools/compare/0.4.4...0.4.5
+[0.4.4]: https://github.com/studiometa/productive-tools/compare/0.4.3...0.4.4
+[0.4.3]: https://github.com/studiometa/productive-tools/compare/0.4.2...0.4.3
+[0.4.2]: https://github.com/studiometa/productive-tools/compare/0.4.1...0.4.2
+[0.4.1]: https://github.com/studiometa/productive-tools/compare/0.4.0...0.4.1
+[0.4.0]: https://github.com/studiometa/productive-tools/compare/v0.3.0...0.4.0
+[0.3.0]: https://github.com/studiometa/productive-tools/compare/0.2.4...v0.3.0
 [0.2.4]: https://github.com/studiometa/productive-tools/compare/0.2.3...0.2.4
 [0.2.3]: https://github.com/studiometa/productive-tools/compare/0.2.2...0.2.3
 [0.2.2]: https://github.com/studiometa/productive-tools/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/studiometa/productive-tools/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/studiometa/productive-tools/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/studiometa/productive-tools/releases/tag/0.1.0
+[#3]: https://github.com/studiometa/productive-tools/pull/3
+[#4]: https://github.com/studiometa/productive-tools/pull/4
+[#5]: https://github.com/studiometa/productive-tools/pull/5
+[#6]: https://github.com/studiometa/productive-tools/pull/6
+[#8]: https://github.com/studiometa/productive-tools/pull/8
+[#9]: https://github.com/studiometa/productive-tools/pull/9
 [#10]: https://github.com/studiometa/productive-tools/pull/10
 [0538e59]: https://github.com/studiometa/productive-tools/commit/0538e59
 [07c5302]: https://github.com/studiometa/productive-tools/commit/07c5302
@@ -326,3 +359,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [f28defc]: https://github.com/studiometa/productive-tools/commit/f28defc
 [fcfd100]: https://github.com/studiometa/productive-tools/commit/fcfd100
 [fdcdd3f]: https://github.com/studiometa/productive-tools/commit/fdcdd3f
+[537a598]: https://github.com/studiometa/productive-tools/commit/537a598
+[a622bc1]: https://github.com/studiometa/productive-tools/commit/a622bc1
+[f0ef187]: https://github.com/studiometa/productive-tools/commit/f0ef187
+[e50803d]: https://github.com/studiometa/productive-tools/commit/e50803d
+[ce27b36]: https://github.com/studiometa/productive-tools/commit/ce27b36
+[9f66138]: https://github.com/studiometa/productive-tools/commit/9f66138
+[fff06a8]: https://github.com/studiometa/productive-tools/commit/fff06a8
+[db8bea3]: https://github.com/studiometa/productive-tools/commit/db8bea3
+[b51d506]: https://github.com/studiometa/productive-tools/commit/b51d506
+[f46e8bd]: https://github.com/studiometa/productive-tools/commit/f46e8bd
+[ca186cc]: https://github.com/studiometa/productive-tools/commit/ca186cc
