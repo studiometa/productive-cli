@@ -20,6 +20,7 @@ import { executeToolWithCredentials } from './handlers.js';
 import { parseAuthHeader } from './auth.js';
 import {
   oauthMetadataHandler,
+  registerHandler,
   authorizeGetHandler,
   authorizePostHandler,
   tokenHandler,
@@ -77,8 +78,9 @@ export function createHttpApp(): App {
   const app = createApp();
   const router = createRouter();
 
-  // OAuth 2.0 endpoints for Claude Desktop integration
+  // OAuth 2.0 endpoints for Claude Desktop integration (MCP auth spec)
   router.get('/.well-known/oauth-authorization-server', oauthMetadataHandler);
+  router.post('/register', registerHandler); // Dynamic Client Registration (RFC 7591)
   router.get('/authorize', authorizeGetHandler);
   router.post('/authorize', authorizePostHandler);
   router.post('/token', tokenHandler);

@@ -47,8 +47,9 @@ export function startHttpServer(
       console.log(`  POST http://${displayHost}:${port}/mcp - MCP JSON-RPC endpoint`);
       console.log(`  GET  http://${displayHost}:${port}/health - Health check`);
       console.log('');
-      console.log('OAuth 2.0 (for Claude Desktop):');
+      console.log('OAuth 2.0 (MCP auth spec compliant):');
       console.log(`  GET  http://${displayHost}:${port}/.well-known/oauth-authorization-server`);
+      console.log(`  POST http://${displayHost}:${port}/register - Dynamic Client Registration`);
       console.log(`  GET  http://${displayHost}:${port}/authorize - Authorization endpoint`);
       console.log(`  POST http://${displayHost}:${port}/token - Token endpoint`);
       console.log('');
