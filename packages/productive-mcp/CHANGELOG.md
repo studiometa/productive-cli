@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-02-02
+
+### Fixed
+- Version now correctly displayed in HTTP server endpoints (was showing 0.1.0) (b51d506)
+- Tests use dynamic VERSION constant to avoid failures on version bumps
+
 ## [0.4.0] - 2026-02-02
 
 ### Added
@@ -67,7 +73,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive deployment documentation
 - Server deployment options (PM2, systemd, Docker)
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.4.0...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/studiometa/productive-tools/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/studiometa/productive-tools/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/studiometa/productive-tools/compare/0.1.0...0.3.0
 [0.1.0]: https://github.com/studiometa/productive-tools/releases/tag/0.1.0
