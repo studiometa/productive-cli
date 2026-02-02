@@ -67,6 +67,7 @@
     "dev": "vite build --watch",
     "dev:server": "node --watch dist/server.js",
     "build": "vite build && tsc --emitDeclarationOnly && node scripts/postbuild.js",
+    "prepublishOnly": "node scripts/prepublish.js",
     "start": "node dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -78,7 +79,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@studiometa/productive-cli": "^0.6.0",
+    "@studiometa/productive-cli": "*",
     "h3": "^1.15.1"
   },
   "devDependencies": {

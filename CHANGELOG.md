@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **MCP**: Prepublish script to sync CLI dependency version automatically
+
 ## [0.6.1] - 2026-02-02
 
 ### Fixed
