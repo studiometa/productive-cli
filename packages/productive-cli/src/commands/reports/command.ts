@@ -6,7 +6,19 @@ import type { OutputFormat } from '../../types.js';
 
 import { createContext, type CommandOptions } from '../../context.js';
 import { OutputFormatter } from '../../output.js';
-import { reportsTime, reportsProject, reportsBudget, reportsPerson } from './handlers.js';
+import {
+  reportsTime,
+  reportsProject,
+  reportsBudget,
+  reportsPerson,
+  reportsInvoice,
+  reportsPayment,
+  reportsService,
+  reportsTask,
+  reportsCompany,
+  reportsDeal,
+  reportsTimesheet,
+} from './handlers.js';
 
 /**
  * Handle reports command
@@ -37,9 +49,39 @@ export async function handleReportsCommand(
     case 'people':
       await reportsPerson(ctx);
       break;
+    case 'invoice':
+    case 'invoices':
+      await reportsInvoice(ctx);
+      break;
+    case 'payment':
+    case 'payments':
+      await reportsPayment(ctx);
+      break;
+    case 'service':
+    case 'services':
+      await reportsService(ctx);
+      break;
+    case 'task':
+    case 'tasks':
+      await reportsTask(ctx);
+      break;
+    case 'company':
+    case 'companies':
+      await reportsCompany(ctx);
+      break;
+    case 'deal':
+    case 'deals':
+      await reportsDeal(ctx);
+      break;
+    case 'timesheet':
+    case 'timesheets':
+      await reportsTimesheet(ctx);
+      break;
     default:
       formatter.error(`Unknown reports subcommand: ${subcommand}`);
-      console.log('Available report types: time, project, budget, person');
+      console.log(
+        'Available report types: time, project, budget, person, invoice, payment, service, task, company, deal, timesheet',
+      );
       process.exit(1);
   }
 }
