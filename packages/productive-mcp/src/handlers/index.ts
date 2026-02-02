@@ -19,6 +19,7 @@ import { handleDeals } from './deals.js';
 import { handlePeople } from './people.js';
 // Resource handlers
 import { handleProjects } from './projects.js';
+import { handleReports } from './reports.js';
 import { handleServices } from './services.js';
 import { handleTasks } from './tasks.js';
 import { handleTime } from './time.js';
@@ -67,6 +68,12 @@ interface ProductiveArgs {
   started_on?: string;
   ended_on?: string;
   event_id?: string;
+  // Report fields
+  report_type?: string;
+  group?: string;
+  from?: string;
+  to?: string;
+  status?: string;
 }
 
 /**
@@ -144,6 +151,9 @@ export async function executeToolWithCredentials(
 
       case 'bookings':
         return await handleBookings(action, restArgs, ctx);
+
+      case 'reports':
+        return await handleReports(action, restArgs, ctx);
 
       default:
         return errorResult(`Unknown resource: ${resource}`);

@@ -9,7 +9,7 @@ export const TOOLS: Tool[] = [
   {
     name: 'productive',
     description:
-      'Productive.io API. Resources: projects, time, tasks, services, people, companies, comments, timers, deals, bookings. Actions: list, get, create, update (varies by resource), start/stop (timers), me (people). Filters: project_id, person_id, service_id, company_id, after/before (dates).',
+      'Productive.io API. Resources: projects, time, tasks, services, people, companies, comments, timers, deals, bookings, reports. Actions: list, get, create, update (varies by resource), start/stop (timers), me (people). Reports: use resource=reports, action=get with report_type (time_reports, project_reports, budget_reports, person_reports, invoice_reports, payment_reports, service_reports, task_reports, company_reports, deal_reports, timesheet_reports). Filters: project_id, person_id, service_id, company_id, after/before (dates).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -26,6 +26,7 @@ export const TOOLS: Tool[] = [
             'timers',
             'deals',
             'bookings',
+            'reports',
           ],
         },
         action: {
@@ -62,6 +63,27 @@ export const TOOLS: Tool[] = [
         started_on: { type: 'string' },
         ended_on: { type: 'string' },
         event_id: { type: 'string' },
+        // Report fields
+        report_type: {
+          type: 'string',
+          enum: [
+            'time_reports',
+            'project_reports',
+            'budget_reports',
+            'person_reports',
+            'invoice_reports',
+            'payment_reports',
+            'service_reports',
+            'task_reports',
+            'company_reports',
+            'deal_reports',
+            'timesheet_reports',
+          ],
+        },
+        group: { type: 'string' },
+        from: { type: 'string' },
+        to: { type: 'string' },
+        status: { type: 'string' },
       },
       required: ['resource', 'action'],
     },

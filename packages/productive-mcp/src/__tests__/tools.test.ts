@@ -34,6 +34,7 @@ describe('tools', () => {
         'timers',
         'deals',
         'bookings',
+        'reports',
       ]);
     });
 
@@ -92,15 +93,15 @@ describe('tools', () => {
   describe('token optimization', () => {
     it('should have reasonable tool schema size', () => {
       const totalSize = JSON.stringify(TOOLS).length;
-      // Single tool with expanded resources should be under 1500 bytes
-      expect(totalSize).toBeLessThan(1500);
+      // Single tool with expanded resources and reports should be under 2100 bytes
+      expect(totalSize).toBeLessThan(2100);
     });
 
-    it('should estimate under 400 tokens', () => {
+    it('should estimate under 550 tokens', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       const estimatedTokens = Math.ceil(totalSize / 4);
-      // With more resources, token budget increased
-      expect(estimatedTokens).toBeLessThan(400);
+      // With reports and new parameters, token budget increased
+      expect(estimatedTokens).toBeLessThan(550);
     });
   });
 });
