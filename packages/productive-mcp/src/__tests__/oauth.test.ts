@@ -112,6 +112,19 @@ describe('OAuth endpoints', () => {
       const data = await response.json();
       expect(data.client_name).toBe('MCP Client');
     });
+
+    it('rejects invalid JSON body', async () => {
+      const response = await fetch(`${baseUrl}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: 'not valid json{',
+      });
+
+      expect(response.status).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBe('invalid_request');
+      expect(data.error_description).toContain('Invalid JSON');
+    });
   });
 
   describe('GET /authorize', () => {
@@ -151,6 +164,19 @@ describe('OAuth endpoints', () => {
       expect(response.status).toBe(400);
       const html = await response.text();
       expect(html).toContain('redirect_uri');
+    });
+
+    it('rejects unsupported code_challenge_method', async () => {
+      const response = await fetch(
+        `${baseUrl}/authorize?client_id=test&redirect_uri=https://example.com/callback&state=abc&code_challenge=test&code_challenge_method=plain`,
+        { redirect: 'manual' }
+      );
+
+      expect(response.status).toBe(302);
+      const location = response.headers.get('location')!;
+      const redirectUrl = new URL(location);
+      expect(redirectUrl.searchParams.get('error')).toBe('invalid_request');
+      expect(redirectUrl.searchParams.get('error_description')).toContain('S256');
     });
   });
 
@@ -203,6 +229,37 @@ describe('OAuth endpoints', () => {
       expect(response.ok).toBe(true);
       const html = await response.text();
       expect(html).toContain('Organization ID and API Token are required');
+    });
+
+    it('shows error when redirectUri is missing in POST', async () => {
+      const response = await fetch(`${baseUrl}/authorize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          orgId: '12345',
+          apiToken: 'pk_test',
+        }).toString(),
+      });
+
+      expect(response.status).toBe(400);
+      const html = await response.text();
+      expect(html).toContain('redirect_uri');
+    });
+
+    it('rejects invalid redirect_uri format', async () => {
+      const response = await fetch(`${baseUrl}/authorize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          orgId: '12345',
+          apiToken: 'pk_test',
+          redirectUri: 'not-a-valid-url',
+        }).toString(),
+      });
+
+      expect(response.status).toBe(400);
+      const html = await response.text();
+      expect(html).toContain('Invalid redirect_uri');
     });
 
     it('rejects non-HTTPS redirect URIs (except localhost)', async () => {
@@ -421,6 +478,22 @@ describe('OAuth endpoints', () => {
       expect(data.error).toBe('unsupported_grant_type');
     });
 
+    it('rejects missing authorization code', async () => {
+      const response = await fetch(`${baseUrl}/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'authorization_code',
+          code_verifier: 'some-verifier',
+        }),
+      });
+
+      expect(response.status).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBe('invalid_request');
+      expect(data.error_description).toContain('authorization code');
+    });
+
     it('rejects invalid authorization code', async () => {
       const response = await fetch(`${baseUrl}/token`, {
         method: 'POST',
@@ -429,6 +502,36 @@ describe('OAuth endpoints', () => {
           grant_type: 'authorization_code',
           code: 'invalid-code',
           code_verifier: 'some-verifier',
+        }),
+      });
+
+      expect(response.status).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBe('invalid_grant');
+    });
+
+    it('rejects missing refresh_token', async () => {
+      const response = await fetch(`${baseUrl}/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'refresh_token',
+        }),
+      });
+
+      expect(response.status).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBe('invalid_request');
+      expect(data.error_description).toContain('refresh_token');
+    });
+
+    it('rejects invalid refresh_token', async () => {
+      const response = await fetch(`${baseUrl}/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'refresh_token',
+          refresh_token: 'invalid-token',
         }),
       });
 
