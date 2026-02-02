@@ -9,12 +9,15 @@
 
 ## Changelog
 
+- **Root changelog** (`CHANGELOG.md`): Main changelog for the monorepo
+- **Package changelogs** (`packages/*/CHANGELOG.md`): Package-specific changelogs, keep in sync when releasing
 - Use `[hash]` format for commit references (not bare hashes)
 - Use `[#N]` format for PR references (GitHub style, not `!N` GitLab style)
 - Add link definitions at the bottom of the file:
   - Commits: `[hash]: https://github.com/studiometa/productive-tools/commit/hash`
   - PRs: `[#N]: https://github.com/studiometa/productive-tools/pull/N`
 - Keep entries concise, single line with references at the end
+- If a package has no changes for a release, add: `### Changed\n\n- No changes for this release`
 
 ## Versioning
 
@@ -24,13 +27,6 @@
   - `npm run version:major` — bump major version (e.g., 0.4.3 → 1.0.0)
 - These scripts update version in root and all workspace packages simultaneously
 - Version is injected at build time from package.json (no manual sync needed)
-
-## Changelogs
-
-- Both packages have their own CHANGELOG.md in `packages/*/CHANGELOG.md`
-- **Keep changelogs in sync**: when releasing a new version, update BOTH changelogs
-- If a package has no changes for a release, add: `### Changed\n\n- No changes for this release`
-- This ensures both packages always have an entry for each version
 
 ---
 
@@ -114,8 +110,6 @@ All commands are non-interactive:
 ### Flexible Authentication
 
 Three authentication methods with priority order:
-
-Priority order:
 
 1. CLI arguments: `--token`, `--org-id`, `--user-id`
 2. Environment variables: `PRODUCTIVE_API_TOKEN`, `PRODUCTIVE_ORG_ID`, `PRODUCTIVE_USER_ID`
@@ -342,7 +336,7 @@ automateTimeTracking();
 
 ### Projects List Response
 
-```typescript
+```json
 {
   "data": [
     {
@@ -350,7 +344,7 @@ automateTimeTracking();
       "name": "Project Name",
       "project_number": "PRJ-001",
       "archived": false,
-      "budget": 50000.00,
+      "budget": 50000.0,
       "created_at": "2024-01-01T10:00:00Z",
       "updated_at": "2024-01-01T10:00:00Z"
     }
@@ -365,7 +359,7 @@ automateTimeTracking();
 
 ### Time Entries List Response
 
-```typescript
+```json
 {
   "data": [
     {
@@ -393,7 +387,7 @@ automateTimeTracking();
 
 ### Time Entry Creation Response
 
-```typescript
+```json
 {
   "status": "success",
   "id": "131776640",
@@ -406,12 +400,12 @@ automateTimeTracking();
 
 ### Error Response
 
-```typescript
+```json
 {
   "error": "ProductiveApiError",
   "message": "API request failed: 401 Unauthorized",
   "statusCode": 401,
-  "response": "{\"errors\":[...]}"  // Raw API error response
+  "response": "{\"errors\":[...]}"
 }
 ```
 
@@ -517,108 +511,11 @@ Validate configuration:
 productive config validate --format json
 ```
 
-## Example: Complete AI Agent Integration
-
-```typescript
-#!/usr/bin/env node
-import { ProductiveApi, setConfig, ProductiveApiError } from '@studiometa/productive-cli';
-
-// Configuration
-setConfig('apiToken', process.env.PRODUCTIVE_API_TOKEN!);
-setConfig('organizationId', process.env.PRODUCTIVE_ORG_ID!);
-setConfig('userId', process.env.PRODUCTIVE_USER_ID!);
-
-const api = new ProductiveApi();
-
-interface DailyReport {
-  date: string;
-  totalHours: number;
-  projects: Array<{
-    name: string;
-    hours: number;
-  }>;
-}
-
-async function generateDailyReport(date: string): Promise<DailyReport> {
-  try {
-    // Get time entries for the date
-    const timeEntries = await api.getTimeEntries({
-      filter: {
-        after: date,
-        before: date,
-        person_id: process.env.PRODUCTIVE_USER_ID!,
-      },
-      perPage: 200,
-    });
-
-    // Get all projects
-    const projects = await api.getProjects({ perPage: 200 });
-    const projectMap = new Map(projects.data.map((p) => [p.id, p.attributes.name]));
-
-    // Aggregate by project
-    const projectHours = new Map<string, number>();
-    let totalMinutes = 0;
-
-    for (const entry of timeEntries.data) {
-      const projectId = entry.relationships?.project?.data?.id;
-      if (!projectId) continue;
-
-      const minutes = entry.attributes.time;
-      totalMinutes += minutes;
-
-      const current = projectHours.get(projectId) || 0;
-      projectHours.set(projectId, current + minutes);
-    }
-
-    // Format report
-    return {
-      date,
-      totalHours: totalMinutes / 60,
-      projects: Array.from(projectHours.entries()).map(([id, minutes]) => ({
-        name: projectMap.get(id) || 'Unknown Project',
-        hours: minutes / 60,
-      })),
-    };
-  } catch (error) {
-    if (error instanceof ProductiveApiError) {
-      console.error(`API Error (${error.statusCode}): ${error.message}`);
-      process.exit(1);
-    }
-    throw error;
-  }
-}
-
-// Run
-const today = new Date().toISOString().split('T')[0];
-const report = await generateDailyReport(today);
-
-console.log(JSON.stringify(report, null, 2));
-```
-
-## Testing AI Integrations
-
-Test your integration with mock data:
-
-```typescript
-import { vi } from 'vitest';
-import type { ProductiveApi } from '@studiometa/productive-cli';
-
-// Mock the API
-vi.mock('@studiometa/productive-cli', () => ({
-  ProductiveApi: vi.fn(() => ({
-    getProjects: vi.fn().mockResolvedValue({
-      data: [{ id: '1', attributes: { name: 'Test Project' } }],
-      meta: { page: 1, total: 1 },
-    }),
-  })),
-}));
-```
-
 ## Support
 
 - [API Documentation](https://developer.productive.io/)
-- [Report Issues](https://github.com/studiometa/productive-cli/issues)
-- [Discussions](https://github.com/studiometa/productive-cli/discussions)
+- [Report Issues](https://github.com/studiometa/productive-tools/issues)
+- [Discussions](https://github.com/studiometa/productive-tools/discussions)
 
 ## License
 
