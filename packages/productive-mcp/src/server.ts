@@ -24,6 +24,7 @@
 import { createServer, type Server } from 'node:http';
 import { toNodeListener } from 'h3';
 import { createHttpApp } from './http.js';
+import { VERSION } from './version.js';
 
 const DEFAULT_PORT = 3000;
 const DEFAULT_HOST = '0.0.0.0';
@@ -41,7 +42,10 @@ export function startHttpServer(
 
     server.listen(port, host, () => {
       const displayHost = host === '0.0.0.0' ? 'localhost' : host;
-      console.log(`Productive MCP server running at http://${displayHost}:${port}`);
+      console.log(`Productive MCP server v${VERSION}`);
+      console.log(`Node.js ${process.version}`);
+      console.log('');
+      console.log(`Running at http://${displayHost}:${port}`);
       console.log('');
       console.log('Endpoints:');
       console.log(`  POST http://${displayHost}:${port}/mcp - MCP JSON-RPC endpoint`);
