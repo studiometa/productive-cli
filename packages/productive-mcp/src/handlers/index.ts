@@ -16,6 +16,7 @@ import { handleBookings } from './bookings.js';
 import { handleComments } from './comments.js';
 import { handleCompanies } from './companies.js';
 import { handleDeals } from './deals.js';
+import { handleHelp, handleHelpOverview } from './help.js';
 import { handlePeople } from './people.js';
 // Resource handlers
 import { handleProjects } from './projects.js';
@@ -43,6 +44,8 @@ interface ProductiveArgs {
   page?: number;
   per_page?: number;
   compact?: boolean;
+  include?: string[];
+  query?: string;
   // Common fields
   person_id?: string;
   service_id?: string;
@@ -96,19 +99,19 @@ export async function executeToolWithCredentials(
     return errorResult(`Unknown tool: ${name}`);
   }
 
-  const {
-    resource,
-    action,
-    filter,
-    page,
-    per_page,
-    compact = true,
-    ...restArgs
-  } = args as unknown as ProductiveArgs;
+  const { resource, action, filter, page, per_page, compact, include, query, ...restArgs } =
+    args as unknown as ProductiveArgs;
 
-  const formatOptions: McpFormatOptions = { compact };
-  const stringFilter = toStringFilter(filter);
+  // Default compact to false for 'get' action (single resource), true for 'list'
+  const isCompact = compact ?? action !== 'get';
+  const formatOptions: McpFormatOptions = { compact: isCompact };
+  let stringFilter = toStringFilter(filter);
   const perPage = per_page ?? DEFAULT_PER_PAGE;
+
+  // Add query to filter if provided (for text search)
+  if (query) {
+    stringFilter = { ...stringFilter, query };
+  }
 
   // Build handler context
   const ctx: HandlerContext = {
@@ -117,9 +120,15 @@ export async function executeToolWithCredentials(
     filter: stringFilter,
     page,
     perPage,
+    include,
   };
 
   try {
+    // Handle help action first (doesn't need API)
+    if (action === 'help') {
+      return resource ? handleHelp(resource) : handleHelpOverview();
+    }
+
     // Route to appropriate resource handler
     switch (resource) {
       case 'projects':

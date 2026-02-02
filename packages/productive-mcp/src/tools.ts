@@ -9,7 +9,7 @@ export const TOOLS: Tool[] = [
   {
     name: 'productive',
     description:
-      'Productive.io API. Resources: projects, time, tasks, services, people, companies, comments, timers, deals, bookings, reports. Actions: list, get, create, update (varies by resource), start/stop (timers), me (people). Reports: use resource=reports, action=get with report_type (time_reports, project_reports, budget_reports, person_reports, invoice_reports, payment_reports, service_reports, task_reports, company_reports, deal_reports, timesheet_reports). Filters: project_id, person_id, service_id, company_id, after/before (dates).',
+      'Productive.io API. Resources: projects, time, tasks, services, people, companies, comments, timers, deals, bookings, reports. Actions: list, get, create, update (varies by resource), start/stop (timers), me (people), help (documentation). Use query for text search on list actions. Reports: use resource=reports, action=get with report_type. Filters: project_id, person_id, service_id, company_id, after/before (dates). Use include to fetch related data. Use compact=false for full details (default for get, true for list). Use action=help with a resource for detailed documentation.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -31,13 +31,26 @@ export const TOOLS: Tool[] = [
         },
         action: {
           type: 'string',
-          enum: ['list', 'get', 'create', 'update', 'me', 'start', 'stop'],
+          enum: ['list', 'get', 'create', 'update', 'me', 'start', 'stop', 'help'],
+          description: 'Action to perform. Use "help" for detailed documentation on a resource.',
         },
         id: { type: 'string' },
         filter: { type: 'object' },
         page: { type: 'number' },
         per_page: { type: 'number' },
-        compact: { type: 'boolean' },
+        compact: {
+          type: 'boolean',
+          description: 'Compact output (default: true for list, false for get)',
+        },
+        include: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Related resources to include (e.g., ["project", "assignee", "comments"])',
+        },
+        query: {
+          type: 'string',
+          description: 'Text search query for list actions (searches name/title fields)',
+        },
         // Common fields
         person_id: { type: 'string' },
         service_id: { type: 'string' },
