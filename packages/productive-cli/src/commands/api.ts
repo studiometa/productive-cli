@@ -309,7 +309,7 @@ export async function handleApiCommand(
     spinner.start();
 
     // Make request(s)
-    let allData: unknown[] = [];
+    const allData: unknown[] = [];
     let currentUrl = `${baseUrl}${normalizedEndpoint}`;
     let hasMore = true;
     let pageCount = 0;

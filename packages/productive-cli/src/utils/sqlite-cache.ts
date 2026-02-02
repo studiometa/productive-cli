@@ -728,7 +728,7 @@ export class SqliteCache {
 }
 
 // Factory function
-let instances: Map<string, SqliteCache> = new Map();
+const instances: Map<string, SqliteCache> = new Map();
 
 export function getSqliteCache(orgId: string): SqliteCache {
   if (!instances.has(orgId)) {

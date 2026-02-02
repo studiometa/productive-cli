@@ -48,7 +48,7 @@ function truncateText(text: string, maxWidth: number): string {
       break;
     }
   }
-  return text.slice(0, cutIndex) + '…' + '\x1b[0m';
+  return text.slice(0, cutIndex) + '…\x1b[0m';
 }
 
 /**

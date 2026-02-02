@@ -310,7 +310,7 @@ async function cacheSync(
     // Sync projects
     spinner.setText("Syncing projects...");
     spinner.start();
-    let allProjects: ProductiveProject[] = [];
+    const allProjects: ProductiveProject[] = [];
     let page = 1;
     while (true) {
       const response = await api.getProjects({ page, perPage: 200 });
@@ -326,7 +326,7 @@ async function cacheSync(
     // Sync people
     spinner.setText("Syncing people...");
     spinner.start();
-    let allPeople: ProductivePerson[] = [];
+    const allPeople: ProductivePerson[] = [];
     page = 1;
     while (true) {
       const response = await api.getPeople({ page, perPage: 200 });
@@ -342,7 +342,7 @@ async function cacheSync(
     // Sync services
     spinner.setText("Syncing services...");
     spinner.start();
-    let allServices: ProductiveService[] = [];
+    const allServices: ProductiveService[] = [];
     page = 1;
     while (true) {
       const response = await api.getServices({ page, perPage: 200 });
