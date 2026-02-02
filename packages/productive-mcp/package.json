@@ -1,6 +1,6 @@
 {
   "name": "@studiometa/productive-mcp",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "MCP server for Productive.io API - Model Context Protocol integration for Claude Desktop",
   "keywords": [
     "ai",
@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "@studiometa/productive-cli": "*",
+    "@studiometa/productive-cli": "^0.6.0",
     "h3": "^1.15.1"
   },
   "devDependencies": {
