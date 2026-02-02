@@ -86,6 +86,27 @@ export function createHttpApp(): App {
   router.post('/authorize', authorizePostHandler);
   router.post('/token', tokenHandler);
 
+  // OAuth Protected Resource Metadata (RFC 9728 / MCP spec 2025-03-26)
+  // This endpoint tells clients where to find the authorization server
+  router.get(
+    '/.well-known/oauth-protected-resource',
+    defineEventHandler((event) => {
+      const host = event.node.req.headers.host || 'localhost:3000';
+      const protocol = event.node.req.headers['x-forwarded-proto'] || 'http';
+      const baseUrl = `${protocol}://${host}`;
+
+      setResponseHeader(event, 'Content-Type', 'application/json');
+      setResponseHeader(event, 'Cache-Control', 'public, max-age=3600');
+
+      return {
+        resource: `${baseUrl}/mcp`,
+        authorization_servers: [baseUrl],
+        scopes_supported: ['productive'],
+        bearer_methods_supported: ['header'],
+      };
+    }),
+  );
+
   // Health check endpoint
   router.get(
     '/',
