@@ -1,7 +1,13 @@
 import { defineConfig } from 'vite';
 import { builtinModules } from 'node:module';
+import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default defineConfig({
+  define: {
+    __VERSION__: JSON.stringify(pkg.version),
+  },
   build: {
     lib: {
       entry: {

@@ -1,4 +1,5 @@
 /**
- * Package version - kept in sync with package.json
+ * Package version - injected from package.json at build time
  */
-export const VERSION = '0.4.3';
+declare const __VERSION__: string;
+export const VERSION = __VERSION__;

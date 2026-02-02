@@ -24,7 +24,8 @@ import {
 import { handleCompletionHelper } from "./commands/completion-helper.js";
 import { processRefreshQueue } from "./utils/refresh-queue.js";
 
-const VERSION = "0.1.4";
+declare const __VERSION__: string;
+const VERSION = __VERSION__;
 
 function showHelp(): void {
   console.log(`
