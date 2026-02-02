@@ -55,6 +55,8 @@ ${colors.bold("COMMANDS:")}
   tasks               Manage tasks
     list, ls            List tasks
     get <id>            Get task details
+    add                 Create task
+    update <id>         Update task
 
   people              Manage people
     list, ls            List people

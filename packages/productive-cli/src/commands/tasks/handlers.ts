@@ -2,8 +2,10 @@
  * Handler implementations for tasks command
  */
 
+import { colors } from "../../utils/colors.js";
 import type { OutputFormat } from "../../types.js";
-import { exitWithValidationError, runCommand } from "../../error-handler.js";
+import { handleError, exitWithValidationError, runCommand } from "../../error-handler.js";
+import { ValidationError } from "../../errors.js";
 import type { CommandContext } from "../../context.js";
 import { formatTask, formatListResponse } from "../../formatters/index.js";
 import {
@@ -164,6 +166,117 @@ export async function tasksGet(args: string[], ctx: CommandContext): Promise<voi
         noColor: ctx.options["no-color"] === true,
       });
       humanTaskDetailRenderer.render(formattedData, renderCtx);
+    }
+  }, ctx.formatter);
+}
+
+/**
+ * Add a new task
+ */
+export async function tasksAdd(ctx: CommandContext): Promise<void> {
+  const spinner = ctx.createSpinner("Creating task...");
+  spinner.start();
+
+  // Validate required fields
+  if (!ctx.options.title) {
+    spinner.fail();
+    handleError(ValidationError.required("title"), ctx.formatter);
+    return;
+  }
+
+  if (!ctx.options.project) {
+    spinner.fail();
+    handleError(ValidationError.required("project"), ctx.formatter);
+    return;
+  }
+
+  if (!ctx.options["task-list"]) {
+    spinner.fail();
+    handleError(ValidationError.required("task-list"), ctx.formatter);
+    return;
+  }
+
+  await runCommand(async () => {
+    const response = await ctx.api.createTask({
+      title: String(ctx.options.title),
+      project_id: String(ctx.options.project),
+      task_list_id: String(ctx.options["task-list"]),
+      assignee_id: ctx.options.assignee ? String(ctx.options.assignee) : undefined,
+      description: ctx.options.description ? String(ctx.options.description) : undefined,
+      due_date: ctx.options["due-date"] ? String(ctx.options["due-date"]) : undefined,
+      start_date: ctx.options["start-date"] ? String(ctx.options["start-date"]) : undefined,
+      initial_estimate: ctx.options.estimate ? parseInt(String(ctx.options.estimate)) : undefined,
+      workflow_status_id: ctx.options.status ? String(ctx.options.status) : undefined,
+      private: ctx.options.private === true,
+    });
+
+    spinner.succeed();
+
+    const task = response.data;
+    const format = ctx.options.format || ctx.options.f || "human";
+
+    if (format === "json") {
+      ctx.formatter.output({
+        status: "success",
+        ...formatTask(task),
+      });
+    } else {
+      ctx.formatter.success("Task created");
+      console.log(colors.cyan("ID:"), task.id);
+      console.log(colors.cyan("Title:"), task.attributes.title);
+      if (task.attributes.number) {
+        console.log(colors.cyan("Number:"), `#${task.attributes.number}`);
+      }
+      if (task.attributes.due_date) {
+        console.log(colors.cyan("Due date:"), task.attributes.due_date);
+      }
+    }
+  }, ctx.formatter);
+}
+
+/**
+ * Update an existing task
+ */
+export async function tasksUpdate(args: string[], ctx: CommandContext): Promise<void> {
+  const [id] = args;
+
+  if (!id) {
+    exitWithValidationError("id", "productive tasks update <id> [options]", ctx.formatter);
+  }
+
+  const spinner = ctx.createSpinner("Updating task...");
+  spinner.start();
+
+  await runCommand(async () => {
+    const data: Parameters<typeof ctx.api.updateTask>[1] = {};
+
+    if (ctx.options.title !== undefined) data.title = String(ctx.options.title);
+    if (ctx.options.description !== undefined) data.description = String(ctx.options.description);
+    if (ctx.options["due-date"] !== undefined) data.due_date = String(ctx.options["due-date"]);
+    if (ctx.options["start-date"] !== undefined) data.start_date = String(ctx.options["start-date"]);
+    if (ctx.options.estimate !== undefined) data.initial_estimate = parseInt(String(ctx.options.estimate));
+    if (ctx.options.private !== undefined) data.private = ctx.options.private === true;
+    if (ctx.options.assignee !== undefined) data.assignee_id = String(ctx.options.assignee);
+    if (ctx.options.status !== undefined) data.workflow_status_id = String(ctx.options.status);
+
+    if (Object.keys(data).length === 0) {
+      spinner.fail();
+      throw ValidationError.invalid(
+        "options",
+        data,
+        "No updates specified. Use --title, --description, --due-date, --assignee, --status, etc.",
+      );
+    }
+
+    const response = await ctx.api.updateTask(id, data);
+
+    spinner.succeed();
+
+    const format = ctx.options.format || ctx.options.f || "human";
+    if (format === "json") {
+      ctx.formatter.output({ status: "success", id: response.data.id });
+    } else {
+      ctx.formatter.success(`Task ${id} updated`);
     }
   }, ctx.formatter);
 }

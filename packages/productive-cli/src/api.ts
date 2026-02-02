@@ -315,6 +315,111 @@ export class ProductiveApi {
     });
   }
 
+  async createTask(data: {
+    title: string;
+    project_id: string;
+    task_list_id: string;
+    assignee_id?: string;
+    description?: string;
+    due_date?: string;
+    start_date?: string;
+    initial_estimate?: number;
+    workflow_status_id?: string;
+    private?: boolean;
+  }): Promise<ProductiveApiResponse<ProductiveTask>> {
+    const relationships: Record<string, { data: { type: string; id: string } }> = {
+      project: {
+        data: { type: "projects", id: data.project_id },
+      },
+      task_list: {
+        data: { type: "task_lists", id: data.task_list_id },
+      },
+    };
+
+    if (data.assignee_id) {
+      relationships.assignee = {
+        data: { type: "people", id: data.assignee_id },
+      };
+    }
+
+    if (data.workflow_status_id) {
+      relationships.workflow_status = {
+        data: { type: "workflow_statuses", id: data.workflow_status_id },
+      };
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveTask>>("/tasks", {
+      method: "POST",
+      body: {
+        data: {
+          type: "tasks",
+          attributes: {
+            title: data.title,
+            description: data.description,
+            due_date: data.due_date,
+            start_date: data.start_date,
+            initial_estimate: data.initial_estimate,
+            private: data.private,
+          },
+          relationships,
+        },
+      },
+    });
+  }
+
+  async updateTask(
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+      due_date?: string;
+      start_date?: string;
+      initial_estimate?: number;
+      private?: boolean;
+      assignee_id?: string;
+      workflow_status_id?: string;
+    },
+  ): Promise<ProductiveApiResponse<ProductiveTask>> {
+    const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
+
+    if (data.assignee_id !== undefined) {
+      relationships.assignee = data.assignee_id
+        ? { data: { type: "people", id: data.assignee_id } }
+        : { data: null };
+    }
+
+    if (data.workflow_status_id !== undefined) {
+      relationships.workflow_status = data.workflow_status_id
+        ? { data: { type: "workflow_statuses", id: data.workflow_status_id } }
+        : { data: null };
+    }
+
+    const attributes: Record<string, unknown> = {};
+    if (data.title !== undefined) attributes.title = data.title;
+    if (data.description !== undefined) attributes.description = data.description;
+    if (data.due_date !== undefined) attributes.due_date = data.due_date;
+    if (data.start_date !== undefined) attributes.start_date = data.start_date;
+    if (data.initial_estimate !== undefined) attributes.initial_estimate = data.initial_estimate;
+    if (data.private !== undefined) attributes.private = data.private;
+
+    const body: Record<string, unknown> = {
+      data: {
+        type: "tasks",
+        id,
+        attributes,
+      },
+    };
+
+    if (Object.keys(relationships).length > 0) {
+      (body.data as Record<string, unknown>).relationships = relationships;
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveTask>>(`/tasks/${id}`, {
+      method: "PATCH",
+      body,
+    });
+  }
+
   // People
   async getPeople(params?: {
     page?: number;

@@ -5,7 +5,7 @@
 import { OutputFormatter } from "../../output.js";
 import type { OutputFormat } from "../../types.js";
 import { createContext, type CommandOptions } from "../../context.js";
-import { tasksList, tasksGet } from "./handlers.js";
+import { tasksList, tasksGet, tasksAdd, tasksUpdate } from "./handlers.js";
 
 /**
  * Handle tasks command
@@ -27,6 +27,13 @@ export async function handleTasksCommand(
       break;
     case "get":
       await tasksGet(args, ctx);
+      break;
+    case "add":
+    case "create":
+      await tasksAdd(ctx);
+      break;
+    case "update":
+      await tasksUpdate(args, ctx);
       break;
     default:
       formatter.error(`Unknown tasks subcommand: ${subcommand}`);
