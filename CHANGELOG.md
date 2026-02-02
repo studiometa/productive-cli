@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **CLI**: 7 new report types for advanced reporting ([c851dff], [#11])
+  - `invoice` - Invoice amounts, status, outstanding balances
+  - `payment` - Payment tracking and cash flow
+  - `service` - Service-level budget vs worked time
+  - `task` - Task completion and workload metrics
+  - `company` - Client profitability analysis
+  - `deal` - Sales pipeline and deal metrics
+  - `timesheet` - Timesheet approval status
+- **MCP**: Reports resource with 11 report types ([97c20e0], [#11])
+
+[c851dff]: https://github.com/studiometa/productive-tools/commit/c851dff
+[97c20e0]: https://github.com/studiometa/productive-tools/commit/97c20e0
+[43897fa]: https://github.com/studiometa/productive-tools/commit/43897fa
+[#11]: https://github.com/studiometa/productive-tools/pull/11
+
 ## [0.6.4] - 2026-02-02
 
 ### Fixed
