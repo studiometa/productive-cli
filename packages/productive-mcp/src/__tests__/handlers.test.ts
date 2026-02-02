@@ -785,3 +785,68 @@ describe('handlers', () => {
     });
   });
 });
+
+describe('help handler', () => {
+  const credentials: ProductiveCredentials = {
+    apiToken: 'test-token',
+    organizationId: 'test-org',
+    userId: 'test-user',
+  };
+
+  it('should return overview when no resource specified', async () => {
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: '', action: 'help' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    const content = JSON.parse(result.content[0].text as string);
+    expect(content.resources).toBeDefined();
+    expect(content.resources.length).toBeGreaterThan(0);
+  });
+
+  it('should return detailed help for tasks resource', async () => {
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: 'tasks', action: 'help' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    const content = JSON.parse(result.content[0].text as string);
+    expect(content.resource).toBe('tasks');
+    expect(content.description).toBeDefined();
+    expect(content.actions).toBeDefined();
+    expect(content.filters).toBeDefined();
+    expect(content.includes).toBeDefined();
+    expect(content.fields).toBeDefined();
+    expect(content.examples).toBeDefined();
+  });
+
+  it('should return detailed help for time resource', async () => {
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: 'time', action: 'help' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    const content = JSON.parse(result.content[0].text as string);
+    expect(content.resource).toBe('time');
+    expect(content.actions.create).toBeDefined();
+  });
+
+  it('should return error for unknown resource in help', async () => {
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: 'unknown', action: 'help' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    const content = JSON.parse(result.content[0].text as string);
+    expect(content.error).toContain('Unknown resource');
+    expect(content.available_resources).toBeDefined();
+  });
+});

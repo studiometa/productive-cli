@@ -41,7 +41,16 @@ describe('tools', () => {
     it('should have action enum with all actions', () => {
       const tool = TOOLS[0];
       const actionProp = tool.inputSchema.properties?.action as { enum?: string[] };
-      expect(actionProp?.enum).toEqual(['list', 'get', 'create', 'update', 'me', 'start', 'stop']);
+      expect(actionProp?.enum).toEqual([
+        'list',
+        'get',
+        'create',
+        'update',
+        'me',
+        'start',
+        'stop',
+        'help',
+      ]);
     });
 
     it('should require resource and action', () => {

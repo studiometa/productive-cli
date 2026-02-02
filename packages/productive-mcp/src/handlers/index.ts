@@ -16,6 +16,7 @@ import { handleBookings } from './bookings.js';
 import { handleComments } from './comments.js';
 import { handleCompanies } from './companies.js';
 import { handleDeals } from './deals.js';
+import { handleHelp, handleHelpOverview } from './help.js';
 import { handlePeople } from './people.js';
 // Resource handlers
 import { handleProjects } from './projects.js';
@@ -117,6 +118,11 @@ export async function executeToolWithCredentials(
   };
 
   try {
+    // Handle help action first (doesn't need API)
+    if (action === 'help') {
+      return resource ? handleHelp(resource) : handleHelpOverview();
+    }
+
     // Route to appropriate resource handler
     switch (resource) {
       case 'projects':

@@ -31,7 +31,8 @@ export const TOOLS: Tool[] = [
         },
         action: {
           type: 'string',
-          enum: ['list', 'get', 'create', 'update', 'me', 'start', 'stop'],
+          enum: ['list', 'get', 'create', 'update', 'me', 'start', 'stop', 'help'],
+          description: 'Action to perform. Use "help" for detailed documentation on a resource.',
         },
         id: { type: 'string' },
         filter: { type: 'object' },
