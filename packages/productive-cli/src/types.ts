@@ -154,6 +154,26 @@ export interface ProductiveBudget {
   relationships?: Record<string, RelationshipData>;
 }
 
+export interface ProductiveCompany {
+  id: string;
+  type: "companies";
+  attributes: {
+    name: string;
+    billing_name?: string;
+    vat?: string;
+    default_currency?: string;
+    company_code?: string;
+    domain?: string;
+    buyer_reference?: string;
+    due_days?: number;
+    tag_list?: string[];
+    archived_at?: string;
+    created_at: string;
+    updated_at: string;
+  };
+  relationships?: Record<string, RelationshipData>;
+}
+
 // CLI output formats for AI agents
 export type OutputFormat = "json" | "human" | "csv" | "table" | "kanban";
 

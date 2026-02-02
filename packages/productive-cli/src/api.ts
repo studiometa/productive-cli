@@ -7,6 +7,7 @@ import type {
   ProductivePerson,
   ProductiveService,
   ProductiveBudget,
+  ProductiveCompany,
 } from "./types.js";
 import { getConfig } from "./config.js";
 import { getCache, type CacheStore } from "./utils/cache.js";
@@ -492,5 +493,101 @@ export class ProductiveApi {
     return this.request<ProductiveApiResponse<ProductiveBudget[]>>("/budgets", {
       query,
     });
+  }
+
+  // Companies
+  async getCompanies(params?: {
+    page?: number;
+    perPage?: number;
+    filter?: Record<string, string>;
+    sort?: string;
+  }): Promise<ProductiveApiResponse<ProductiveCompany[]>> {
+    const query: Record<string, string> = {};
+
+    if (params?.page) query["page[number]"] = String(params.page);
+    if (params?.perPage) query["page[size]"] = String(params.perPage);
+    if (params?.sort) query["sort"] = params.sort;
+    if (params?.filter) {
+      Object.entries(params.filter).forEach(([key, value]) => {
+        query[`filter[${key}]`] = value;
+      });
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveCompany[]>>(
+      "/companies",
+      { query },
+    );
+  }
+
+  async getCompany(
+    id: string,
+  ): Promise<ProductiveApiResponse<ProductiveCompany>> {
+    return this.request<ProductiveApiResponse<ProductiveCompany>>(
+      `/companies/${id}`,
+    );
+  }
+
+  async createCompany(data: {
+    name: string;
+    billing_name?: string;
+    vat?: string;
+    default_currency?: string;
+    company_code?: string;
+    domain?: string;
+    due_days?: number;
+  }): Promise<ProductiveApiResponse<ProductiveCompany>> {
+    return this.request<ProductiveApiResponse<ProductiveCompany>>("/companies", {
+      method: "POST",
+      body: {
+        data: {
+          type: "companies",
+          attributes: {
+            name: data.name,
+            billing_name: data.billing_name,
+            vat: data.vat,
+            default_currency: data.default_currency,
+            company_code: data.company_code,
+            domain: data.domain,
+            due_days: data.due_days,
+          },
+        },
+      },
+    });
+  }
+
+  async updateCompany(
+    id: string,
+    data: {
+      name?: string;
+      billing_name?: string;
+      vat?: string;
+      default_currency?: string;
+      company_code?: string;
+      domain?: string;
+      due_days?: number;
+    },
+  ): Promise<ProductiveApiResponse<ProductiveCompany>> {
+    const attributes: Record<string, unknown> = {};
+    if (data.name !== undefined) attributes.name = data.name;
+    if (data.billing_name !== undefined) attributes.billing_name = data.billing_name;
+    if (data.vat !== undefined) attributes.vat = data.vat;
+    if (data.default_currency !== undefined) attributes.default_currency = data.default_currency;
+    if (data.company_code !== undefined) attributes.company_code = data.company_code;
+    if (data.domain !== undefined) attributes.domain = data.domain;
+    if (data.due_days !== undefined) attributes.due_days = data.due_days;
+
+    return this.request<ProductiveApiResponse<ProductiveCompany>>(
+      `/companies/${id}`,
+      {
+        method: "PATCH",
+        body: {
+          data: {
+            type: "companies",
+            id,
+            attributes,
+          },
+        },
+      },
+    );
   }
 }

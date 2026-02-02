@@ -59,3 +59,11 @@ export {
   HumanBudgetListRenderer,
   humanBudgetListRenderer,
 } from './budget.js';
+
+// Companies
+export {
+  HumanCompanyListRenderer,
+  HumanCompanyDetailRenderer,
+  humanCompanyListRenderer,
+  humanCompanyDetailRenderer,
+} from './company.js';

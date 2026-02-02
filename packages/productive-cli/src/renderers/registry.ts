@@ -16,6 +16,7 @@ import { kanbanRenderer } from './human/kanban.js';
 import { humanPersonListRenderer } from './human/person.js';
 import { humanServiceListRenderer } from './human/service.js';
 import { humanBudgetListRenderer } from './human/budget.js';
+import { humanCompanyListRenderer } from './human/company.js';
 
 /**
  * Registry key format: "resourceType:format" or "*:format" for fallbacks
@@ -133,3 +134,4 @@ registerRenderer('task', 'kanban', kanbanRenderer);
 registerRenderer('person', 'human', humanPersonListRenderer);
 registerRenderer('service', 'human', humanServiceListRenderer);
 registerRenderer('budget', 'human', humanBudgetListRenderer);
+registerRenderer('company', 'human', humanCompanyListRenderer);

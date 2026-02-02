@@ -21,6 +21,8 @@ export type {
   FormattedBudget,
 } from './types.js';
 
+export type { FormattedCompany } from './company.js';
+
 export { DEFAULT_FORMAT_OPTIONS } from './types.js';
 
 // Formatters
@@ -30,6 +32,7 @@ export { formatTask } from './task.js';
 export { formatPerson } from './person.js';
 export { formatService } from './service.js';
 export { formatBudget } from './budget.js';
+export { formatCompany } from './company.js';
 
 // Pagination
 export { formatPagination, hasMorePages } from './pagination.js';
@@ -119,6 +122,7 @@ import { formatTask } from './task.js';
 import { formatPerson } from './person.js';
 import { formatService } from './service.js';
 import { formatBudget } from './budget.js';
+import { formatCompany } from './company.js';
 
 /**
  * Get the appropriate formatter function for a resource type
@@ -139,6 +143,8 @@ function getFormatterForType(
       return formatService as (item: JsonApiResource, options?: FormatOptions) => Record<string, unknown>;
     case 'budgets':
       return formatBudget as (item: JsonApiResource, options?: FormatOptions) => Record<string, unknown>;
+    case 'companies':
+      return formatCompany as (item: JsonApiResource, options?: FormatOptions) => Record<string, unknown>;
     default:
       // Generic formatter: flatten id + attributes
       return (item: JsonApiResource) => ({

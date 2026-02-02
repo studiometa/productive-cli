@@ -15,6 +15,10 @@ import {
   showServicesHelp,
 } from "./commands/services/index.js";
 import { handleBudgetsCommand, showBudgetsHelp } from "./commands/budgets/index.js";
+import {
+  handleCompaniesCommand,
+  showCompaniesHelp,
+} from "./commands/companies/index.js";
 import { handleCacheCommand, showCacheHelp } from "./commands/cache.js";
 import { handleApiCommand, showApiHelp } from "./commands/api.js";
 import {
@@ -67,6 +71,12 @@ ${colors.bold("COMMANDS:")}
 
   budgets             Manage budgets
     list, ls            List budgets
+
+  companies           Manage companies (clients)
+    list, ls            List companies
+    get <id>            Get company details
+    add                 Create company
+    update <id>         Update company
 
   cache               Manage CLI cache
     status              Show cache statistics
@@ -247,6 +257,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         await handleBudgetsCommand(subcommand || "list", positional, options);
+        break;
+
+      case "companies":
+        if (wantsHelp) {
+          showCompaniesHelp(subcommand);
+          process.exit(0);
+        }
+        await handleCompaniesCommand(subcommand || "list", positional, options);
         break;
 
       case "cache":
