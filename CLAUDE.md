@@ -6,6 +6,14 @@
 - **Tags**: Do NOT use `v` prefix (use `0.4.0` not `v0.4.0`)
 - **Releases**: Do NOT create GitHub releases manually with `gh release create` - they are created automatically by GitHub Actions when a tag is pushed
 
+## Versioning
+- Use root npm scripts to bump version across all packages:
+  - `npm run version:patch` — bump patch version (e.g., 0.4.3 → 0.4.4)
+  - `npm run version:minor` — bump minor version (e.g., 0.4.3 → 0.5.0)
+  - `npm run version:major` — bump major version (e.g., 0.4.3 → 1.0.0)
+- These scripts update version in root and all workspace packages simultaneously
+- Version is injected at build time from package.json (no manual sync needed)
+
 ---
 
 # AI Agents & Automation
