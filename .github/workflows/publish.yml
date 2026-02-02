@@ -83,20 +83,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create release notes
-        run: |
-          {
-            echo "See CHANGELOG.md for details:"
-            echo ""
-            echo "- [@studiometa/productive-cli](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/packages/productive-cli/CHANGELOG.md)"
-            echo "- [@studiometa/productive-mcp](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/packages/productive-mcp/CHANGELOG.md)"
-          } > release_notes.md
-
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          bodyFile: release_notes.md
+          body: |
+            Please refer to [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for details.
           draft: false
           prerelease: ${{ env.IS_PRERELEASE }}

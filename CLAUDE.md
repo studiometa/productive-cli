@@ -9,15 +9,14 @@
 
 ## Changelog
 
-- **Root changelog** (`CHANGELOG.md`): Main changelog for the monorepo
-- **Package changelogs** (`packages/*/CHANGELOG.md`): Package-specific changelogs, keep in sync when releasing
+- **Single changelog** at root (`CHANGELOG.md`) for the entire monorepo
+- Prefix entries with package name when relevant: `**CLI**: ...`, `**MCP**: ...`
 - Use `[hash]` format for commit references (not bare hashes)
 - Use `[#N]` format for PR references (GitHub style, not `!N` GitLab style)
 - Add link definitions at the bottom of the file:
   - Commits: `[hash]: https://github.com/studiometa/productive-tools/commit/hash`
   - PRs: `[#N]: https://github.com/studiometa/productive-tools/pull/N`
 - Keep entries concise, single line with references at the end
-- If a package has no changes for a release, add: `### Changed\n\n- No changes for this release`
 
 ## Versioning
 
