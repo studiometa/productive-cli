@@ -82,18 +82,15 @@ describe('http module', () => {
 
       expect(result.tools).toBeDefined();
       expect(Array.isArray(result.tools)).toBe(true);
-      expect(result.tools.length).toBe(5); // 5 consolidated tools
+      expect(result.tools.length).toBe(1); // Single consolidated tool
 
       // Should NOT include stdio-only tools
       const configure = result.tools.find((t) => t.name === 'productive_configure');
       expect(configure).toBeUndefined();
 
-      // Should include consolidated tools
-      const projects = result.tools.find((t) => t.name === 'productive_projects');
-      expect(projects).toBeDefined();
-
-      const time = result.tools.find((t) => t.name === 'productive_time');
-      expect(time).toBeDefined();
+      // Should include single consolidated tool
+      const productive = result.tools.find((t) => t.name === 'productive');
+      expect(productive).toBeDefined();
     });
   });
 });
@@ -264,12 +261,12 @@ describe('HTTP Server Integration', () => {
       expect(data.result.tools).toBeDefined();
       expect(Array.isArray(data.result.tools)).toBe(true);
 
-      // Verify consolidated tool structure
-      const projectTool = data.result.tools.find(
-        (t: { name: string }) => t.name === 'productive_projects'
+      // Verify single consolidated tool
+      const productiveTool = data.result.tools.find(
+        (t: { name: string }) => t.name === 'productive'
       );
-      expect(projectTool).toBeDefined();
-      expect(projectTool.inputSchema).toBeDefined();
+      expect(productiveTool).toBeDefined();
+      expect(productiveTool.inputSchema).toBeDefined();
     });
 
     it('should handle tools/call method', async () => {
@@ -283,8 +280,8 @@ describe('HTTP Server Integration', () => {
           jsonrpc: '2.0',
           method: 'tools/call',
           params: {
-            name: 'productive_projects',
-            arguments: { action: 'list', page: 1 },
+            name: 'productive',
+            arguments: { resource: 'projects', action: 'list', page: 1 },
           },
           id: 3,
         }),
@@ -296,8 +293,8 @@ describe('HTTP Server Integration', () => {
 
       // Verify handler was called with correct credentials
       expect(executeToolWithCredentials).toHaveBeenCalledWith(
-        'productive_projects',
-        { action: 'list', page: 1 },
+        'productive',
+        { resource: 'projects', action: 'list', page: 1 },
         {
           organizationId: 'test-org',
           apiToken: 'test-token',

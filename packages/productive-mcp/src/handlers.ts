@@ -2,12 +2,8 @@
  * Tool execution handlers for Productive MCP server
  * These are shared between stdio and HTTP transports
  *
- * Consolidated tools reduce token overhead by grouping related operations:
- * - productive_projects: list, get
- * - productive_time: list, get, create, update, delete
- * - productive_tasks: list, get
- * - productive_services: list
- * - productive_people: list, get, me
+ * Single consolidated tool for minimal token overhead:
+ * - productive: resource + action based API
  */
 
 import { ProductiveApi } from '@studiometa/productive-cli';
@@ -62,25 +58,26 @@ function toStringFilter(filter?: Record<string, unknown>): Record<string, string
 }
 
 /**
- * Common args interface for consolidated tools
+ * Args interface for the consolidated tool
  */
-interface ConsolidatedArgs {
-  action: string;
+interface ProductiveArgs {
+  resource: 'projects' | 'time' | 'tasks' | 'services' | 'people';
+  action: 'list' | 'get' | 'create' | 'update' | 'delete' | 'me';
   id?: string;
   filter?: Record<string, unknown>;
   page?: number;
   per_page?: number;
   compact?: boolean;
-  [key: string]: unknown;
+  // Time entry fields
+  person_id?: string;
+  service_id?: string;
+  time?: number;
+  date?: string;
+  note?: string;
 }
 
 /**
  * Execute a tool with the given credentials and arguments
- *
- * @param name - Tool name
- * @param args - Tool arguments
- * @param credentials - Productive API credentials
- * @returns Tool execution result
  */
 export async function executeToolWithCredentials(
   name: string,
@@ -94,35 +91,50 @@ export async function executeToolWithCredentials(
     'user-id': credentials.userId,
   } as Record<string, string>);
 
-  const { action, id, filter, page, per_page, compact = true, ...restArgs } = args as ConsolidatedArgs;
-  const formatOptions: McpFormatOptions = { compact };
-  const stringFilter = toStringFilter(filter);
+  // Handle the single consolidated tool
+  if (name === 'productive') {
+    const {
+      resource,
+      action,
+      id,
+      filter,
+      page,
+      per_page,
+      compact = true,
+      person_id,
+      service_id,
+      time,
+      date,
+      note,
+    } = args as unknown as ProductiveArgs;
 
-  // Apply default page size
-  const perPage = per_page ?? DEFAULT_PER_PAGE;
+    const formatOptions: McpFormatOptions = { compact };
+    const stringFilter = toStringFilter(filter);
+    const perPage = per_page ?? DEFAULT_PER_PAGE;
 
-  try {
-    switch (name) {
+    try {
       // ========================================================================
       // Projects
       // ========================================================================
-      case 'productive_projects': {
+      if (resource === 'projects') {
         if (action === 'get') {
           if (!id) return errorResult('id is required for get action');
           const result = await api.getProject(id);
           return jsonResult(formatProject(result.data, formatOptions));
         }
-        // Default: list
-        const result = await api.getProjects({ filter: stringFilter, page, perPage });
-        return jsonResult(
-          formatListResponse(result.data, formatProject, result.meta, formatOptions)
-        );
+        if (action === 'list') {
+          const result = await api.getProjects({ filter: stringFilter, page, perPage });
+          return jsonResult(
+            formatListResponse(result.data, formatProject, result.meta, formatOptions)
+          );
+        }
+        return errorResult(`Invalid action "${action}" for projects. Use: list, get`);
       }
 
       // ========================================================================
       // Time Entries
       // ========================================================================
-      case 'productive_time': {
+      if (resource === 'time') {
         if (action === 'get') {
           if (!id) return errorResult('id is required for get action');
           const result = await api.getTimeEntry(id);
@@ -130,44 +142,15 @@ export async function executeToolWithCredentials(
         }
 
         if (action === 'create') {
-          const { person_id, service_id, time, date, note, task_id } = restArgs as {
-            person_id?: string;
-            service_id?: string;
-            time?: number;
-            date?: string;
-            note?: string;
-            task_id?: string;
-          };
           if (!person_id || !service_id || !time || !date) {
             return errorResult('person_id, service_id, time, and date are required for create');
           }
-          // Note: task_id is not directly supported by createTimeEntry API
-          // It would need to be set via relationships in a more complex request
-          const createParams: Parameters<typeof api.createTimeEntry>[0] = {
-            person_id,
-            service_id,
-            time,
-            date,
-            note,
-          };
-          const result = await api.createTimeEntry(createParams);
-          const response: Record<string, unknown> = {
-            success: true,
-            ...formatTimeEntry(result.data, formatOptions),
-          };
-          if (task_id) {
-            response.warning = 'task_id was provided but is not currently supported for create';
-          }
-          return jsonResult(response);
+          const result = await api.createTimeEntry({ person_id, service_id, time, date, note });
+          return jsonResult({ success: true, ...formatTimeEntry(result.data, formatOptions) });
         }
 
         if (action === 'update') {
           if (!id) return errorResult('id is required for update action');
-          const { time, date, note } = restArgs as {
-            time?: number;
-            date?: string;
-            note?: string;
-          };
           const updateData: Parameters<typeof api.updateTimeEntry>[1] = {};
           if (time !== undefined) updateData.time = time;
           if (date !== undefined) updateData.date = date;
@@ -182,18 +165,20 @@ export async function executeToolWithCredentials(
           return jsonResult({ success: true, message: 'Time entry deleted' });
         }
 
-        // Default: list
-        const result = await api.getTimeEntries({ filter: stringFilter, page, perPage });
-        return jsonResult(
-          formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions)
-        );
+        if (action === 'list') {
+          const result = await api.getTimeEntries({ filter: stringFilter, page, perPage });
+          return jsonResult(
+            formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions)
+          );
+        }
+
+        return errorResult(`Invalid action "${action}" for time. Use: list, get, create, update, delete`);
       }
 
       // ========================================================================
       // Tasks
       // ========================================================================
-      case 'productive_tasks': {
-        // Always include project and company for context
+      if (resource === 'tasks') {
         const include = ['project', 'project.company'];
 
         if (action === 'get') {
@@ -204,31 +189,37 @@ export async function executeToolWithCredentials(
           );
         }
 
-        // Default: list
-        const result = await api.getTasks({ filter: stringFilter, page, perPage, include });
-        return jsonResult(
-          formatListResponse(result.data, formatTask, result.meta, {
-            ...formatOptions,
-            included: result.included,
-          })
-        );
+        if (action === 'list') {
+          const result = await api.getTasks({ filter: stringFilter, page, perPage, include });
+          return jsonResult(
+            formatListResponse(result.data, formatTask, result.meta, {
+              ...formatOptions,
+              included: result.included,
+            })
+          );
+        }
+
+        return errorResult(`Invalid action "${action}" for tasks. Use: list, get`);
       }
 
       // ========================================================================
       // Services
       // ========================================================================
-      case 'productive_services': {
-        // Only list action
-        const result = await api.getServices({ filter: stringFilter, page, perPage });
-        return jsonResult(
-          formatListResponse(result.data, formatService, result.meta, formatOptions)
-        );
+      if (resource === 'services') {
+        if (action === 'list') {
+          const result = await api.getServices({ filter: stringFilter, page, perPage });
+          return jsonResult(
+            formatListResponse(result.data, formatService, result.meta, formatOptions)
+          );
+        }
+
+        return errorResult(`Invalid action "${action}" for services. Use: list`);
       }
 
       // ========================================================================
       // People
       // ========================================================================
-      case 'productive_people': {
+      if (resource === 'people') {
         if (action === 'get') {
           if (!id) return errorResult('id is required for get action');
           const result = await api.getPerson(id);
@@ -246,18 +237,22 @@ export async function executeToolWithCredentials(
           });
         }
 
-        // Default: list
-        const result = await api.getPeople({ filter: stringFilter, page, perPage });
-        return jsonResult(
-          formatListResponse(result.data, formatPerson, result.meta, formatOptions)
-        );
+        if (action === 'list') {
+          const result = await api.getPeople({ filter: stringFilter, page, perPage });
+          return jsonResult(
+            formatListResponse(result.data, formatPerson, result.meta, formatOptions)
+          );
+        }
+
+        return errorResult(`Invalid action "${action}" for people. Use: list, get, me`);
       }
 
-      default:
-        return errorResult(`Unknown tool: ${name}`);
+      return errorResult(`Unknown resource: ${resource}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return errorResult(message);
     }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return errorResult(message);
   }
+
+  return errorResult(`Unknown tool: ${name}`);
 }
