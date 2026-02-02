@@ -9,7 +9,7 @@ export const TOOLS: Tool[] = [
   {
     name: 'productive',
     description:
-      'Productive.io API. Resources: projects, time, tasks, services, people. Actions: list, get, create (time only), update (time only), delete (time only), me (people only).',
+      'Productive.io API. Resources: projects, time, tasks, services, people. Actions: list, get, create/update/delete (time), me (people). Filters: project_id, person_id, service_id, after/before (dates).',
     inputSchema: {
       type: 'object',
       properties: {
@@ -29,6 +29,7 @@ export const TOOLS: Tool[] = [
         // Time entry fields
         person_id: { type: 'string' },
         service_id: { type: 'string' },
+        task_id: { type: 'string' },
         time: { type: 'number' },
         date: { type: 'string' },
         note: { type: 'string' },

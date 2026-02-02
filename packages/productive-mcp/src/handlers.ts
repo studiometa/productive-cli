@@ -71,6 +71,7 @@ interface ProductiveArgs {
   // Time entry fields
   person_id?: string;
   service_id?: string;
+  task_id?: string;
   time?: number;
   date?: string;
   note?: string;
@@ -103,6 +104,7 @@ export async function executeToolWithCredentials(
       compact = true,
       person_id,
       service_id,
+      task_id,
       time,
       date,
       note,
@@ -145,7 +147,14 @@ export async function executeToolWithCredentials(
           if (!person_id || !service_id || !time || !date) {
             return errorResult('person_id, service_id, time, and date are required for create');
           }
-          const result = await api.createTimeEntry({ person_id, service_id, time, date, note });
+          const result = await api.createTimeEntry({
+            person_id,
+            service_id,
+            time,
+            date,
+            note,
+            task_id,
+          });
           return jsonResult({ success: true, ...formatTimeEntry(result.data, formatOptions) });
         }
 
