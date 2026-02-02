@@ -1,64 +1,37 @@
 #!/usr/bin/env node
 
-import { parseArgs } from "./utils/args.js";
-import { colors, setColorEnabled } from "./utils/colors.js";
-import { handleConfigCommand, showConfigHelp } from "./commands/config.js";
-import {
-  handleProjectsCommand,
-  showProjectsHelp,
-} from "./commands/projects/index.js";
-import { handleTimeCommand, showTimeHelp } from "./commands/time/index.js";
-import { handleTasksCommand, showTasksHelp } from "./commands/tasks/index.js";
-import { handlePeopleCommand, showPeopleHelp } from "./commands/people/index.js";
-import {
-  handleServicesCommand,
-  showServicesHelp,
-} from "./commands/services/index.js";
-import { handleBudgetsCommand, showBudgetsHelp } from "./commands/budgets/index.js";
-import {
-  handleCompaniesCommand,
-  showCompaniesHelp,
-} from "./commands/companies/index.js";
-import {
-  handleCommentsCommand,
-  showCommentsHelp,
-} from "./commands/comments/index.js";
-import {
-  handleTimersCommand,
-  showTimersHelp,
-} from "./commands/timers/index.js";
-import {
-  handleDealsCommand,
-  showDealsHelp,
-} from "./commands/deals/index.js";
-import {
-  handleBookingsCommand,
-  showBookingsHelp,
-} from "./commands/bookings/index.js";
-import {
-  handleReportsCommand,
-  showReportsHelp,
-} from "./commands/reports/index.js";
-import { handleCacheCommand, showCacheHelp } from "./commands/cache.js";
-import { handleApiCommand, showApiHelp } from "./commands/api.js";
-import {
-  handleCompletionCommand,
-  showCompletionHelp,
-} from "./commands/completion.js";
-import { handleCompletionHelper } from "./commands/completion-helper.js";
-import { processRefreshQueue } from "./utils/refresh-queue.js";
+import { handleApiCommand, showApiHelp } from './commands/api.js';
+import { handleBookingsCommand, showBookingsHelp } from './commands/bookings/index.js';
+import { handleBudgetsCommand, showBudgetsHelp } from './commands/budgets/index.js';
+import { handleCacheCommand, showCacheHelp } from './commands/cache.js';
+import { handleCommentsCommand, showCommentsHelp } from './commands/comments/index.js';
+import { handleCompaniesCommand, showCompaniesHelp } from './commands/companies/index.js';
+import { handleCompletionHelper } from './commands/completion-helper.js';
+import { handleCompletionCommand, showCompletionHelp } from './commands/completion.js';
+import { handleConfigCommand, showConfigHelp } from './commands/config.js';
+import { handleDealsCommand, showDealsHelp } from './commands/deals/index.js';
+import { handlePeopleCommand, showPeopleHelp } from './commands/people/index.js';
+import { handleProjectsCommand, showProjectsHelp } from './commands/projects/index.js';
+import { handleReportsCommand, showReportsHelp } from './commands/reports/index.js';
+import { handleServicesCommand, showServicesHelp } from './commands/services/index.js';
+import { handleTasksCommand, showTasksHelp } from './commands/tasks/index.js';
+import { handleTimeCommand, showTimeHelp } from './commands/time/index.js';
+import { handleTimersCommand, showTimersHelp } from './commands/timers/index.js';
+import { parseArgs } from './utils/args.js';
+import { colors, setColorEnabled } from './utils/colors.js';
+import { processRefreshQueue } from './utils/refresh-queue.js';
 
 declare const __VERSION__: string;
 const VERSION = __VERSION__;
 
 function showHelp(): void {
   console.log(`
-${colors.bold("productive-cli")} v${VERSION}
+${colors.bold('productive-cli')} v${VERSION}
 
-${colors.bold("USAGE:")}
+${colors.bold('USAGE:')}
   productive <command> [subcommand] [options]
 
-${colors.bold("COMMANDS:")}
+${colors.bold('COMMANDS:')}
   config              Manage CLI configuration
     set <key> <val>     Set configuration value
     get [key]           Get configuration value(s)
@@ -140,7 +113,7 @@ ${colors.bold("COMMANDS:")}
     zsh                 Generate Zsh completion
     fish                Generate Fish completion
 
-${colors.bold("OPTIONS:")}
+${colors.bold('OPTIONS:')}
   -f, --format <fmt>  Output format: json, human, csv, table (default: human)
   --no-color          Disable colored output
   --no-cache          Bypass cache for this request
@@ -151,7 +124,7 @@ ${colors.bold("OPTIONS:")}
   -h, --help          Show help
   -v, --version       Show version
 
-${colors.bold("AUTHENTICATION OPTIONS:")}
+${colors.bold('AUTHENTICATION OPTIONS:')}
   --token <token>     API token (overrides config and env)
   --api-token <token> Alternative API token flag
   --org-id <id>       Organization ID (overrides config and env)
@@ -159,7 +132,7 @@ ${colors.bold("AUTHENTICATION OPTIONS:")}
   --user-id <id>      User ID (overrides config and env)
   --base-url <url>    API base URL (optional)
 
-${colors.bold("EXAMPLES:")}
+${colors.bold('EXAMPLES:')}
   # Configure via CLI
   productive config set apiToken YOUR_TOKEN
   productive config set organizationId YOUR_ORG_ID
@@ -186,13 +159,13 @@ ${colors.bold("EXAMPLES:")}
   # List time entries for date range
   productive time list --from 2024-01-01 --to 2024-01-31
 
-${colors.bold("CREDENTIAL PRIORITY:")}
+${colors.bold('CREDENTIAL PRIORITY:')}
   Credentials are loaded in this order (highest to lowest priority):
   1. CLI arguments (--token, --org-id, --user-id)
   2. Environment variables (PRODUCTIVE_API_TOKEN, PRODUCTIVE_ORG_ID, etc.)
   3. Config file (~/.config/productive-cli/config.json)
 
-${colors.bold("ENVIRONMENT VARIABLES:")}
+${colors.bold('ENVIRONMENT VARIABLES:')}
   PRODUCTIVE_API_TOKEN      API token
   PRODUCTIVE_ORG_ID         Organization ID
   PRODUCTIVE_USER_ID        User ID
@@ -200,13 +173,13 @@ ${colors.bold("ENVIRONMENT VARIABLES:")}
   XDG_CONFIG_HOME           Config directory (respects XDG spec)
   NO_COLOR                  Disable colors
 
-${colors.bold("CONFIGURATION:")}
+${colors.bold('CONFIGURATION:')}
   Config stored in XDG-compliant location:
   - Linux:   $XDG_CONFIG_HOME/productive-cli/config.json (~/.config)
   - macOS:   $XDG_CONFIG_HOME or ~/Library/Application Support
   - Windows: %APPDATA%\\productive-cli\\config.json
 
-${colors.bold("LEARN MORE:")}
+${colors.bold('LEARN MORE:')}
   Documentation: https://github.com/studiometa/productive-cli
   Productive API: https://developer.productive.io/
 `);
@@ -232,7 +205,7 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  if (options["no-color"]) {
+  if (options['no-color']) {
     setColorEnabled(false);
   }
 
@@ -250,106 +223,106 @@ async function main(): Promise<void> {
   // Route to appropriate handler
   try {
     switch (mainCommand) {
-      case "config":
+      case 'config':
         if (wantsHelp) {
           showConfigHelp(subcommand);
           process.exit(0);
         }
-        handleConfigCommand(subcommand || "get", positional, options);
+        handleConfigCommand(subcommand || 'get', positional, options);
         break;
 
-      case "projects":
-      case "p":
+      case 'projects':
+      case 'p':
         if (wantsHelp) {
           showProjectsHelp(subcommand);
           process.exit(0);
         }
-        await handleProjectsCommand(subcommand || "list", positional, options);
+        await handleProjectsCommand(subcommand || 'list', positional, options);
         break;
 
-      case "time":
-      case "t":
+      case 'time':
+      case 't':
         if (wantsHelp) {
           showTimeHelp(subcommand);
           process.exit(0);
         }
-        await handleTimeCommand(subcommand || "list", positional, options);
+        await handleTimeCommand(subcommand || 'list', positional, options);
         break;
 
-      case "tasks":
+      case 'tasks':
         if (wantsHelp) {
           showTasksHelp(subcommand);
           process.exit(0);
         }
-        await handleTasksCommand(subcommand || "list", positional, options);
+        await handleTasksCommand(subcommand || 'list', positional, options);
         break;
 
-      case "people":
+      case 'people':
         if (wantsHelp) {
           showPeopleHelp(subcommand);
           process.exit(0);
         }
-        await handlePeopleCommand(subcommand || "list", positional, options);
+        await handlePeopleCommand(subcommand || 'list', positional, options);
         break;
 
-      case "services":
-      case "svc":
+      case 'services':
+      case 'svc':
         if (wantsHelp) {
           showServicesHelp(subcommand);
           process.exit(0);
         }
-        await handleServicesCommand(subcommand || "list", positional, options);
+        await handleServicesCommand(subcommand || 'list', positional, options);
         break;
 
-      case "budgets":
+      case 'budgets':
         if (wantsHelp) {
           showBudgetsHelp(subcommand);
           process.exit(0);
         }
-        await handleBudgetsCommand(subcommand || "list", positional, options);
+        await handleBudgetsCommand(subcommand || 'list', positional, options);
         break;
 
-      case "companies":
+      case 'companies':
         if (wantsHelp) {
           showCompaniesHelp(subcommand);
           process.exit(0);
         }
-        await handleCompaniesCommand(subcommand || "list", positional, options);
+        await handleCompaniesCommand(subcommand || 'list', positional, options);
         break;
 
-      case "comments":
+      case 'comments':
         if (wantsHelp) {
           showCommentsHelp(subcommand);
           process.exit(0);
         }
-        await handleCommentsCommand(subcommand || "list", positional, options);
+        await handleCommentsCommand(subcommand || 'list', positional, options);
         break;
 
-      case "timers":
+      case 'timers':
         if (wantsHelp) {
           showTimersHelp(subcommand);
           process.exit(0);
         }
-        await handleTimersCommand(subcommand || "list", positional, options);
+        await handleTimersCommand(subcommand || 'list', positional, options);
         break;
 
-      case "deals":
+      case 'deals':
         if (wantsHelp) {
           showDealsHelp(subcommand);
           process.exit(0);
         }
-        await handleDealsCommand(subcommand || "list", positional, options);
+        await handleDealsCommand(subcommand || 'list', positional, options);
         break;
 
-      case "bookings":
+      case 'bookings':
         if (wantsHelp) {
           showBookingsHelp(subcommand);
           process.exit(0);
         }
-        await handleBookingsCommand(subcommand || "list", positional, options);
+        await handleBookingsCommand(subcommand || 'list', positional, options);
         break;
 
-      case "reports":
+      case 'reports':
         if (wantsHelp) {
           showReportsHelp(subcommand);
           process.exit(0);
@@ -361,57 +334,47 @@ async function main(): Promise<void> {
         await handleReportsCommand(subcommand, positional, options);
         break;
 
-      case "cache":
+      case 'cache':
         if (wantsHelp) {
           showCacheHelp(subcommand);
           process.exit(0);
         }
-        handleCacheCommand(subcommand || "status", positional, options);
+        handleCacheCommand(subcommand || 'status', positional, options);
         break;
 
-      case "api":
+      case 'api':
         if (wantsHelp) {
           showApiHelp();
           process.exit(0);
         }
-        await handleApiCommand(
-          subcommand ? [subcommand, ...positional] : positional,
-          options,
-        );
+        await handleApiCommand(subcommand ? [subcommand, ...positional] : positional, options);
         break;
 
-      case "completion":
+      case 'completion':
         if (wantsHelp) {
           showCompletionHelp();
           process.exit(0);
         }
-        handleCompletionCommand(
-          subcommand ? [subcommand, ...positional] : positional,
-          options,
-        );
+        handleCompletionCommand(subcommand ? [subcommand, ...positional] : positional, options);
         break;
 
-      case "__completion_helper":
+      case '__completion_helper':
         // Hidden command for shell completion scripts
-        await handleCompletionHelper(
-          subcommand ? [subcommand, ...positional] : positional,
-        );
+        await handleCompletionHelper(subcommand ? [subcommand, ...positional] : positional);
         break;
 
       default:
         console.error(colors.red(`Unknown command: ${mainCommand}`));
-        console.log(
-          `Run ${colors.cyan("productive --help")} for usage information`,
-        );
+        console.log(`Run ${colors.cyan('productive --help')} for usage information`);
         process.exit(1);
     }
   } catch (error) {
-    console.error(colors.red("Fatal error:"), error);
+    console.error(colors.red('Fatal error:'), error);
     process.exit(1);
   }
 }
 
 main().catch((error) => {
-  console.error(colors.red("Unhandled error:"), error);
+  console.error(colors.red('Unhandled error:'), error);
   process.exit(1);
 });

@@ -2,10 +2,11 @@
  * Tasks command entry point
  */
 
-import { OutputFormatter } from "../../output.js";
-import type { OutputFormat } from "../../types.js";
-import { createContext, type CommandOptions } from "../../context.js";
-import { tasksList, tasksGet, tasksAdd, tasksUpdate } from "./handlers.js";
+import type { OutputFormat } from '../../types.js';
+
+import { createContext, type CommandOptions } from '../../context.js';
+import { OutputFormatter } from '../../output.js';
+import { tasksList, tasksGet, tasksAdd, tasksUpdate } from './handlers.js';
 
 /**
  * Handle tasks command
@@ -15,24 +16,24 @@ export async function handleTasksCommand(
   args: string[],
   options: Record<string, string | boolean>,
 ): Promise<void> {
-  const format = (options.format || options.f || "human") as OutputFormat;
-  const formatter = new OutputFormatter(format, options["no-color"] === true);
+  const format = (options.format || options.f || 'human') as OutputFormat;
+  const formatter = new OutputFormatter(format, options['no-color'] === true);
 
   const ctx = createContext(options as CommandOptions);
 
   switch (subcommand) {
-    case "list":
-    case "ls":
+    case 'list':
+    case 'ls':
       await tasksList(ctx);
       break;
-    case "get":
+    case 'get':
       await tasksGet(args, ctx);
       break;
-    case "add":
-    case "create":
+    case 'add':
+    case 'create':
       await tasksAdd(ctx);
       break;
-    case "update":
+    case 'update':
       await tasksUpdate(args, ctx);
       break;
     default:

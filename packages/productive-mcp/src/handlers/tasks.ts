@@ -2,14 +2,15 @@
  * Tasks resource handler
  */
 
-import { formatTask, formatListResponse } from '../formatters.js';
 import type { HandlerContext, TaskArgs, ToolResult } from './types.js';
+
+import { formatTask, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleTasks(
   action: string,
   args: TaskArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, title, project_id, task_list_id, description, assignee_id } = args;
@@ -18,9 +19,7 @@ export async function handleTasks(
   if (action === 'get') {
     if (!id) return errorResult('id is required for get action');
     const result = await api.getTask(id, { include });
-    return jsonResult(
-      formatTask(result.data, { ...formatOptions, included: result.included })
-    );
+    return jsonResult(formatTask(result.data, { ...formatOptions, included: result.included }));
   }
 
   if (action === 'create') {
@@ -53,7 +52,7 @@ export async function handleTasks(
       formatListResponse(result.data, formatTask, result.meta, {
         ...formatOptions,
         included: result.included,
-      })
+      }),
     );
   }
 

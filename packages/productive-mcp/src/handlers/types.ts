@@ -2,8 +2,9 @@
  * Shared types for resource handlers
  */
 
-import type { ProductiveApi } from '@studiometa/productive-cli';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { ProductiveApi } from '@studiometa/productive-cli';
+
 import type { McpFormatOptions } from '../formatters.js';
 
 export type ToolResult = CallToolResult;
@@ -88,5 +89,5 @@ export interface CompanyArgs extends CommonArgs {
 export type ResourceHandler<T extends CommonArgs = CommonArgs> = (
   action: string,
   args: T,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ) => Promise<ToolResult>;

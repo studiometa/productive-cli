@@ -2,17 +2,14 @@
  * Handler implementations for bookings command
  */
 
-import { colors } from "../../utils/colors.js";
-import type { OutputFormat } from "../../types.js";
-import { handleError, exitWithValidationError, runCommand } from "../../error-handler.js";
-import { ValidationError } from "../../errors.js";
-import type { CommandContext } from "../../context.js";
-import { formatBooking, formatListResponse } from "../../formatters/index.js";
-import {
-  render,
-  createRenderContext,
-  humanBookingDetailRenderer,
-} from "../../renderers/index.js";
+import type { CommandContext } from '../../context.js';
+import type { OutputFormat } from '../../types.js';
+
+import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
+import { ValidationError } from '../../errors.js';
+import { formatBooking, formatListResponse } from '../../formatters/index.js';
+import { render, createRenderContext, humanBookingDetailRenderer } from '../../renderers/index.js';
+import { colors } from '../../utils/colors.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -21,8 +18,8 @@ function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
   if (!filterString) return filters;
 
-  filterString.split(",").forEach((pair) => {
-    const [key, value] = pair.split("=");
+  filterString.split(',').forEach((pair) => {
+    const [key, value] = pair.split('=');
     if (key && value) {
       filters[key.trim()] = value.trim();
     }
@@ -46,7 +43,7 @@ function formatDuration(minutes: number): string {
  * List bookings
  */
 export async function bookingsList(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching bookings...");
+  const spinner = ctx.createSpinner('Fetching bookings...');
   spinner.start();
 
   await runCommand(async () => {
@@ -72,39 +69,39 @@ export async function bookingsList(ctx: CommandContext): Promise<void> {
     }
 
     // Include tentative bookings by default
-    filter.with_draft = "true";
+    filter.with_draft = 'true';
 
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getBookings({
       page,
       perPage,
       filter,
-      sort: ctx.getSort() || "started_on",
-      include: ["person", "service"],
+      sort: ctx.getSort() || 'started_on',
+      include: ['person', 'service'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatListResponse(response.data, formatBooking, response.meta, {
       included: response.included,
     });
 
-    if (format === "csv" || format === "table") {
+    if (format === 'csv' || format === 'table') {
       const data = response.data.map((b) => ({
         id: b.id,
         start: b.attributes.started_on,
         end: b.attributes.ended_on,
-        time: b.attributes.time ? formatDuration(b.attributes.time) : "",
-        total: b.attributes.total_time ? formatDuration(b.attributes.total_time) : "",
-        draft: b.attributes.draft ? "tentative" : "confirmed",
+        time: b.attributes.time ? formatDuration(b.attributes.time) : '',
+        total: b.attributes.total_time ? formatDuration(b.attributes.total_time) : '',
+        draft: b.attributes.draft ? 'tentative' : 'confirmed',
       }));
       ctx.formatter.output(data);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
-      render("booking", format, formattedData, renderCtx);
+      render('booking', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -116,28 +113,28 @@ export async function bookingsGet(args: string[], ctx: CommandContext): Promise<
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive bookings get <id>", ctx.formatter);
+    exitWithValidationError('id', 'productive bookings get <id>', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Fetching booking...");
+  const spinner = ctx.createSpinner('Fetching booking...');
   spinner.start();
 
   await runCommand(async () => {
     const response = await ctx.api.getBooking(id, {
-      include: ["person", "service", "event", "approver"],
+      include: ['person', 'service', 'event', 'approver'],
     });
     const booking = response.data;
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatBooking(booking, { included: response.included });
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output(formattedData);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
       humanBookingDetailRenderer.render(formattedData, renderCtx);
     }
@@ -148,26 +145,26 @@ export async function bookingsGet(args: string[], ctx: CommandContext): Promise<
  * Add a new booking
  */
 export async function bookingsAdd(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Creating booking...");
+  const spinner = ctx.createSpinner('Creating booking...');
   spinner.start();
 
   // Validate required fields
-  const personId = String(ctx.options.person || ctx.config.userId || "");
+  const personId = String(ctx.options.person || ctx.config.userId || '');
   if (!personId) {
     spinner.fail();
-    handleError(ValidationError.required("person"), ctx.formatter);
+    handleError(ValidationError.required('person'), ctx.formatter);
     return;
   }
 
   if (!ctx.options.from) {
     spinner.fail();
-    handleError(ValidationError.required("from"), ctx.formatter);
+    handleError(ValidationError.required('from'), ctx.formatter);
     return;
   }
 
   if (!ctx.options.to) {
     spinner.fail();
-    handleError(ValidationError.required("to"), ctx.formatter);
+    handleError(ValidationError.required('to'), ctx.formatter);
     return;
   }
 
@@ -176,9 +173,9 @@ export async function bookingsAdd(ctx: CommandContext): Promise<void> {
     spinner.fail();
     handleError(
       ValidationError.invalid(
-        "options",
+        'options',
         undefined,
-        "Must specify --service (for budget booking) or --event (for absence booking)",
+        'Must specify --service (for budget booking) or --event (for absence booking)',
       ),
       ctx.formatter,
     );
@@ -193,7 +190,9 @@ export async function bookingsAdd(ctx: CommandContext): Promise<void> {
       started_on: String(ctx.options.from),
       ended_on: String(ctx.options.to),
       time: ctx.options.time ? parseInt(String(ctx.options.time)) : undefined,
-      total_time: ctx.options["total-time"] ? parseInt(String(ctx.options["total-time"])) : undefined,
+      total_time: ctx.options['total-time']
+        ? parseInt(String(ctx.options['total-time']))
+        : undefined,
       percentage: ctx.options.percentage ? parseInt(String(ctx.options.percentage)) : undefined,
       draft: ctx.options.tentative === true,
       note: ctx.options.note ? String(ctx.options.note) : undefined,
@@ -202,19 +201,22 @@ export async function bookingsAdd(ctx: CommandContext): Promise<void> {
     spinner.succeed();
 
     const booking = response.data;
-    const format = ctx.options.format || ctx.options.f || "human";
+    const format = ctx.options.format || ctx.options.f || 'human';
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({
-        status: "success",
+        status: 'success',
         ...formatBooking(booking),
       });
     } else {
-      ctx.formatter.success("Booking created");
-      console.log(colors.cyan("ID:"), booking.id);
-      console.log(colors.cyan("Period:"), `${booking.attributes.started_on} → ${booking.attributes.ended_on}`);
+      ctx.formatter.success('Booking created');
+      console.log(colors.cyan('ID:'), booking.id);
+      console.log(
+        colors.cyan('Period:'),
+        `${booking.attributes.started_on} → ${booking.attributes.ended_on}`,
+      );
       if (booking.attributes.draft) {
-        console.log(colors.yellow("Status: Tentative"));
+        console.log(colors.yellow('Status: Tentative'));
       }
     }
   }, ctx.formatter);
@@ -227,10 +229,10 @@ export async function bookingsUpdate(args: string[], ctx: CommandContext): Promi
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive bookings update <id> [options]", ctx.formatter);
+    exitWithValidationError('id', 'productive bookings update <id> [options]', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Updating booking...");
+  const spinner = ctx.createSpinner('Updating booking...');
   spinner.start();
 
   await runCommand(async () => {
@@ -239,8 +241,10 @@ export async function bookingsUpdate(args: string[], ctx: CommandContext): Promi
     if (ctx.options.from !== undefined) data.started_on = String(ctx.options.from);
     if (ctx.options.to !== undefined) data.ended_on = String(ctx.options.to);
     if (ctx.options.time !== undefined) data.time = parseInt(String(ctx.options.time));
-    if (ctx.options["total-time"] !== undefined) data.total_time = parseInt(String(ctx.options["total-time"]));
-    if (ctx.options.percentage !== undefined) data.percentage = parseInt(String(ctx.options.percentage));
+    if (ctx.options['total-time'] !== undefined)
+      data.total_time = parseInt(String(ctx.options['total-time']));
+    if (ctx.options.percentage !== undefined)
+      data.percentage = parseInt(String(ctx.options.percentage));
     if (ctx.options.tentative !== undefined) data.draft = ctx.options.tentative === true;
     if (ctx.options.confirm !== undefined) data.draft = false;
     if (ctx.options.note !== undefined) data.note = String(ctx.options.note);
@@ -248,9 +252,9 @@ export async function bookingsUpdate(args: string[], ctx: CommandContext): Promi
     if (Object.keys(data).length === 0) {
       spinner.fail();
       throw ValidationError.invalid(
-        "options",
+        'options',
         data,
-        "No updates specified. Use --from, --to, --time, --tentative, --confirm, --note, etc.",
+        'No updates specified. Use --from, --to, --time, --tentative, --confirm, --note, etc.',
       );
     }
 
@@ -258,9 +262,9 @@ export async function bookingsUpdate(args: string[], ctx: CommandContext): Promi
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || "human";
-    if (format === "json") {
-      ctx.formatter.output({ status: "success", id: response.data.id });
+    const format = ctx.options.format || ctx.options.f || 'human';
+    if (format === 'json') {
+      ctx.formatter.output({ status: 'success', id: response.data.id });
     } else {
       ctx.formatter.success(`Booking ${id} updated`);
     }

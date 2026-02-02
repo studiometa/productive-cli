@@ -1,2 +1,2 @@
-export { handleDealsCommand } from "./command.js";
-export { showDealsHelp } from "./help.js";
+export { handleDealsCommand } from './command.js';
+export { showDealsHelp } from './help.js';

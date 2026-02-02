@@ -2,14 +2,15 @@
  * Timers resource handler
  */
 
-import { formatTimer, formatListResponse } from '../formatters.js';
 import type { HandlerContext, TimerArgs, ToolResult } from './types.js';
+
+import { formatTimer, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleTimers(
   action: string,
   args: TimerArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, service_id, time_entry_id } = args;
@@ -36,9 +37,7 @@ export async function handleTimers(
 
   if (action === 'list') {
     const result = await api.getTimers({ filter, page, perPage });
-    return jsonResult(
-      formatListResponse(result.data, formatTimer, result.meta, formatOptions)
-    );
+    return jsonResult(formatListResponse(result.data, formatTimer, result.meta, formatOptions));
   }
 
   return errorResult(`Invalid action "${action}" for timers. Use: list, get, start, stop`);

@@ -2,8 +2,9 @@
  * Formatter for Booking resources
  */
 
-import type { JsonApiResource, FormatOptions } from "./types.js";
-import { DEFAULT_FORMAT_OPTIONS } from "./types.js";
+import type { JsonApiResource, FormatOptions } from './types.js';
+
+import { DEFAULT_FORMAT_OPTIONS } from './types.js';
 
 export interface FormattedBooking {
   [key: string]: unknown;
@@ -34,13 +35,13 @@ export interface FormattedBooking {
 function getBookingMethodName(id: number): string {
   switch (id) {
     case 1:
-      return "per_day";
+      return 'per_day';
     case 2:
-      return "percentage";
+      return 'percentage';
     case 3:
-      return "total_hours";
+      return 'total_hours';
     default:
-      return "unknown";
+      return 'unknown';
   }
 }
 
@@ -59,26 +60,23 @@ function getIncludedResource(
 /**
  * Format a Booking resource for output
  */
-export function formatBooking(
-  booking: JsonApiResource,
-  options?: FormatOptions,
-): FormattedBooking {
+export function formatBooking(booking: JsonApiResource, options?: FormatOptions): FormattedBooking {
   const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
   const attrs = booking.attributes;
 
   // Get related resources from includes
   const personId = booking.relationships?.person?.data?.id;
-  const personData = getIncludedResource(opts.included, "people", personId);
+  const personData = getIncludedResource(opts.included, 'people', personId);
 
   const serviceId = booking.relationships?.service?.data?.id;
-  const serviceData = getIncludedResource(opts.included, "services", serviceId);
+  const serviceData = getIncludedResource(opts.included, 'services', serviceId);
 
   const eventId = booking.relationships?.event?.data?.id;
 
   const result: FormattedBooking = {
     id: booking.id,
-    started_on: String(attrs.started_on || ""),
-    ended_on: String(attrs.ended_on || ""),
+    started_on: String(attrs.started_on || ''),
+    ended_on: String(attrs.ended_on || ''),
     time: attrs.time != null ? Number(attrs.time) : null,
     total_time: attrs.total_time != null ? Number(attrs.total_time) : null,
     percentage: attrs.percentage != null ? Number(attrs.percentage) : null,
@@ -101,7 +99,7 @@ export function formatBooking(
   }
 
   if (serviceData) {
-    result.service_name = String(serviceData.name || "");
+    result.service_name = String(serviceData.name || '');
   }
 
   if (opts.includeTimestamps) {

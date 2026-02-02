@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0] - 2026-02-01
 
 ### Added
+
 - **Renderer Infrastructure** - Pluggable output rendering system (e5fa4fc, cc93bf8)
   - Base renderers for JSON, CSV, and table formats
   - Human-readable renderers for all resource types (projects, tasks, time, people, services, budgets)
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Budget Links** - Clickable links to budgets in terminal output (76966a4)
 
 ### Changed
+
 - **Command Architecture** - Split commands into modular files (14ad00b, 6df0e37, 0538e59, fcfd100, 1e8df6e, 1535a27)
   - Each command now has separate `command.ts`, `handlers.ts`, `help.ts` files
   - Improved code organization and maintainability
@@ -26,11 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored all commands to use new renderer system (bad60f9, fdcdd3f, 33ea6cb, 5251a31)
 
 ### Fixed
+
 - CI workflow now builds CLI before running MCP tests (76966a4)
 
 ## [0.2.4] - 2026-01-21
 
 ### Added
+
 - **Dynamic Argument Completion** - Intelligent autocomplete from local cache (6a6382c)
   - Config keys completion for `config set/get` commands
   - Project names completion for `--project` flag
@@ -44,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.3] - 2026-01-21
 
 ### Added
+
 - **Shell Completion** - Automatic installation of tab completion for Bash, Zsh, and Fish (a634018, d9a16f7)
   - `completion` command installs to standard directories without editing RC files
   - Installs to `~/.local/share/bash-completion/completions/` (Bash)
@@ -54,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive help with troubleshooting instructions
 
 ### Fixed
+
 - Suppress SQLite experimental warning globally (1e92112)
   - Warning no longer appears on any CLI command
   - Applied at module load time for complete coverage
@@ -61,11 +67,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.2] - 2026-01-21
 
 ### Fixed
+
 - Suppress SQLite experimental warning during module import
 
 ## [0.2.1] - 2026-01-21
 
 ### Added
+
 - **Secure Keychain Storage** - Cross-platform secure credential storage (20b8c1e)
   - macOS: Keychain Access (via `security` CLI)
   - Linux: libsecret (via `secret-tool` CLI)
@@ -75,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2026-01-21
 
 ### Added
+
 - **SQLite Cache** - High-performance unified cache with SQLite backend (94cc95d, 92a1e4b, de9f8de, 9616f81)
   - Replaces file-based cache with single SQLite database
   - Stale-while-revalidate pattern for faster responses
@@ -101,12 +110,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cache architecture documentation (8c5b8a5)
 
 ### Fixed
+
 - Remove unsupported API filters (archived, active, completed) that caused 400 errors
 - Projects list now works correctly with Productive.io API
 - People list returns all results without filtering issues
 - Tasks list works without completion filter errors
 
 ### Changed
+
 - Migrated from file-based cache to SQLite for better performance (de9f8de)
 - Updated documentation to match fox-pilot style guide
 - Enhanced README with better structure and examples
@@ -117,12 +128,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Core Features
+
 - **CLI Tool** - Complete command-line interface for Productive.io API
 - **Zero Dependencies** - Built entirely with native Node.js APIs (fetch, streams, fs)
 - **TypeScript Support** - Full type definitions and type-safe API client
 - **Multi-format Output** - JSON, CSV, Table, and Human-readable formats
 
 #### Commands
+
 - **Configuration** - Manage credentials with XDG-compliant storage
   - `config set/get/validate/clear`
 - **Projects** - List and retrieve project information
@@ -139,6 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `budgets list` with project filtering
 
 #### AI Agent Optimization
+
 - Structured JSON output for all commands
 - Consistent error response format with status codes
 - Non-interactive, scriptable commands
@@ -147,6 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Exit code conventions (0=success, 1=error)
 
 #### Developer Experience
+
 - **Testing** - 210 tests with 92.38% coverage
   - Vitest test runner
   - Comprehensive unit and integration tests
@@ -162,6 +177,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pre-publish build validation
 
 #### Documentation
+
 - Comprehensive README with usage examples
 - Contributing guide for new developers
 - API documentation with TypeScript types
@@ -169,12 +185,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - XDG Base Directory compliance documentation
 
 #### Library Usage
+
 - Exported API client for programmatic use
 - Type-safe methods for all API endpoints
 - Configuration helpers
 - Error handling utilities
 
 ### Technical Details
+
 - **Node.js 24+** required (native fetch, type stripping)
 - **Vite 6** for fast builds
 - **TypeScript 5** with strict type checking

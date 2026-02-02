@@ -7,22 +7,23 @@
  */
 
 import { ProductiveApi } from '@studiometa/productive-cli';
+
 import type { ProductiveCredentials } from '../auth.js';
 import type { McpFormatOptions } from '../formatters.js';
 import type { ToolResult, HandlerContext } from './types.js';
-import { toStringFilter, errorResult } from './utils.js';
 
+import { handleBookings } from './bookings.js';
+import { handleComments } from './comments.js';
+import { handleCompanies } from './companies.js';
+import { handleDeals } from './deals.js';
+import { handlePeople } from './people.js';
 // Resource handlers
 import { handleProjects } from './projects.js';
-import { handleTime } from './time.js';
-import { handleTasks } from './tasks.js';
 import { handleServices } from './services.js';
-import { handlePeople } from './people.js';
-import { handleCompanies } from './companies.js';
-import { handleComments } from './comments.js';
+import { handleTasks } from './tasks.js';
+import { handleTime } from './time.js';
 import { handleTimers } from './timers.js';
-import { handleDeals } from './deals.js';
-import { handleBookings } from './bookings.js';
+import { toStringFilter, errorResult } from './utils.js';
 
 // Re-export types
 export type { ToolResult } from './types.js';
@@ -74,7 +75,7 @@ interface ProductiveArgs {
 export async function executeToolWithCredentials(
   name: string,
   args: Record<string, unknown>,
-  credentials: ProductiveCredentials
+  credentials: ProductiveCredentials,
 ): Promise<ToolResult> {
   // Initialize API client with provided credentials
   const api = new ProductiveApi({

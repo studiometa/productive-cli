@@ -2,10 +2,11 @@
  * Human-readable renderers for Booking resources
  */
 
-import { colors } from "../../utils/colors.js";
-import type { RenderContext, ListRenderer, Renderer } from "../types.js";
-import type { FormattedBooking } from "../../formatters/booking.js";
-import type { FormattedListResponse } from "../../formatters/types.js";
+import type { FormattedBooking } from '../../formatters/booking.js';
+import type { FormattedListResponse } from '../../formatters/types.js';
+import type { RenderContext, ListRenderer, Renderer } from '../types.js';
+
+import { colors } from '../../utils/colors.js';
 
 /**
  * Format duration in minutes to human-readable string
@@ -23,14 +24,11 @@ function formatDuration(minutes: number): string {
  * Render a list of bookings in human-readable format
  */
 export class HumanBookingListRenderer implements ListRenderer<FormattedBooking> {
-  render(
-    data: FormattedListResponse<FormattedBooking>,
-    ctx: RenderContext,
-  ): void {
+  render(data: FormattedListResponse<FormattedBooking>, ctx: RenderContext): void {
     const { data: bookings, meta } = data;
 
     if (bookings.length === 0) {
-      console.log(ctx.noColor ? "No bookings found" : colors.dim("No bookings found"));
+      console.log(ctx.noColor ? 'No bookings found' : colors.dim('No bookings found'));
       return;
     }
 
@@ -44,16 +42,20 @@ export class HumanBookingListRenderer implements ListRenderer<FormattedBooking> 
     // List bookings
     for (const booking of bookings) {
       // Status indicator
-      let status = booking.draft ? "[TENTATIVE]" : "[CONFIRMED]";
+      let status = booking.draft ? '[TENTATIVE]' : '[CONFIRMED]';
       let statusColored = booking.draft
-        ? ctx.noColor ? status : colors.yellow(status)
-        : ctx.noColor ? status : colors.green(status);
+        ? ctx.noColor
+          ? status
+          : colors.yellow(status)
+        : ctx.noColor
+          ? status
+          : colors.green(status);
 
       if (booking.rejected_at) {
-        status = "[REJECTED]";
+        status = '[REJECTED]';
         statusColored = ctx.noColor ? status : colors.red(status);
       } else if (booking.approved_at) {
-        status = "[APPROVED]";
+        status = '[APPROVED]';
         statusColored = ctx.noColor ? status : colors.green(status);
       }
 
@@ -68,7 +70,7 @@ export class HumanBookingListRenderer implements ListRenderer<FormattedBooking> 
       if (booking.event_id) details.push(`Event: ${booking.event_id}`);
 
       if (details.length > 0) {
-        const detailLine = details.join(" | ");
+        const detailLine = details.join(' | ');
         console.log(ctx.noColor ? `  ${detailLine}` : colors.dim(`  ${detailLine}`));
       }
 
@@ -79,7 +81,7 @@ export class HumanBookingListRenderer implements ListRenderer<FormattedBooking> 
       if (booking.percentage) timeInfo.push(`${booking.percentage}%`);
 
       if (timeInfo.length > 0) {
-        const timeLine = timeInfo.join(" | ");
+        const timeLine = timeInfo.join(' | ');
         console.log(ctx.noColor ? `  ${timeLine}` : colors.dim(`  ${timeLine}`));
       }
 
@@ -101,64 +103,68 @@ export class HumanBookingDetailRenderer implements Renderer<FormattedBooking> {
     console.log();
 
     // Status
-    let status = booking.draft ? "[TENTATIVE]" : "[CONFIRMED]";
+    let status = booking.draft ? '[TENTATIVE]' : '[CONFIRMED]';
     let statusColored = booking.draft
-      ? ctx.noColor ? status : colors.yellow(status)
-      : ctx.noColor ? status : colors.green(status);
+      ? ctx.noColor
+        ? status
+        : colors.yellow(status)
+      : ctx.noColor
+        ? status
+        : colors.green(status);
 
     if (booking.rejected_at) {
-      status = "[REJECTED]";
+      status = '[REJECTED]';
       statusColored = ctx.noColor ? status : colors.red(status);
     } else if (booking.approved_at) {
-      status = "[APPROVED]";
+      status = '[APPROVED]';
       statusColored = ctx.noColor ? status : colors.green(status);
     }
 
     console.log(statusColored);
     console.log();
 
-    console.log(label("ID:"), booking.id);
-    console.log(label("Period:"), `${booking.started_on} → ${booking.ended_on}`);
-    console.log(label("Method:"), booking.booking_method);
+    console.log(label('ID:'), booking.id);
+    console.log(label('Period:'), `${booking.started_on} → ${booking.ended_on}`);
+    console.log(label('Method:'), booking.booking_method);
 
     if (booking.person_name) {
-      console.log(label("Person:"), booking.person_name);
+      console.log(label('Person:'), booking.person_name);
     }
 
     if (booking.service_name) {
-      console.log(label("Service:"), booking.service_name);
+      console.log(label('Service:'), booking.service_name);
     }
 
     if (booking.event_id) {
-      console.log(label("Event ID:"), booking.event_id);
+      console.log(label('Event ID:'), booking.event_id);
     }
 
     if (booking.time) {
-      console.log(label("Time/day:"), formatDuration(booking.time));
+      console.log(label('Time/day:'), formatDuration(booking.time));
     }
 
     if (booking.total_time) {
-      console.log(label("Total time:"), formatDuration(booking.total_time));
+      console.log(label('Total time:'), formatDuration(booking.total_time));
     }
 
     if (booking.percentage) {
-      console.log(label("Percentage:"), `${booking.percentage}%`);
+      console.log(label('Percentage:'), `${booking.percentage}%`);
     }
 
     if (booking.note) {
-      console.log(label("Note:"), booking.note);
+      console.log(label('Note:'), booking.note);
     }
 
     if (booking.rejected_reason) {
-      console.log(label("Rejection reason:"), booking.rejected_reason);
+      console.log(label('Rejection reason:'), booking.rejected_reason);
     }
 
     if (booking.approved_at) {
-      console.log(label("Approved at:"), booking.approved_at.split("T")[0]);
+      console.log(label('Approved at:'), booking.approved_at.split('T')[0]);
     }
 
     if (booking.created_at) {
-      console.log(label("Created:"), booking.created_at.split("T")[0]);
+      console.log(label('Created:'), booking.created_at.split('T')[0]);
     }
 
     console.log();

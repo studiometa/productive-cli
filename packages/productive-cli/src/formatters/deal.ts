@@ -2,15 +2,16 @@
  * Formatter for Deal resources
  */
 
-import type { JsonApiResource, FormatOptions } from "./types.js";
-import { DEFAULT_FORMAT_OPTIONS } from "./types.js";
+import type { JsonApiResource, FormatOptions } from './types.js';
+
+import { DEFAULT_FORMAT_OPTIONS } from './types.js';
 
 export interface FormattedDeal {
   [key: string]: unknown;
   id: string;
   name: string;
   number: string | null;
-  type: "deal" | "budget";
+  type: 'deal' | 'budget';
   date: string | null;
   end_date: string | null;
   won_at: string | null;
@@ -40,28 +41,25 @@ function getIncludedResource(
 /**
  * Format a Deal resource for output
  */
-export function formatDeal(
-  deal: JsonApiResource,
-  options?: FormatOptions,
-): FormattedDeal {
+export function formatDeal(deal: JsonApiResource, options?: FormatOptions): FormattedDeal {
   const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
   const attrs = deal.attributes;
 
   // Get related resources from includes
   const companyId = deal.relationships?.company?.data?.id;
-  const companyData = getIncludedResource(opts.included, "companies", companyId);
+  const companyData = getIncludedResource(opts.included, 'companies', companyId);
 
   const responsibleId = deal.relationships?.responsible?.data?.id;
-  const responsibleData = getIncludedResource(opts.included, "people", responsibleId);
+  const responsibleData = getIncludedResource(opts.included, 'people', responsibleId);
 
   const statusId = deal.relationships?.deal_status?.data?.id;
-  const statusData = getIncludedResource(opts.included, "deal_statuses", statusId);
+  const statusData = getIncludedResource(opts.included, 'deal_statuses', statusId);
 
   const result: FormattedDeal = {
     id: deal.id,
-    name: String(attrs.name || ""),
+    name: String(attrs.name || ''),
     number: attrs.number ? String(attrs.number) : null,
-    type: attrs.budget ? "budget" : "deal",
+    type: attrs.budget ? 'budget' : 'deal',
     date: attrs.date ? String(attrs.date) : null,
     end_date: attrs.end_date ? String(attrs.end_date) : null,
     won_at: attrs.won_at ? String(attrs.won_at) : null,
@@ -75,7 +73,7 @@ export function formatDeal(
   }
 
   if (companyData) {
-    result.company_name = String(companyData.name || "");
+    result.company_name = String(companyData.name || '');
   }
 
   if (responsibleData) {
@@ -83,7 +81,7 @@ export function formatDeal(
   }
 
   if (statusData) {
-    result.status_name = String(statusData.name || "");
+    result.status_name = String(statusData.name || '');
   }
 
   if (opts.includeTimestamps) {

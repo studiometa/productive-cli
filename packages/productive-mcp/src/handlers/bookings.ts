@@ -2,14 +2,15 @@
  * Bookings resource handler
  */
 
-import { formatBooking, formatListResponse } from '../formatters.js';
 import type { HandlerContext, BookingArgs, ToolResult } from './types.js';
+
+import { formatBooking, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleBookings(
   action: string,
   args: BookingArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, person_id, service_id, event_id, started_on, ended_on, time, note } = args;
@@ -56,7 +57,7 @@ export async function handleBookings(
       formatListResponse(result.data, formatBooking, result.meta, {
         ...formatOptions,
         included: result.included,
-      })
+      }),
     );
   }
 

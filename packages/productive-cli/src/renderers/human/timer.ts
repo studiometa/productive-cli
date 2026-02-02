@@ -2,10 +2,11 @@
  * Human-readable renderers for Timer resources
  */
 
-import { colors } from "../../utils/colors.js";
-import type { RenderContext, ListRenderer, Renderer } from "../types.js";
-import type { FormattedTimer } from "../../formatters/timer.js";
-import type { FormattedListResponse } from "../../formatters/types.js";
+import type { FormattedTimer } from '../../formatters/timer.js';
+import type { FormattedListResponse } from '../../formatters/types.js';
+import type { RenderContext, ListRenderer, Renderer } from '../types.js';
+
+import { colors } from '../../utils/colors.js';
 
 /**
  * Format duration in minutes to human-readable string
@@ -23,14 +24,11 @@ function formatDuration(minutes: number): string {
  * Render a list of timers in human-readable format
  */
 export class HumanTimerListRenderer implements ListRenderer<FormattedTimer> {
-  render(
-    data: FormattedListResponse<FormattedTimer>,
-    ctx: RenderContext,
-  ): void {
+  render(data: FormattedListResponse<FormattedTimer>, ctx: RenderContext): void {
     const { data: timers, meta } = data;
 
     if (timers.length === 0) {
-      console.log(ctx.noColor ? "No timers found" : colors.dim("No timers found"));
+      console.log(ctx.noColor ? 'No timers found' : colors.dim('No timers found'));
       return;
     }
 
@@ -44,16 +42,22 @@ export class HumanTimerListRenderer implements ListRenderer<FormattedTimer> {
     // List timers
     for (const timer of timers) {
       // Status indicator
-      const status = timer.running ? "[RUNNING]" : "[STOPPED]";
+      const status = timer.running ? '[RUNNING]' : '[STOPPED]';
       const statusColored = timer.running
-        ? ctx.noColor ? status : colors.green(status)
-        : ctx.noColor ? status : colors.dim(status);
+        ? ctx.noColor
+          ? status
+          : colors.green(status)
+        : ctx.noColor
+          ? status
+          : colors.dim(status);
 
       // Time info
-      const startTime = timer.started_at.split("T")[1]?.split(".")[0] || timer.started_at;
-      const startDate = timer.started_at.split("T")[0];
+      const startTime = timer.started_at.split('T')[1]?.split('.')[0] || timer.started_at;
+      const startDate = timer.started_at.split('T')[0];
 
-      console.log(`${statusColored} ${ctx.noColor ? startDate : colors.bold(startDate)} at ${startTime}`);
+      console.log(
+        `${statusColored} ${ctx.noColor ? startDate : colors.bold(startDate)} at ${startTime}`,
+      );
 
       // Duration
       const duration = formatDuration(timer.total_time);
@@ -83,25 +87,29 @@ export class HumanTimerDetailRenderer implements Renderer<FormattedTimer> {
     console.log();
 
     // Status
-    const status = timer.running ? "[RUNNING]" : "[STOPPED]";
+    const status = timer.running ? '[RUNNING]' : '[STOPPED]';
     const statusColored = timer.running
-      ? ctx.noColor ? status : colors.green(status)
-      : ctx.noColor ? status : colors.dim(status);
+      ? ctx.noColor
+        ? status
+        : colors.green(status)
+      : ctx.noColor
+        ? status
+        : colors.dim(status);
     console.log(statusColored);
     console.log();
 
-    console.log(label("ID:"), timer.id);
-    console.log(label("Person ID:"), timer.person_id);
-    console.log(label("Started at:"), timer.started_at);
+    console.log(label('ID:'), timer.id);
+    console.log(label('Person ID:'), timer.person_id);
+    console.log(label('Started at:'), timer.started_at);
 
     if (timer.stopped_at) {
-      console.log(label("Stopped at:"), timer.stopped_at);
+      console.log(label('Stopped at:'), timer.stopped_at);
     }
 
-    console.log(label("Total time:"), formatDuration(timer.total_time));
+    console.log(label('Total time:'), formatDuration(timer.total_time));
 
     if (timer.time_entry_id) {
-      console.log(label("Time Entry ID:"), timer.time_entry_id);
+      console.log(label('Time Entry ID:'), timer.time_entry_id);
     }
 
     console.log();

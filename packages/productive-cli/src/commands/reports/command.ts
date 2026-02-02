@@ -2,15 +2,11 @@
  * Reports command entry point
  */
 
-import { OutputFormatter } from "../../output.js";
-import type { OutputFormat } from "../../types.js";
-import { createContext, type CommandOptions } from "../../context.js";
-import {
-  reportsTime,
-  reportsProject,
-  reportsBudget,
-  reportsPerson,
-} from "./handlers.js";
+import type { OutputFormat } from '../../types.js';
+
+import { createContext, type CommandOptions } from '../../context.js';
+import { OutputFormatter } from '../../output.js';
+import { reportsTime, reportsProject, reportsBudget, reportsPerson } from './handlers.js';
 
 /**
  * Handle reports command
@@ -20,30 +16,30 @@ export async function handleReportsCommand(
   args: string[],
   options: Record<string, string | boolean>,
 ): Promise<void> {
-  const format = (options.format || options.f || "human") as OutputFormat;
-  const formatter = new OutputFormatter(format, options["no-color"] === true);
+  const format = (options.format || options.f || 'human') as OutputFormat;
+  const formatter = new OutputFormatter(format, options['no-color'] === true);
 
   const ctx = createContext(options as CommandOptions);
 
   switch (subcommand) {
-    case "time":
+    case 'time':
       await reportsTime(ctx);
       break;
-    case "project":
-    case "projects":
+    case 'project':
+    case 'projects':
       await reportsProject(ctx);
       break;
-    case "budget":
-    case "budgets":
+    case 'budget':
+    case 'budgets':
       await reportsBudget(ctx);
       break;
-    case "person":
-    case "people":
+    case 'person':
+    case 'people':
       await reportsPerson(ctx);
       break;
     default:
       formatter.error(`Unknown reports subcommand: ${subcommand}`);
-      console.log("Available report types: time, project, budget, person");
+      console.log('Available report types: time, project, budget, person');
       process.exit(1);
   }
 }

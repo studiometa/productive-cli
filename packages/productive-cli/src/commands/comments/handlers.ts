@@ -2,17 +2,14 @@
  * Handler implementations for comments command
  */
 
-import { colors } from "../../utils/colors.js";
-import type { OutputFormat } from "../../types.js";
-import { handleError, exitWithValidationError, runCommand } from "../../error-handler.js";
-import { ValidationError } from "../../errors.js";
-import type { CommandContext } from "../../context.js";
-import { formatComment, formatListResponse } from "../../formatters/index.js";
-import {
-  render,
-  createRenderContext,
-  humanCommentDetailRenderer,
-} from "../../renderers/index.js";
+import type { CommandContext } from '../../context.js';
+import type { OutputFormat } from '../../types.js';
+
+import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
+import { ValidationError } from '../../errors.js';
+import { formatComment, formatListResponse } from '../../formatters/index.js';
+import { render, createRenderContext, humanCommentDetailRenderer } from '../../renderers/index.js';
+import { colors } from '../../utils/colors.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -21,8 +18,8 @@ function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
   if (!filterString) return filters;
 
-  filterString.split(",").forEach((pair) => {
-    const [key, value] = pair.split("=");
+  filterString.split(',').forEach((pair) => {
+    const [key, value] = pair.split('=');
     if (key && value) {
       filters[key.trim()] = value.trim();
     }
@@ -34,7 +31,7 @@ function parseFilters(filterString: string): Record<string, string> {
  * List comments
  */
 export async function commentsList(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching comments...");
+  const spinner = ctx.createSpinner('Fetching comments...');
   spinner.start();
 
   await runCommand(async () => {
@@ -54,29 +51,29 @@ export async function commentsList(ctx: CommandContext): Promise<void> {
       page,
       perPage,
       filter,
-      include: ["creator"],
+      include: ['creator'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatListResponse(response.data, formatComment, response.meta, {
       included: response.included,
     });
 
-    if (format === "csv" || format === "table") {
+    if (format === 'csv' || format === 'table') {
       const data = response.data.map((c) => ({
         id: c.id,
         type: c.attributes.commentable_type,
         body: c.attributes.body.substring(0, 100),
-        created: c.attributes.created_at.split("T")[0],
+        created: c.attributes.created_at.split('T')[0],
       }));
       ctx.formatter.output(data);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
-      render("comment", format, formattedData, renderCtx);
+      render('comment', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -88,28 +85,28 @@ export async function commentsGet(args: string[], ctx: CommandContext): Promise<
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive comments get <id>", ctx.formatter);
+    exitWithValidationError('id', 'productive comments get <id>', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Fetching comment...");
+  const spinner = ctx.createSpinner('Fetching comment...');
   spinner.start();
 
   await runCommand(async () => {
     const response = await ctx.api.getComment(id, {
-      include: ["creator"],
+      include: ['creator'],
     });
     const comment = response.data;
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatComment(comment, { included: response.included });
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output(formattedData);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
       humanCommentDetailRenderer.render(formattedData, renderCtx);
     }
@@ -120,12 +117,12 @@ export async function commentsGet(args: string[], ctx: CommandContext): Promise<
  * Add a new comment
  */
 export async function commentsAdd(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Creating comment...");
+  const spinner = ctx.createSpinner('Creating comment...');
   spinner.start();
 
   if (!ctx.options.body) {
     spinner.fail();
-    handleError(ValidationError.required("body"), ctx.formatter);
+    handleError(ValidationError.required('body'), ctx.formatter);
     return;
   }
 
@@ -143,9 +140,9 @@ export async function commentsAdd(ctx: CommandContext): Promise<void> {
     spinner.fail();
     handleError(
       ValidationError.invalid(
-        "parent",
+        'parent',
         undefined,
-        "Must specify a parent resource: --task, --deal, --company, --invoice, --person, or --discussion",
+        'Must specify a parent resource: --task, --deal, --company, --invoice, --person, or --discussion',
       ),
       ctx.formatter,
     );
@@ -155,11 +152,7 @@ export async function commentsAdd(ctx: CommandContext): Promise<void> {
   if (parentCount > 1) {
     spinner.fail();
     handleError(
-      ValidationError.invalid(
-        "parent",
-        undefined,
-        "Can only specify one parent resource",
-      ),
+      ValidationError.invalid('parent', undefined, 'Can only specify one parent resource'),
       ctx.formatter,
     );
     return;
@@ -179,19 +172,22 @@ export async function commentsAdd(ctx: CommandContext): Promise<void> {
     spinner.succeed();
 
     const comment = response.data;
-    const format = ctx.options.format || ctx.options.f || "human";
+    const format = ctx.options.format || ctx.options.f || 'human';
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({
-        status: "success",
+        status: 'success',
         ...formatComment(comment),
       });
     } else {
-      ctx.formatter.success("Comment created");
-      console.log(colors.cyan("ID:"), comment.id);
-      console.log(colors.cyan("Type:"), comment.attributes.commentable_type);
+      ctx.formatter.success('Comment created');
+      console.log(colors.cyan('ID:'), comment.id);
+      console.log(colors.cyan('Type:'), comment.attributes.commentable_type);
       const preview = comment.attributes.body.substring(0, 80);
-      console.log(colors.cyan("Body:"), preview + (comment.attributes.body.length > 80 ? "..." : ""));
+      console.log(
+        colors.cyan('Body:'),
+        preview + (comment.attributes.body.length > 80 ? '...' : ''),
+      );
     }
   }, ctx.formatter);
 }
@@ -203,10 +199,10 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive comments update <id> [options]", ctx.formatter);
+    exitWithValidationError('id', 'productive comments update <id> [options]', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Updating comment...");
+  const spinner = ctx.createSpinner('Updating comment...');
   spinner.start();
 
   await runCommand(async () => {
@@ -217,9 +213,9 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
     if (Object.keys(data).length === 0) {
       spinner.fail();
       throw ValidationError.invalid(
-        "options",
+        'options',
         data,
-        "No updates specified. Use --body to update the comment text.",
+        'No updates specified. Use --body to update the comment text.',
       );
     }
 
@@ -227,9 +223,9 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || "human";
-    if (format === "json") {
-      ctx.formatter.output({ status: "success", id: response.data.id });
+    const format = ctx.options.format || ctx.options.f || 'human';
+    if (format === 'json') {
+      ctx.formatter.output({ status: 'success', id: response.data.id });
     } else {
       ctx.formatter.success(`Comment ${id} updated`);
     }

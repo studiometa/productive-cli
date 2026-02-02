@@ -2,17 +2,14 @@
  * Handler implementations for deals command
  */
 
-import { colors } from "../../utils/colors.js";
-import type { OutputFormat } from "../../types.js";
-import { handleError, exitWithValidationError, runCommand } from "../../error-handler.js";
-import { ValidationError } from "../../errors.js";
-import type { CommandContext } from "../../context.js";
-import { formatDeal, formatListResponse } from "../../formatters/index.js";
-import {
-  render,
-  createRenderContext,
-  humanDealDetailRenderer,
-} from "../../renderers/index.js";
+import type { CommandContext } from '../../context.js';
+import type { OutputFormat } from '../../types.js';
+
+import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
+import { ValidationError } from '../../errors.js';
+import { formatDeal, formatListResponse } from '../../formatters/index.js';
+import { render, createRenderContext, humanDealDetailRenderer } from '../../renderers/index.js';
+import { colors } from '../../utils/colors.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -21,8 +18,8 @@ function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
   if (!filterString) return filters;
 
-  filterString.split(",").forEach((pair) => {
-    const [key, value] = pair.split("=");
+  filterString.split(',').forEach((pair) => {
+    const [key, value] = pair.split('=');
     if (key && value) {
       filters[key.trim()] = value.trim();
     }
@@ -34,7 +31,7 @@ function parseFilters(filterString: string): Record<string, string> {
  * List deals
  */
 export async function dealsList(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching deals...");
+  const spinner = ctx.createSpinner('Fetching deals...');
   spinner.start();
 
   await runCommand(async () => {
@@ -51,20 +48,20 @@ export async function dealsList(ctx: CommandContext): Promise<void> {
 
     // Filter by stage status (open, won, lost)
     const status = ctx.options.status ? String(ctx.options.status).toLowerCase() : undefined;
-    if (status === "open") {
-      filter.stage_status_id = "1";
-    } else if (status === "won") {
-      filter.stage_status_id = "2";
-    } else if (status === "lost") {
-      filter.stage_status_id = "3";
+    if (status === 'open') {
+      filter.stage_status_id = '1';
+    } else if (status === 'won') {
+      filter.stage_status_id = '2';
+    } else if (status === 'lost') {
+      filter.stage_status_id = '3';
     }
 
     // Filter by type (deal vs budget)
     const type = ctx.options.type ? String(ctx.options.type).toLowerCase() : undefined;
-    if (type === "deal") {
-      filter.type = "1";
-    } else if (type === "budget") {
-      filter.type = "2";
+    if (type === 'deal') {
+      filter.type = '1';
+    } else if (type === 'budget') {
+      filter.type = '2';
     }
 
     const { page, perPage } = ctx.getPagination();
@@ -73,31 +70,31 @@ export async function dealsList(ctx: CommandContext): Promise<void> {
       perPage,
       filter,
       sort: ctx.getSort(),
-      include: ["company", "deal_status", "responsible"],
+      include: ['company', 'deal_status', 'responsible'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatListResponse(response.data, formatDeal, response.meta, {
       included: response.included,
     });
 
-    if (format === "csv" || format === "table") {
+    if (format === 'csv' || format === 'table') {
       const data = response.data.map((d) => ({
         id: d.id,
-        number: d.attributes.number || "",
+        number: d.attributes.number || '',
         name: d.attributes.name,
-        type: d.attributes.budget ? "budget" : "deal",
-        date: d.attributes.date || "",
-        created: d.attributes.created_at.split("T")[0],
+        type: d.attributes.budget ? 'budget' : 'deal',
+        date: d.attributes.date || '',
+        created: d.attributes.created_at.split('T')[0],
       }));
       ctx.formatter.output(data);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
-      render("deal", format, formattedData, renderCtx);
+      render('deal', format, formattedData, renderCtx);
     }
   }, ctx.formatter);
 }
@@ -109,28 +106,28 @@ export async function dealsGet(args: string[], ctx: CommandContext): Promise<voi
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive deals get <id>", ctx.formatter);
+    exitWithValidationError('id', 'productive deals get <id>', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Fetching deal...");
+  const spinner = ctx.createSpinner('Fetching deal...');
   spinner.start();
 
   await runCommand(async () => {
     const response = await ctx.api.getDeal(id, {
-      include: ["company", "deal_status", "responsible", "project"],
+      include: ['company', 'deal_status', 'responsible', 'project'],
     });
     const deal = response.data;
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "human") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
     const formattedData = formatDeal(deal, { included: response.included });
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output(formattedData);
     } else {
       const renderCtx = createRenderContext({
-        noColor: ctx.options["no-color"] === true,
+        noColor: ctx.options['no-color'] === true,
       });
       humanDealDetailRenderer.render(formattedData, renderCtx);
     }
@@ -141,18 +138,18 @@ export async function dealsGet(args: string[], ctx: CommandContext): Promise<voi
  * Add a new deal
  */
 export async function dealsAdd(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Creating deal...");
+  const spinner = ctx.createSpinner('Creating deal...');
   spinner.start();
 
   if (!ctx.options.name) {
     spinner.fail();
-    handleError(ValidationError.required("name"), ctx.formatter);
+    handleError(ValidationError.required('name'), ctx.formatter);
     return;
   }
 
   if (!ctx.options.company) {
     spinner.fail();
-    handleError(ValidationError.required("company"), ctx.formatter);
+    handleError(ValidationError.required('company'), ctx.formatter);
     return;
   }
 
@@ -168,20 +165,20 @@ export async function dealsAdd(ctx: CommandContext): Promise<void> {
     spinner.succeed();
 
     const deal = response.data;
-    const format = ctx.options.format || ctx.options.f || "human";
+    const format = ctx.options.format || ctx.options.f || 'human';
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({
-        status: "success",
+        status: 'success',
         ...formatDeal(deal),
       });
     } else {
-      const type = deal.attributes.budget ? "Budget" : "Deal";
+      const type = deal.attributes.budget ? 'Budget' : 'Deal';
       ctx.formatter.success(`${type} created`);
-      console.log(colors.cyan("ID:"), deal.id);
-      console.log(colors.cyan("Name:"), deal.attributes.name);
+      console.log(colors.cyan('ID:'), deal.id);
+      console.log(colors.cyan('Name:'), deal.attributes.name);
       if (deal.attributes.number) {
-        console.log(colors.cyan("Number:"), `#${deal.attributes.number}`);
+        console.log(colors.cyan('Number:'), `#${deal.attributes.number}`);
       }
     }
   }, ctx.formatter);
@@ -194,10 +191,10 @@ export async function dealsUpdate(args: string[], ctx: CommandContext): Promise<
   const [id] = args;
 
   if (!id) {
-    exitWithValidationError("id", "productive deals update <id> [options]", ctx.formatter);
+    exitWithValidationError('id', 'productive deals update <id> [options]', ctx.formatter);
   }
 
-  const spinner = ctx.createSpinner("Updating deal...");
+  const spinner = ctx.createSpinner('Updating deal...');
   spinner.start();
 
   await runCommand(async () => {
@@ -205,16 +202,17 @@ export async function dealsUpdate(args: string[], ctx: CommandContext): Promise<
 
     if (ctx.options.name !== undefined) data.name = String(ctx.options.name);
     if (ctx.options.date !== undefined) data.date = String(ctx.options.date);
-    if (ctx.options["end-date"] !== undefined) data.end_date = String(ctx.options["end-date"]);
-    if (ctx.options.responsible !== undefined) data.responsible_id = String(ctx.options.responsible);
+    if (ctx.options['end-date'] !== undefined) data.end_date = String(ctx.options['end-date']);
+    if (ctx.options.responsible !== undefined)
+      data.responsible_id = String(ctx.options.responsible);
     if (ctx.options.status !== undefined) data.deal_status_id = String(ctx.options.status);
 
     if (Object.keys(data).length === 0) {
       spinner.fail();
       throw ValidationError.invalid(
-        "options",
+        'options',
         data,
-        "No updates specified. Use --name, --date, --end-date, --responsible, --status, etc.",
+        'No updates specified. Use --name, --date, --end-date, --responsible, --status, etc.',
       );
     }
 
@@ -222,9 +220,9 @@ export async function dealsUpdate(args: string[], ctx: CommandContext): Promise<
 
     spinner.succeed();
 
-    const format = ctx.options.format || ctx.options.f || "human";
-    if (format === "json") {
-      ctx.formatter.output({ status: "success", id: response.data.id });
+    const format = ctx.options.format || ctx.options.f || 'human';
+    if (format === 'json') {
+      ctx.formatter.output({ status: 'success', id: response.data.id });
     } else {
       ctx.formatter.success(`Deal ${id} updated`);
     }

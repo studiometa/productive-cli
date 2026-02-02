@@ -2,23 +2,21 @@
  * Human-readable renderers for Company resources
  */
 
-import { colors } from "../../utils/colors.js";
-import type { RenderContext, ListRenderer, Renderer } from "../types.js";
-import type { FormattedCompany } from "../../formatters/company.js";
-import type { FormattedListResponse } from "../../formatters/types.js";
+import type { FormattedCompany } from '../../formatters/company.js';
+import type { FormattedListResponse } from '../../formatters/types.js';
+import type { RenderContext, ListRenderer, Renderer } from '../types.js';
+
+import { colors } from '../../utils/colors.js';
 
 /**
  * Render a list of companies in human-readable format
  */
 export class HumanCompanyListRenderer implements ListRenderer<FormattedCompany> {
-  render(
-    data: FormattedListResponse<FormattedCompany>,
-    ctx: RenderContext,
-  ): void {
+  render(data: FormattedListResponse<FormattedCompany>, ctx: RenderContext): void {
     const { data: companies, meta } = data;
 
     if (companies.length === 0) {
-      console.log(ctx.noColor ? "No companies found" : colors.dim("No companies found"));
+      console.log(ctx.noColor ? 'No companies found' : colors.dim('No companies found'));
       return;
     }
 
@@ -31,16 +29,16 @@ export class HumanCompanyListRenderer implements ListRenderer<FormattedCompany> 
 
     // List companies
     for (const company of companies) {
-      const archived = company.archived ? " [ARCHIVED]" : "";
+      const archived = company.archived ? ' [ARCHIVED]' : '';
       const name = ctx.noColor
         ? `${company.name}${archived}`
-        : `${colors.bold(company.name)}${archived ? colors.red(archived) : ""}`;
+        : `${colors.bold(company.name)}${archived ? colors.red(archived) : ''}`;
 
       const code = company.company_code
         ? ctx.noColor
           ? ` (${company.company_code})`
           : colors.dim(` (${company.company_code})`)
-        : "";
+        : '';
 
       console.log(`${name}${code}`);
 
@@ -50,7 +48,7 @@ export class HumanCompanyListRenderer implements ListRenderer<FormattedCompany> 
       if (company.due_days) details.push(`Due: ${company.due_days} days`);
 
       if (details.length > 0) {
-        const detailLine = details.join(" | ");
+        const detailLine = details.join(' | ');
         console.log(ctx.noColor ? `  ${detailLine}` : colors.dim(`  ${detailLine}`));
       }
 
@@ -71,38 +69,38 @@ export class HumanCompanyDetailRenderer implements Renderer<FormattedCompany> {
     console.log();
     console.log(ctx.noColor ? company.name : colors.bold(company.name));
     if (company.archived) {
-      console.log(ctx.noColor ? "[ARCHIVED]" : colors.red("[ARCHIVED]"));
+      console.log(ctx.noColor ? '[ARCHIVED]' : colors.red('[ARCHIVED]'));
     }
     console.log();
 
-    console.log(label("ID:"), company.id);
+    console.log(label('ID:'), company.id);
 
     if (company.company_code) {
-      console.log(label("Code:"), company.company_code);
+      console.log(label('Code:'), company.company_code);
     }
 
     if (company.billing_name) {
-      console.log(label("Billing Name:"), company.billing_name);
+      console.log(label('Billing Name:'), company.billing_name);
     }
 
     if (company.vat) {
-      console.log(label("VAT/Tax ID:"), company.vat);
+      console.log(label('VAT/Tax ID:'), company.vat);
     }
 
     if (company.default_currency) {
-      console.log(label("Currency:"), company.default_currency);
+      console.log(label('Currency:'), company.default_currency);
     }
 
     if (company.domain) {
-      console.log(label("Domain:"), company.domain);
+      console.log(label('Domain:'), company.domain);
     }
 
     if (company.due_days) {
-      console.log(label("Payment Terms:"), `${company.due_days} days`);
+      console.log(label('Payment Terms:'), `${company.due_days} days`);
     }
 
     if (company.created_at) {
-      console.log(label("Created:"), company.created_at.split("T")[0]);
+      console.log(label('Created:'), company.created_at.split('T')[0]);
     }
 
     console.log();

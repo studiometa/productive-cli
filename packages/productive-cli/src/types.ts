@@ -43,7 +43,7 @@ export interface ProductiveApiResponse<T> {
 
 export interface ProductiveProject {
   id: string;
-  type: "projects";
+  type: 'projects';
   attributes: {
     name: string;
     project_number?: string;
@@ -57,7 +57,7 @@ export interface ProductiveProject {
 
 export interface ProductiveTimeEntry {
   id: string;
-  type: "time_entries";
+  type: 'time_entries';
   attributes: {
     date: string;
     time: number;
@@ -76,7 +76,7 @@ export interface ProductiveTimeEntry {
 
 export interface ProductiveTask {
   id: string;
-  type: "tasks";
+  type: 'tasks';
   attributes: {
     title: string;
     description?: string;
@@ -116,7 +116,7 @@ export interface ProductiveTask {
 
 export interface ProductivePerson {
   id: string;
-  type: "people";
+  type: 'people';
   attributes: {
     first_name: string;
     last_name: string;
@@ -131,7 +131,7 @@ export interface ProductivePerson {
 
 export interface ProductiveService {
   id: string;
-  type: "services";
+  type: 'services';
   attributes: {
     name: string;
     budgeted_time?: number;
@@ -144,7 +144,7 @@ export interface ProductiveService {
 
 export interface ProductiveBudget {
   id: string;
-  type: "budgets";
+  type: 'budgets';
   attributes: {
     total_time_budget?: number;
     remaining_time_budget?: number;
@@ -156,7 +156,7 @@ export interface ProductiveBudget {
 
 export interface ProductiveCompany {
   id: string;
-  type: "companies";
+  type: 'companies';
   attributes: {
     name: string;
     billing_name?: string;
@@ -176,7 +176,7 @@ export interface ProductiveCompany {
 
 export interface ProductiveBooking {
   id: string;
-  type: "bookings";
+  type: 'bookings';
   attributes: {
     started_on: string;
     ended_on: string;
@@ -202,7 +202,7 @@ export interface ProductiveBooking {
 
 export interface ProductiveDeal {
   id: string;
-  type: "deals";
+  type: 'deals';
   attributes: {
     name: string;
     date?: string;
@@ -228,7 +228,7 @@ export interface ProductiveDeal {
 
 export interface ProductiveTimer {
   id: string;
-  type: "timers";
+  type: 'timers';
   attributes: {
     person_id: number;
     started_at: string;
@@ -242,7 +242,7 @@ export interface ProductiveTimer {
 
 export interface ProductiveComment {
   id: string;
-  type: "comments";
+  type: 'comments';
   attributes: {
     body: string;
     commentable_type: string;
@@ -270,7 +270,7 @@ export interface ProductiveReport {
 }
 
 // CLI output formats for AI agents
-export type OutputFormat = "json" | "human" | "csv" | "table" | "kanban";
+export type OutputFormat = 'json' | 'human' | 'csv' | 'table' | 'kanban';
 
 export interface CliOptions {
   format?: OutputFormat;

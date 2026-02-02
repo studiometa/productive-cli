@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { TOOLS, STDIO_ONLY_TOOLS } from '../tools.js';
 
 describe('tools', () => {
@@ -23,8 +24,16 @@ describe('tools', () => {
       const tool = TOOLS[0];
       const resourceProp = tool.inputSchema.properties?.resource as { enum?: string[] };
       expect(resourceProp?.enum).toEqual([
-        'projects', 'time', 'tasks', 'services', 'people',
-        'companies', 'comments', 'timers', 'deals', 'bookings'
+        'projects',
+        'time',
+        'tasks',
+        'services',
+        'people',
+        'companies',
+        'comments',
+        'timers',
+        'deals',
+        'bookings',
       ]);
     });
 
@@ -67,15 +76,15 @@ describe('tools', () => {
     });
 
     it('should include configure tool', () => {
-      const configureTool = STDIO_ONLY_TOOLS.find(t => t.name === 'productive_configure');
+      const configureTool = STDIO_ONLY_TOOLS.find((t) => t.name === 'productive_configure');
       expect(configureTool).toBeDefined();
       expect(configureTool?.inputSchema.required).toEqual(
-        expect.arrayContaining(['organizationId', 'apiToken'])
+        expect.arrayContaining(['organizationId', 'apiToken']),
       );
     });
 
     it('should include get_config tool', () => {
-      const getConfigTool = STDIO_ONLY_TOOLS.find(t => t.name === 'productive_get_config');
+      const getConfigTool = STDIO_ONLY_TOOLS.find((t) => t.name === 'productive_get_config');
       expect(getConfigTool).toBeDefined();
     });
   });

@@ -2,14 +2,15 @@
  * Time entries resource handler
  */
 
-import { formatTimeEntry, formatListResponse } from '../formatters.js';
 import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+
+import { formatTimeEntry, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleTime(
   action: string,
   args: CommonArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, person_id, service_id, task_id, time, date, note } = args;
@@ -47,9 +48,7 @@ export async function handleTime(
 
   if (action === 'list') {
     const result = await api.getTimeEntries({ filter, page, perPage });
-    return jsonResult(
-      formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions)
-    );
+    return jsonResult(formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions));
   }
 
   return errorResult(`Invalid action "${action}" for time. Use: list, get, create, update`);

@@ -2,14 +2,15 @@
  * Comments resource handler
  */
 
-import { formatComment, formatListResponse } from '../formatters.js';
 import type { HandlerContext, CommentArgs, ToolResult } from './types.js';
+
+import { formatComment, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleComments(
   action: string,
   args: CommentArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, body, task_id, deal_id, company_id } = args;
@@ -47,7 +48,7 @@ export async function handleComments(
       formatListResponse(result.data, formatComment, result.meta, {
         ...formatOptions,
         included: result.included,
-      })
+      }),
     );
   }
 

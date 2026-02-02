@@ -2,9 +2,10 @@
  * Handler implementations for reports command
  */
 
-import type { OutputFormat } from "../../types.js";
-import { runCommand } from "../../error-handler.js";
-import type { CommandContext } from "../../context.js";
+import type { CommandContext } from '../../context.js';
+import type { OutputFormat } from '../../types.js';
+
+import { runCommand } from '../../error-handler.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -13,8 +14,8 @@ function parseFilters(filterString: string): Record<string, string> {
   const filters: Record<string, string> = {};
   if (!filterString) return filters;
 
-  filterString.split(",").forEach((pair) => {
-    const [key, value] = pair.split("=");
+  filterString.split(',').forEach((pair) => {
+    const [key, value] = pair.split('=');
     if (key && value) {
       filters[key.trim()] = value.trim();
     }
@@ -41,7 +42,7 @@ function formatReportData(data: unknown[]): unknown[] {
  * Time reports
  */
 export async function reportsTime(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching time reports...");
+  const spinner = ctx.createSpinner('Fetching time reports...');
   spinner.start();
 
   await runCommand(async () => {
@@ -58,9 +59,9 @@ export async function reportsTime(ctx: CommandContext): Promise<void> {
     if (ctx.options.project) filter.project_id = String(ctx.options.project);
 
     const { page, perPage } = ctx.getPagination();
-    const group = ctx.options.group ? String(ctx.options.group) : "person";
+    const group = ctx.options.group ? String(ctx.options.group) : 'person';
 
-    const response = await ctx.api.getReports("time_reports", {
+    const response = await ctx.api.getReports('time_reports', {
       page,
       perPage,
       filter,
@@ -69,10 +70,10 @@ export async function reportsTime(ctx: CommandContext): Promise<void> {
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "json") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'json') as OutputFormat;
     const formattedData = formatReportData(response.data);
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({ data: formattedData, meta: response.meta });
     } else {
       // For human format, show summary
@@ -93,7 +94,7 @@ export async function reportsTime(ctx: CommandContext): Promise<void> {
  * Project reports
  */
 export async function reportsProject(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching project reports...");
+  const spinner = ctx.createSpinner('Fetching project reports...');
   spinner.start();
 
   await runCommand(async () => {
@@ -106,22 +107,22 @@ export async function reportsProject(ctx: CommandContext): Promise<void> {
     if (ctx.options.company) filter.company_id = String(ctx.options.company);
 
     const { page, perPage } = ctx.getPagination();
-    const group = ctx.options.group ? String(ctx.options.group) : "project";
+    const group = ctx.options.group ? String(ctx.options.group) : 'project';
 
-    const response = await ctx.api.getReports("project_reports", {
+    const response = await ctx.api.getReports('project_reports', {
       page,
       perPage,
       filter,
       group,
-      include: ["project"],
+      include: ['project'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "json") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'json') as OutputFormat;
     const formattedData = formatReportData(response.data);
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({ data: formattedData, meta: response.meta });
     } else {
       console.log(`\nProject Report\n`);
@@ -143,7 +144,7 @@ export async function reportsProject(ctx: CommandContext): Promise<void> {
  * Budget reports
  */
 export async function reportsBudget(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching budget reports...");
+  const spinner = ctx.createSpinner('Fetching budget reports...');
   spinner.start();
 
   await runCommand(async () => {
@@ -156,22 +157,22 @@ export async function reportsBudget(ctx: CommandContext): Promise<void> {
     if (ctx.options.company) filter.company_id = String(ctx.options.company);
 
     const { page, perPage } = ctx.getPagination();
-    const group = ctx.options.group ? String(ctx.options.group) : "deal";
+    const group = ctx.options.group ? String(ctx.options.group) : 'deal';
 
-    const response = await ctx.api.getReports("budget_reports", {
+    const response = await ctx.api.getReports('budget_reports', {
       page,
       perPage,
       filter,
       group,
-      include: ["deal"],
+      include: ['deal'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "json") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'json') as OutputFormat;
     const formattedData = formatReportData(response.data);
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({ data: formattedData, meta: response.meta });
     } else {
       console.log(`\nBudget Report\n`);
@@ -192,7 +193,7 @@ export async function reportsBudget(ctx: CommandContext): Promise<void> {
  * Person reports
  */
 export async function reportsPerson(ctx: CommandContext): Promise<void> {
-  const spinner = ctx.createSpinner("Fetching person reports...");
+  const spinner = ctx.createSpinner('Fetching person reports...');
   spinner.start();
 
   await runCommand(async () => {
@@ -206,22 +207,22 @@ export async function reportsPerson(ctx: CommandContext): Promise<void> {
     if (ctx.options.to) filter.before = String(ctx.options.to);
 
     const { page, perPage } = ctx.getPagination();
-    const group = ctx.options.group ? String(ctx.options.group) : "person";
+    const group = ctx.options.group ? String(ctx.options.group) : 'person';
 
-    const response = await ctx.api.getReports("person_reports", {
+    const response = await ctx.api.getReports('person_reports', {
       page,
       perPage,
       filter,
       group,
-      include: ["person"],
+      include: ['person'],
     });
 
     spinner.succeed();
 
-    const format = (ctx.options.format || ctx.options.f || "json") as OutputFormat;
+    const format = (ctx.options.format || ctx.options.f || 'json') as OutputFormat;
     const formattedData = formatReportData(response.data);
 
-    if (format === "json") {
+    if (format === 'json') {
       ctx.formatter.output({ data: formattedData, meta: response.meta });
     } else {
       console.log(`\nPerson Report\n`);

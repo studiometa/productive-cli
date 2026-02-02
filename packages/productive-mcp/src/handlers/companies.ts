@@ -2,14 +2,15 @@
  * Companies resource handler
  */
 
-import { formatCompany, formatListResponse } from '../formatters.js';
 import type { HandlerContext, CompanyArgs, ToolResult } from './types.js';
+
+import { formatCompany, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleCompanies(
   action: string,
   args: CompanyArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, name } = args;
@@ -36,9 +37,7 @@ export async function handleCompanies(
 
   if (action === 'list') {
     const result = await api.getCompanies({ filter, page, perPage });
-    return jsonResult(
-      formatListResponse(result.data, formatCompany, result.meta, formatOptions)
-    );
+    return jsonResult(formatListResponse(result.data, formatCompany, result.meta, formatOptions));
   }
 
   return errorResult(`Invalid action "${action}" for companies. Use: list, get, create, update`);

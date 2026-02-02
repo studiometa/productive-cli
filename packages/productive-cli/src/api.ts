@@ -13,9 +13,10 @@ import type {
   ProductiveDeal,
   ProductiveBooking,
   ProductiveReport,
-} from "./types.js";
-import { getConfig } from "./config.js";
-import { getCache, type CacheStore } from "./utils/cache.js";
+} from './types.js';
+
+import { getConfig } from './config.js';
+import { getCache, type CacheStore } from './utils/cache.js';
 
 export class ProductiveApiError extends Error {
   constructor(
@@ -24,7 +25,7 @@ export class ProductiveApiError extends Error {
     public response?: unknown,
   ) {
     super(message);
-    this.name = "ProductiveApiError";
+    this.name = 'ProductiveApiError';
   }
 
   toJSON() {
@@ -50,22 +51,22 @@ export class ProductiveApi {
 
     if (!config.apiToken) {
       throw new ProductiveApiError(
-        "API token not configured. Set via: --token <token>, productive config set apiToken <token>, or PRODUCTIVE_API_TOKEN env var",
+        'API token not configured. Set via: --token <token>, productive config set apiToken <token>, or PRODUCTIVE_API_TOKEN env var',
       );
     }
 
     if (!config.organizationId) {
       throw new ProductiveApiError(
-        "Organization ID not configured. Set via: --org-id <id>, productive config set organizationId <id>, or PRODUCTIVE_ORG_ID env var",
+        'Organization ID not configured. Set via: --org-id <id>, productive config set organizationId <id>, or PRODUCTIVE_ORG_ID env var',
       );
     }
 
-    this.baseUrl = config.baseUrl || "https://api.productive.io/api/v2";
+    this.baseUrl = config.baseUrl || 'https://api.productive.io/api/v2';
     this.apiToken = config.apiToken;
     this.organizationId = config.organizationId;
 
     // Cache options
-    this.useCache = options?.["no-cache"] !== true;
+    this.useCache = options?.['no-cache'] !== true;
     this.forceRefresh = options?.refresh === true;
     this.cache = getCache(this.useCache);
     this.cache.setOrgId(this.organizationId);
@@ -79,15 +80,11 @@ export class ProductiveApi {
       query?: Record<string, string>;
     } = {},
   ): Promise<T> {
-    const { method = "GET", body, query } = options;
+    const { method = 'GET', body, query } = options;
 
     // Check cache for GET requests
-    if (method === "GET" && this.useCache && !this.forceRefresh) {
-      const cached = await this.cache.getAsync<T>(
-        endpoint,
-        query || {},
-        this.organizationId,
-      );
+    if (method === 'GET' && this.useCache && !this.forceRefresh) {
+      const cached = await this.cache.getAsync<T>(endpoint, query || {}, this.organizationId);
       if (cached) {
         return cached;
       }
@@ -101,9 +98,9 @@ export class ProductiveApi {
     }
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/vnd.api+json",
-      "X-Auth-Token": this.apiToken,
-      "X-Organization-Id": this.organizationId,
+      'Content-Type': 'application/vnd.api+json',
+      'X-Auth-Token': this.apiToken,
+      'X-Organization-Id': this.organizationId,
     };
 
     const response = await globalThis.fetch(url.toString(), {
@@ -129,18 +126,13 @@ export class ProductiveApi {
     const data = (await response.json()) as T;
 
     // Cache GET responses
-    if (method === "GET" && this.useCache) {
-      await this.cache.setAsync(
-        endpoint,
-        query || {},
-        this.organizationId,
-        data,
-      );
+    if (method === 'GET' && this.useCache) {
+      await this.cache.setAsync(endpoint, query || {}, this.organizationId, data);
     }
 
     // Invalidate cache on write operations
-    if (method !== "GET") {
-      await this.cache.invalidateAsync(endpoint.split("/")[1]); // e.g., '/time_entries/123' -> 'time_entries'
+    if (method !== 'GET') {
+      await this.cache.invalidateAsync(endpoint.split('/')[1]); // e.g., '/time_entries/123' -> 'time_entries'
     }
 
     return data;
@@ -155,27 +147,20 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveProject[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveProject[]>>(
-      "/projects",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveProject[]>>('/projects', { query });
   }
 
-  async getProject(
-    id: string,
-  ): Promise<ProductiveApiResponse<ProductiveProject>> {
-    return this.request<ProductiveApiResponse<ProductiveProject>>(
-      `/projects/${id}`,
-    );
+  async getProject(id: string): Promise<ProductiveApiResponse<ProductiveProject>> {
+    return this.request<ProductiveApiResponse<ProductiveProject>>(`/projects/${id}`);
   }
 
   // Time Entries
@@ -187,27 +172,20 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveTimeEntry[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTimeEntry[]>>(
-      "/time_entries",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveTimeEntry[]>>('/time_entries', { query });
   }
 
-  async getTimeEntry(
-    id: string,
-  ): Promise<ProductiveApiResponse<ProductiveTimeEntry>> {
-    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>(
-      `/time_entries/${id}`,
-    );
+  async getTimeEntry(id: string): Promise<ProductiveApiResponse<ProductiveTimeEntry>> {
+    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>(`/time_entries/${id}`);
   }
 
   async createTimeEntry(data: {
@@ -220,36 +198,33 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveTimeEntry>> {
     const relationships: Record<string, { data: { type: string; id: string } }> = {
       person: {
-        data: { type: "people", id: data.person_id },
+        data: { type: 'people', id: data.person_id },
       },
       service: {
-        data: { type: "services", id: data.service_id },
+        data: { type: 'services', id: data.service_id },
       },
     };
 
     if (data.task_id) {
       relationships.task = {
-        data: { type: "tasks", id: data.task_id },
+        data: { type: 'tasks', id: data.task_id },
       };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>(
-      "/time_entries",
-      {
-        method: "POST",
-        body: {
-          data: {
-            type: "time_entries",
-            attributes: {
-              date: data.date,
-              time: data.time,
-              note: data.note,
-            },
-            relationships,
+    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>('/time_entries', {
+      method: 'POST',
+      body: {
+        data: {
+          type: 'time_entries',
+          attributes: {
+            date: data.date,
+            time: data.time,
+            note: data.note,
           },
+          relationships,
         },
       },
-    );
+    });
   }
 
   async updateTimeEntry(
@@ -260,24 +235,21 @@ export class ProductiveApi {
       date?: string;
     },
   ): Promise<ProductiveApiResponse<ProductiveTimeEntry>> {
-    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>(
-      `/time_entries/${id}`,
-      {
-        method: "PATCH",
-        body: {
-          data: {
-            type: "time_entries",
-            id,
-            attributes: data,
-          },
+    return this.request<ProductiveApiResponse<ProductiveTimeEntry>>(`/time_entries/${id}`, {
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'time_entries',
+          id,
+          attributes: data,
         },
       },
-    );
+    });
   }
 
   async deleteTimeEntry(id: string): Promise<void> {
     await this.request<void>(`/time_entries/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
     });
   }
 
@@ -291,19 +263,19 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveTask[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTask[]>>("/tasks", {
+    return this.request<ProductiveApiResponse<ProductiveTask[]>>('/tasks', {
       query,
     });
   }
@@ -314,7 +286,7 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveTask>> {
     const query: Record<string, string> = {};
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
     return this.request<ProductiveApiResponse<ProductiveTask>>(`/tasks/${id}`, {
       query,
@@ -335,30 +307,30 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveTask>> {
     const relationships: Record<string, { data: { type: string; id: string } }> = {
       project: {
-        data: { type: "projects", id: data.project_id },
+        data: { type: 'projects', id: data.project_id },
       },
       task_list: {
-        data: { type: "task_lists", id: data.task_list_id },
+        data: { type: 'task_lists', id: data.task_list_id },
       },
     };
 
     if (data.assignee_id) {
       relationships.assignee = {
-        data: { type: "people", id: data.assignee_id },
+        data: { type: 'people', id: data.assignee_id },
       };
     }
 
     if (data.workflow_status_id) {
       relationships.workflow_status = {
-        data: { type: "workflow_statuses", id: data.workflow_status_id },
+        data: { type: 'workflow_statuses', id: data.workflow_status_id },
       };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTask>>("/tasks", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveTask>>('/tasks', {
+      method: 'POST',
       body: {
         data: {
-          type: "tasks",
+          type: 'tasks',
           attributes: {
             title: data.title,
             description: data.description,
@@ -390,13 +362,13 @@ export class ProductiveApi {
 
     if (data.assignee_id !== undefined) {
       relationships.assignee = data.assignee_id
-        ? { data: { type: "people", id: data.assignee_id } }
+        ? { data: { type: 'people', id: data.assignee_id } }
         : { data: null };
     }
 
     if (data.workflow_status_id !== undefined) {
       relationships.workflow_status = data.workflow_status_id
-        ? { data: { type: "workflow_statuses", id: data.workflow_status_id } }
+        ? { data: { type: 'workflow_statuses', id: data.workflow_status_id } }
         : { data: null };
     }
 
@@ -410,7 +382,7 @@ export class ProductiveApi {
 
     const body: Record<string, unknown> = {
       data: {
-        type: "tasks",
+        type: 'tasks',
         id,
         attributes,
       },
@@ -421,7 +393,7 @@ export class ProductiveApi {
     }
 
     return this.request<ProductiveApiResponse<ProductiveTask>>(`/tasks/${id}`, {
-      method: "PATCH",
+      method: 'PATCH',
       body,
     });
   }
@@ -435,26 +407,22 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductivePerson[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductivePerson[]>>("/people", {
+    return this.request<ProductiveApiResponse<ProductivePerson[]>>('/people', {
       query,
     });
   }
 
-  async getPerson(
-    id: string,
-  ): Promise<ProductiveApiResponse<ProductivePerson>> {
-    return this.request<ProductiveApiResponse<ProductivePerson>>(
-      `/people/${id}`,
-    );
+  async getPerson(id: string): Promise<ProductiveApiResponse<ProductivePerson>> {
+    return this.request<ProductiveApiResponse<ProductivePerson>>(`/people/${id}`);
   }
 
   // Services
@@ -465,18 +433,15 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveService[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveService[]>>(
-      "/services",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveService[]>>('/services', { query });
   }
 
   // Budgets
@@ -487,15 +452,15 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveBudget[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveBudget[]>>("/budgets", {
+    return this.request<ProductiveApiResponse<ProductiveBudget[]>>('/budgets', {
       query,
     });
   }
@@ -509,27 +474,20 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveCompany[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveCompany[]>>(
-      "/companies",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveCompany[]>>('/companies', { query });
   }
 
-  async getCompany(
-    id: string,
-  ): Promise<ProductiveApiResponse<ProductiveCompany>> {
-    return this.request<ProductiveApiResponse<ProductiveCompany>>(
-      `/companies/${id}`,
-    );
+  async getCompany(id: string): Promise<ProductiveApiResponse<ProductiveCompany>> {
+    return this.request<ProductiveApiResponse<ProductiveCompany>>(`/companies/${id}`);
   }
 
   async createCompany(data: {
@@ -541,11 +499,11 @@ export class ProductiveApi {
     domain?: string;
     due_days?: number;
   }): Promise<ProductiveApiResponse<ProductiveCompany>> {
-    return this.request<ProductiveApiResponse<ProductiveCompany>>("/companies", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveCompany>>('/companies', {
+      method: 'POST',
       body: {
         data: {
-          type: "companies",
+          type: 'companies',
           attributes: {
             name: data.name,
             billing_name: data.billing_name,
@@ -581,19 +539,16 @@ export class ProductiveApi {
     if (data.domain !== undefined) attributes.domain = data.domain;
     if (data.due_days !== undefined) attributes.due_days = data.due_days;
 
-    return this.request<ProductiveApiResponse<ProductiveCompany>>(
-      `/companies/${id}`,
-      {
-        method: "PATCH",
-        body: {
-          data: {
-            type: "companies",
-            id,
-            attributes,
-          },
+    return this.request<ProductiveApiResponse<ProductiveCompany>>(`/companies/${id}`, {
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'companies',
+          id,
+          attributes,
         },
       },
-    );
+    });
   }
 
   // Comments
@@ -605,21 +560,18 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveComment[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveComment[]>>(
-      "/comments",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveComment[]>>('/comments', { query });
   }
 
   async getComment(
@@ -628,12 +580,9 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveComment>> {
     const query: Record<string, string> = {};
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
-    return this.request<ProductiveApiResponse<ProductiveComment>>(
-      `/comments/${id}`,
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveComment>>(`/comments/${id}`, { query });
   }
 
   async createComment(data: {
@@ -648,29 +597,29 @@ export class ProductiveApi {
     const relationships: Record<string, { data: { type: string; id: string } }> = {};
 
     if (data.task_id) {
-      relationships.task = { data: { type: "tasks", id: data.task_id } };
+      relationships.task = { data: { type: 'tasks', id: data.task_id } };
     }
     if (data.deal_id) {
-      relationships.deal = { data: { type: "deals", id: data.deal_id } };
+      relationships.deal = { data: { type: 'deals', id: data.deal_id } };
     }
     if (data.company_id) {
-      relationships.company = { data: { type: "companies", id: data.company_id } };
+      relationships.company = { data: { type: 'companies', id: data.company_id } };
     }
     if (data.invoice_id) {
-      relationships.invoice = { data: { type: "invoices", id: data.invoice_id } };
+      relationships.invoice = { data: { type: 'invoices', id: data.invoice_id } };
     }
     if (data.person_id) {
-      relationships.person = { data: { type: "people", id: data.person_id } };
+      relationships.person = { data: { type: 'people', id: data.person_id } };
     }
     if (data.discussion_id) {
-      relationships.discussion = { data: { type: "discussions", id: data.discussion_id } };
+      relationships.discussion = { data: { type: 'discussions', id: data.discussion_id } };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveComment>>("/comments", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveComment>>('/comments', {
+      method: 'POST',
       body: {
         data: {
-          type: "comments",
+          type: 'comments',
           attributes: {
             body: data.body,
           },
@@ -686,19 +635,16 @@ export class ProductiveApi {
       body?: string;
     },
   ): Promise<ProductiveApiResponse<ProductiveComment>> {
-    return this.request<ProductiveApiResponse<ProductiveComment>>(
-      `/comments/${id}`,
-      {
-        method: "PATCH",
-        body: {
-          data: {
-            type: "comments",
-            id,
-            attributes: data,
-          },
+    return this.request<ProductiveApiResponse<ProductiveComment>>(`/comments/${id}`, {
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'comments',
+          id,
+          attributes: data,
         },
       },
-    );
+    });
   }
 
   // Timers
@@ -711,22 +657,19 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveTimer[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTimer[]>>(
-      "/timers",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveTimer[]>>('/timers', { query });
   }
 
   async getTimer(
@@ -735,12 +678,9 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveTimer>> {
     const query: Record<string, string> = {};
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
-    return this.request<ProductiveApiResponse<ProductiveTimer>>(
-      `/timers/${id}`,
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveTimer>>(`/timers/${id}`, { query });
   }
 
   async startTimer(data: {
@@ -750,17 +690,17 @@ export class ProductiveApi {
     const relationships: Record<string, { data: { type: string; id: string } }> = {};
 
     if (data.service_id) {
-      relationships.service = { data: { type: "services", id: data.service_id } };
+      relationships.service = { data: { type: 'services', id: data.service_id } };
     }
     if (data.time_entry_id) {
-      relationships.time_entry = { data: { type: "time_entries", id: data.time_entry_id } };
+      relationships.time_entry = { data: { type: 'time_entries', id: data.time_entry_id } };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveTimer>>("/timers", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveTimer>>('/timers', {
+      method: 'POST',
       body: {
         data: {
-          type: "timers",
+          type: 'timers',
           relationships,
         },
       },
@@ -768,12 +708,9 @@ export class ProductiveApi {
   }
 
   async stopTimer(id: string): Promise<ProductiveApiResponse<ProductiveTimer>> {
-    return this.request<ProductiveApiResponse<ProductiveTimer>>(
-      `/timers/${id}/stop`,
-      {
-        method: "PATCH",
-      },
-    );
+    return this.request<ProductiveApiResponse<ProductiveTimer>>(`/timers/${id}/stop`, {
+      method: 'PATCH',
+    });
   }
 
   // Deals
@@ -786,22 +723,19 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveDeal[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveDeal[]>>(
-      "/deals",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveDeal[]>>('/deals', { query });
   }
 
   async getDeal(
@@ -810,12 +744,9 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveDeal>> {
     const query: Record<string, string> = {};
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
-    return this.request<ProductiveApiResponse<ProductiveDeal>>(
-      `/deals/${id}`,
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveDeal>>(`/deals/${id}`, { query });
   }
 
   async createDeal(data: {
@@ -826,21 +757,21 @@ export class ProductiveApi {
     responsible_id?: string;
   }): Promise<ProductiveApiResponse<ProductiveDeal>> {
     const relationships: Record<string, { data: { type: string; id: string } }> = {
-      company: { data: { type: "companies", id: data.company_id } },
+      company: { data: { type: 'companies', id: data.company_id } },
     };
 
     if (data.responsible_id) {
-      relationships.responsible = { data: { type: "people", id: data.responsible_id } };
+      relationships.responsible = { data: { type: 'people', id: data.responsible_id } };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveDeal>>("/deals", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveDeal>>('/deals', {
+      method: 'POST',
       body: {
         data: {
-          type: "deals",
+          type: 'deals',
           attributes: {
             name: data.name,
-            date: data.date || new Date().toISOString().split("T")[0],
+            date: data.date || new Date().toISOString().split('T')[0],
             budget: data.budget || false,
           },
           relationships,
@@ -867,18 +798,18 @@ export class ProductiveApi {
     const relationships: Record<string, { data: { type: string; id: string } | null }> = {};
     if (data.responsible_id !== undefined) {
       relationships.responsible = data.responsible_id
-        ? { data: { type: "people", id: data.responsible_id } }
+        ? { data: { type: 'people', id: data.responsible_id } }
         : { data: null };
     }
     if (data.deal_status_id !== undefined) {
       relationships.deal_status = data.deal_status_id
-        ? { data: { type: "deal_statuses", id: data.deal_status_id } }
+        ? { data: { type: 'deal_statuses', id: data.deal_status_id } }
         : { data: null };
     }
 
     const body: Record<string, unknown> = {
       data: {
-        type: "deals",
+        type: 'deals',
         id,
         attributes,
       },
@@ -888,13 +819,10 @@ export class ProductiveApi {
       (body.data as Record<string, unknown>).relationships = relationships;
     }
 
-    return this.request<ProductiveApiResponse<ProductiveDeal>>(
-      `/deals/${id}`,
-      {
-        method: "PATCH",
-        body,
-      },
-    );
+    return this.request<ProductiveApiResponse<ProductiveDeal>>(`/deals/${id}`, {
+      method: 'PATCH',
+      body,
+    });
   }
 
   // Bookings
@@ -907,22 +835,19 @@ export class ProductiveApi {
   }): Promise<ProductiveApiResponse<ProductiveBooking[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.sort) query["sort"] = params.sort;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.sort) query['sort'] = params.sort;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveBooking[]>>(
-      "/bookings",
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveBooking[]>>('/bookings', { query });
   }
 
   async getBooking(
@@ -931,12 +856,9 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveBooking>> {
     const query: Record<string, string> = {};
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
-    return this.request<ProductiveApiResponse<ProductiveBooking>>(
-      `/bookings/${id}`,
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveBooking>>(`/bookings/${id}`, { query });
   }
 
   async createBooking(data: {
@@ -953,21 +875,21 @@ export class ProductiveApi {
     note?: string;
   }): Promise<ProductiveApiResponse<ProductiveBooking>> {
     const relationships: Record<string, { data: { type: string; id: string } }> = {
-      person: { data: { type: "people", id: data.person_id } },
+      person: { data: { type: 'people', id: data.person_id } },
     };
 
     if (data.service_id) {
-      relationships.service = { data: { type: "services", id: data.service_id } };
+      relationships.service = { data: { type: 'services', id: data.service_id } };
     }
     if (data.event_id) {
-      relationships.event = { data: { type: "events", id: data.event_id } };
+      relationships.event = { data: { type: 'events', id: data.event_id } };
     }
 
-    return this.request<ProductiveApiResponse<ProductiveBooking>>("/bookings", {
-      method: "POST",
+    return this.request<ProductiveApiResponse<ProductiveBooking>>('/bookings', {
+      method: 'POST',
       body: {
         data: {
-          type: "bookings",
+          type: 'bookings',
           attributes: {
             started_on: data.started_on,
             ended_on: data.ended_on,
@@ -1005,19 +927,16 @@ export class ProductiveApi {
     if (data.draft !== undefined) attributes.draft = data.draft;
     if (data.note !== undefined) attributes.note = data.note;
 
-    return this.request<ProductiveApiResponse<ProductiveBooking>>(
-      `/bookings/${id}`,
-      {
-        method: "PATCH",
-        body: {
-          data: {
-            type: "bookings",
-            id,
-            attributes,
-          },
+    return this.request<ProductiveApiResponse<ProductiveBooking>>(`/bookings/${id}`, {
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'bookings',
+          id,
+          attributes,
         },
       },
-    );
+    });
   }
 
   // Reports
@@ -1033,21 +952,20 @@ export class ProductiveApi {
   ): Promise<ProductiveApiResponse<ProductiveReport[]>> {
     const query: Record<string, string> = {};
 
-    if (params?.page) query["page[number]"] = String(params.page);
-    if (params?.perPage) query["page[size]"] = String(params.perPage);
-    if (params?.group) query["group"] = params.group;
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.group) query['group'] = params.group;
     if (params?.filter) {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
     }
     if (params?.include?.length) {
-      query["include"] = params.include.join(",");
+      query['include'] = params.include.join(',');
     }
 
-    return this.request<ProductiveApiResponse<ProductiveReport[]>>(
-      `/reports/${reportType}`,
-      { query },
-    );
+    return this.request<ProductiveApiResponse<ProductiveReport[]>>(`/reports/${reportType}`, {
+      query,
+    });
   }
 }

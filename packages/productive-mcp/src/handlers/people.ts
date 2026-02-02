@@ -2,16 +2,17 @@
  * People resource handler
  */
 
-import { formatPerson, formatListResponse } from '../formatters.js';
 import type { ProductiveCredentials } from '../auth.js';
 import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+
+import { formatPerson, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handlePeople(
   action: string,
   args: CommonArgs,
   ctx: HandlerContext,
-  credentials: ProductiveCredentials
+  credentials: ProductiveCredentials,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id } = args;
@@ -35,9 +36,7 @@ export async function handlePeople(
 
   if (action === 'list') {
     const result = await api.getPeople({ filter, page, perPage });
-    return jsonResult(
-      formatListResponse(result.data, formatPerson, result.meta, formatOptions)
-    );
+    return jsonResult(formatListResponse(result.data, formatPerson, result.meta, formatOptions));
   }
 
   return errorResult(`Invalid action "${action}" for people. Use: list, get, me`);

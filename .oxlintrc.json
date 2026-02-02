@@ -13,7 +13,10 @@
     // Complexity rules
     "complexity": ["warn", { "max": 50 }],
     "max-depth": ["warn", { "max": 5 }],
-    "max-lines-per-function": ["warn", { "max": 200, "skipBlankLines": true, "skipComments": true }],
+    "max-lines-per-function": [
+      "warn",
+      { "max": 200, "skipBlankLines": true, "skipComments": true }
+    ],
     "max-nested-callbacks": ["warn", { "max": 4 }],
     "max-params": ["warn", { "max": 6 }],
 
@@ -66,11 +69,5 @@
       }
     }
   ],
-  "ignorePatterns": [
-    "dist",
-    "node_modules",
-    "coverage",
-    "*.config.js",
-    "*.config.ts"
-  ]
+  "ignorePatterns": ["dist", "node_modules", "coverage", "*.config.js", "*.config.ts"]
 }

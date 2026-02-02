@@ -26,7 +26,9 @@ export function errorResult(message: string): ToolResult {
 /**
  * Convert unknown filter to string filter for API
  */
-export function toStringFilter(filter?: Record<string, unknown>): Record<string, string> | undefined {
+export function toStringFilter(
+  filter?: Record<string, unknown>,
+): Record<string, string> | undefined {
   if (!filter) return undefined;
   const result: Record<string, string> = {};
   for (const [key, value] of Object.entries(filter)) {

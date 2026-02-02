@@ -2,14 +2,15 @@
  * Deals resource handler
  */
 
-import { formatDeal, formatListResponse } from '../formatters.js';
 import type { HandlerContext, DealArgs, ToolResult } from './types.js';
+
+import { formatDeal, formatListResponse } from '../formatters.js';
 import { jsonResult, errorResult } from './utils.js';
 
 export async function handleDeals(
   action: string,
   args: DealArgs,
-  ctx: HandlerContext
+  ctx: HandlerContext,
 ): Promise<ToolResult> {
   const { api, formatOptions, filter, page, perPage } = ctx;
   const { id, name, company_id } = args;
@@ -37,12 +38,17 @@ export async function handleDeals(
   }
 
   if (action === 'list') {
-    const result = await api.getDeals({ filter, page, perPage, include: ['company', 'deal_status'] });
+    const result = await api.getDeals({
+      filter,
+      page,
+      perPage,
+      include: ['company', 'deal_status'],
+    });
     return jsonResult(
       formatListResponse(result.data, formatDeal, result.meta, {
         ...formatOptions,
         included: result.included,
-      })
+      }),
     );
   }
 

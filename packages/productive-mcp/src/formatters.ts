@@ -52,10 +52,7 @@ export interface McpFormatOptions {
 /**
  * Remove verbose fields from an object for compact output
  */
-function compactify<T extends Record<string, unknown>>(
-  obj: T,
-  fieldsToRemove: string[]
-): T {
+function compactify<T extends Record<string, unknown>>(obj: T, fieldsToRemove: string[]): T {
   const result = { ...obj };
   for (const field of fieldsToRemove) {
     delete result[field];
@@ -68,7 +65,7 @@ function compactify<T extends Record<string, unknown>>(
  */
 export function formatTimeEntry(
   entry: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatTimeEntry(entry, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
@@ -82,7 +79,7 @@ export function formatTimeEntry(
  */
 export function formatProject(
   project: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatProject(project, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
@@ -97,7 +94,7 @@ export function formatProject(
  */
 export function formatTask(
   task: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatTask(task, { ...MCP_FORMAT_OPTIONS, included: options?.included });
   if (options?.compact) {
@@ -118,7 +115,7 @@ export function formatTask(
  */
 export function formatPerson(
   person: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatPerson(person, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
@@ -132,7 +129,7 @@ export function formatPerson(
  */
 export function formatService(
   service: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatService(service, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
@@ -146,7 +143,7 @@ export function formatService(
  */
 export function formatCompany(
   company: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatCompany(company, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
@@ -160,7 +157,7 @@ export function formatCompany(
  */
 export function formatComment(
   comment: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatComment(comment, { ...MCP_FORMAT_OPTIONS, included: options?.included });
   return result;
@@ -171,7 +168,7 @@ export function formatComment(
  */
 export function formatTimer(
   timer: JsonApiResource,
-  _options?: McpFormatOptions
+  _options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatTimer(timer, MCP_FORMAT_OPTIONS);
   return result;
@@ -182,7 +179,7 @@ export function formatTimer(
  */
 export function formatDeal(
   deal: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatDeal(deal, { ...MCP_FORMAT_OPTIONS, included: options?.included });
   if (options?.compact) {
@@ -196,7 +193,7 @@ export function formatDeal(
  */
 export function formatBooking(
   booking: JsonApiResource,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): Record<string, unknown> {
   const result = cliFormatBooking(booking, { ...MCP_FORMAT_OPTIONS, included: options?.included });
   if (options?.compact) {
@@ -217,7 +214,7 @@ export function formatListResponse<T>(
   data: JsonApiResource[],
   formatter: (item: JsonApiResource, options?: McpFormatOptions) => T,
   meta?: JsonApiMeta,
-  options?: McpFormatOptions
+  options?: McpFormatOptions,
 ): { data: T[]; meta?: FormattedPagination } {
   // Create a wrapper that passes MCP options to the formatter
   const wrappedFormatter = (item: JsonApiResource, _cliOptions?: FormatOptions) => {

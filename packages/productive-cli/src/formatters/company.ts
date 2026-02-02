@@ -2,8 +2,9 @@
  * Formatter for Company resources
  */
 
-import type { JsonApiResource, FormatOptions } from "./types.js";
-import { DEFAULT_FORMAT_OPTIONS } from "./types.js";
+import type { JsonApiResource, FormatOptions } from './types.js';
+
+import { DEFAULT_FORMAT_OPTIONS } from './types.js';
 
 export interface FormattedCompany {
   [key: string]: unknown;
@@ -23,16 +24,13 @@ export interface FormattedCompany {
 /**
  * Format a Company resource for output
  */
-export function formatCompany(
-  company: JsonApiResource,
-  options?: FormatOptions,
-): FormattedCompany {
+export function formatCompany(company: JsonApiResource, options?: FormatOptions): FormattedCompany {
   const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
   const attrs = company.attributes;
 
   const result: FormattedCompany = {
     id: company.id,
-    name: String(attrs.name || ""),
+    name: String(attrs.name || ''),
     billing_name: attrs.billing_name ? String(attrs.billing_name) : null,
     company_code: attrs.company_code ? String(attrs.company_code) : null,
     vat: attrs.vat ? String(attrs.vat) : null,

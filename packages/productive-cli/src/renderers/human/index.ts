@@ -31,13 +31,7 @@ export {
 } from './task.js';
 
 // Kanban
-export {
-  KanbanRenderer,
-  kanbanRenderer,
-  stripAnsi,
-  truncateText,
-  padText,
-} from './kanban.js';
+export { KanbanRenderer, kanbanRenderer, stripAnsi, truncateText, padText } from './kanban.js';
 export type { KanbanTask, KanbanColumn } from './kanban.js';
 
 // People
@@ -49,16 +43,10 @@ export {
 } from './person.js';
 
 // Services
-export {
-  HumanServiceListRenderer,
-  humanServiceListRenderer,
-} from './service.js';
+export { HumanServiceListRenderer, humanServiceListRenderer } from './service.js';
 
 // Budgets
-export {
-  HumanBudgetListRenderer,
-  humanBudgetListRenderer,
-} from './budget.js';
+export { HumanBudgetListRenderer, humanBudgetListRenderer } from './budget.js';
 
 // Companies
 export {

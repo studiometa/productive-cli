@@ -2,9 +2,10 @@
  * Formatter for Comment resources
  */
 
-import type { JsonApiResource, FormatOptions } from "./types.js";
-import { DEFAULT_FORMAT_OPTIONS } from "./types.js";
-import { stripHtml } from "../utils/html.js";
+import type { JsonApiResource, FormatOptions } from './types.js';
+
+import { stripHtml } from '../utils/html.js';
+import { DEFAULT_FORMAT_OPTIONS } from './types.js';
 
 export interface FormattedComment {
   [key: string]: unknown;
@@ -34,21 +35,18 @@ function getIncludedResource(
 /**
  * Format a Comment resource for output
  */
-export function formatComment(
-  comment: JsonApiResource,
-  options?: FormatOptions,
-): FormattedComment {
+export function formatComment(comment: JsonApiResource, options?: FormatOptions): FormattedComment {
   const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
   const attrs = comment.attributes;
 
   // Get creator info from includes
   const creatorId = comment.relationships?.creator?.data?.id;
-  const creatorData = getIncludedResource(opts.included, "people", creatorId);
+  const creatorData = getIncludedResource(opts.included, 'people', creatorId);
 
   const result: FormattedComment = {
     id: comment.id,
-    body: opts.stripHtml ? stripHtml(String(attrs.body || "")) : String(attrs.body || ""),
-    commentable_type: String(attrs.commentable_type || ""),
+    body: opts.stripHtml ? stripHtml(String(attrs.body || '')) : String(attrs.body || ''),
+    commentable_type: String(attrs.commentable_type || ''),
     draft: Boolean(attrs.draft),
     pinned: !!attrs.pinned_at,
   };

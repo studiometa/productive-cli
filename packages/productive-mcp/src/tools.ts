@@ -15,7 +15,18 @@ export const TOOLS: Tool[] = [
       properties: {
         resource: {
           type: 'string',
-          enum: ['projects', 'time', 'tasks', 'services', 'people', 'companies', 'comments', 'timers', 'deals', 'bookings'],
+          enum: [
+            'projects',
+            'time',
+            'tasks',
+            'services',
+            'people',
+            'companies',
+            'comments',
+            'timers',
+            'deals',
+            'bookings',
+          ],
         },
         action: {
           type: 'string',

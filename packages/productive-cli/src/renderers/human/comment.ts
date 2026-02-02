@@ -2,23 +2,21 @@
  * Human-readable renderers for Comment resources
  */
 
-import { colors } from "../../utils/colors.js";
-import type { RenderContext, ListRenderer, Renderer } from "../types.js";
-import type { FormattedComment } from "../../formatters/comment.js";
-import type { FormattedListResponse } from "../../formatters/types.js";
+import type { FormattedComment } from '../../formatters/comment.js';
+import type { FormattedListResponse } from '../../formatters/types.js';
+import type { RenderContext, ListRenderer, Renderer } from '../types.js';
+
+import { colors } from '../../utils/colors.js';
 
 /**
  * Render a list of comments in human-readable format
  */
 export class HumanCommentListRenderer implements ListRenderer<FormattedComment> {
-  render(
-    data: FormattedListResponse<FormattedComment>,
-    ctx: RenderContext,
-  ): void {
+  render(data: FormattedListResponse<FormattedComment>, ctx: RenderContext): void {
     const { data: comments, meta } = data;
 
     if (comments.length === 0) {
-      console.log(ctx.noColor ? "No comments found" : colors.dim("No comments found"));
+      console.log(ctx.noColor ? 'No comments found' : colors.dim('No comments found'));
       return;
     }
 
@@ -32,8 +30,8 @@ export class HumanCommentListRenderer implements ListRenderer<FormattedComment> 
     // List comments
     for (const comment of comments) {
       // Author and date
-      const author = comment.creator_name || "Unknown";
-      const date = comment.created_at ? comment.created_at.split("T")[0] : "";
+      const author = comment.creator_name || 'Unknown';
+      const date = comment.created_at ? comment.created_at.split('T')[0] : '';
       const header = `${author} on ${date}`;
       console.log(ctx.noColor ? header : colors.bold(header));
 
@@ -42,8 +40,8 @@ export class HumanCommentListRenderer implements ListRenderer<FormattedComment> 
       console.log(ctx.noColor ? `  ${typeBadge}` : colors.dim(`  ${typeBadge}`));
 
       // Body preview
-      const bodyPreview = comment.body.substring(0, 120).replace(/\n/g, " ");
-      const truncated = comment.body.length > 120 ? "..." : "";
+      const bodyPreview = comment.body.substring(0, 120).replace(/\n/g, ' ');
+      const truncated = comment.body.length > 120 ? '...' : '';
       console.log(`  ${bodyPreview}${truncated}`);
 
       // ID
@@ -64,23 +62,23 @@ export class HumanCommentDetailRenderer implements Renderer<FormattedComment> {
     console.log();
 
     // Author and date
-    const author = comment.creator_name || "Unknown";
-    const date = comment.created_at ? comment.created_at.split("T")[0] : "";
+    const author = comment.creator_name || 'Unknown';
+    const date = comment.created_at ? comment.created_at.split('T')[0] : '';
     console.log(ctx.noColor ? `${author} on ${date}` : colors.bold(`${author} on ${date}`));
 
     if (comment.pinned) {
-      console.log(ctx.noColor ? "[PINNED]" : colors.yellow("[PINNED]"));
+      console.log(ctx.noColor ? '[PINNED]' : colors.yellow('[PINNED]'));
     }
     if (comment.draft) {
-      console.log(ctx.noColor ? "[DRAFT]" : colors.dim("[DRAFT]"));
+      console.log(ctx.noColor ? '[DRAFT]' : colors.dim('[DRAFT]'));
     }
     console.log();
 
-    console.log(label("ID:"), comment.id);
-    console.log(label("Type:"), comment.commentable_type);
+    console.log(label('ID:'), comment.id);
+    console.log(label('Type:'), comment.commentable_type);
     console.log();
 
-    console.log(label("Body:"));
+    console.log(label('Body:'));
     console.log(comment.body);
     console.log();
   }
