@@ -18,6 +18,61 @@ import {
 } from '../errors.js';
 
 describe('Error classes', () => {
+  describe('Hints support', () => {
+    it('should include hints in ValidationError', () => {
+      const error = ValidationError.required('service', [
+        'Find services using: productive services list',
+      ]);
+      expect(error.hints).toContain('Find services using: productive services list');
+    });
+
+    it('should include hints in ConfigError static methods', () => {
+      const error = ConfigError.missingToken();
+      expect(error.hints).toBeDefined();
+      expect(error.hints?.length).toBeGreaterThan(0);
+      expect(error.hints).toContain('Set via CLI flag: --token <token>');
+    });
+
+    it('should include hints in JSON output', () => {
+      const error = ValidationError.required('field', ['Hint 1', 'Hint 2']);
+      const json = error.toJSON();
+      expect(json.hints).toEqual(['Hint 1', 'Hint 2']);
+    });
+
+    it('should not include hints in JSON when empty', () => {
+      const error = new ValidationError('Error without hints', 'field');
+      const json = error.toJSON();
+      expect(json.hints).toBeUndefined();
+    });
+
+    it('should format message with hints using toFormattedMessage', () => {
+      const error = ValidationError.required('field', ['Try this', 'Or this']);
+      const formatted = error.toFormattedMessage();
+      expect(formatted).toContain('field is required');
+      expect(formatted).toContain('Hints:');
+      expect(formatted).toContain('• Try this');
+      expect(formatted).toContain('• Or this');
+    });
+
+    it('should return plain message when no hints', () => {
+      const error = new ValidationError('Simple error');
+      const formatted = error.toFormattedMessage();
+      expect(formatted).toBe('Simple error');
+      expect(formatted).not.toContain('Hints:');
+    });
+
+    it('should auto-generate hints for API errors based on status code', () => {
+      const error401 = new ApiError('Unauthorized', 401);
+      expect(error401.hints).toContain('Check that your API token is valid and not expired');
+
+      const error404 = new ApiError('Not found', 404);
+      expect(error404.hints).toContain("Use 'list' command to find valid resource IDs");
+
+      const error500 = new ApiError('Server error', 500);
+      expect(error500.hints).toContain('This is a server error - try again later');
+    });
+  });
+
   describe('ConfigError', () => {
     it('should create with message and missing keys', () => {
       const error = new ConfigError('Missing config', ['apiToken', 'orgId']);
@@ -238,7 +293,7 @@ describe('Error classes', () => {
     it('should create missing argument error', () => {
       const error = CommandError.missingArgument('time get', 'id', 'productive time get <id>');
       expect(error.message).toContain('Missing required argument');
-      expect(error.message).toContain('productive time get <id>');
+      expect(error.hints).toContain('Usage: productive time get <id>');
     });
   });
 
@@ -317,7 +372,7 @@ describe('Error classes', () => {
 
     it('should include cause message if cause is Error', () => {
       const cause = new Error('original error');
-      const error = new CacheError('Cache failed', 'read', cause);
+      const error = new CacheError('Cache failed', 'read', undefined, cause);
       const json = error.toJSON();
       expect(json.cause).toEqual({ message: 'original error' });
     });
