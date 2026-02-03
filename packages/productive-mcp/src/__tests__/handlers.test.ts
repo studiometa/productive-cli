@@ -198,7 +198,7 @@ describe('handlers', () => {
         );
 
         expect(result.isError).toBe(true);
-        expect(result.content[0].text).toContain('required for create');
+        expect(result.content[0].text).toContain('are required for creating time entry');
       });
 
       it('should handle update action', async () => {

@@ -59,6 +59,14 @@
     "./handlers": {
       "types": "./dist/handlers.d.ts",
       "import": "./dist/handlers.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js"
     }
   },
   "publishConfig": {
@@ -81,7 +89,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "@studiometa/productive-cli": "*",
-    "h3": "^1.15.1"
+    "h3": "^1.15.1",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
