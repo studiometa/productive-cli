@@ -223,7 +223,12 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     },
     filters: {
       query: 'Text search on name or email',
-      status: 'Filter by status (active, inactive)',
+      status: 'Filter by status: 1=active, 2=deactivated',
+      person_type: 'Filter by type: 1=user, 2=contact, 3=placeholder',
+      company_id: 'Filter by company',
+      project_id: 'Filter by project',
+      role_id: 'Filter by role',
+      team: 'Filter by team name',
     },
     fields: {
       id: 'Unique person identifier',
@@ -289,6 +294,9 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     filters: {
       task_id: 'Filter by task',
       deal_id: 'Filter by deal',
+      project_id: 'Filter by project',
+      page_id: 'Filter by page',
+      discussion_id: 'Filter by discussion',
     },
     includes: ['creator', 'task', 'deal'],
     fields: {
@@ -316,6 +324,10 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       start: 'Start a new timer (requires service_id or time_entry_id)',
       stop: 'Stop an active timer by ID',
     },
+    filters: {
+      person_id: 'Filter by person',
+      time_entry_id: 'Filter by time entry',
+    },
     fields: {
       id: 'Unique timer identifier',
       started_at: 'When the timer started (ISO 8601)',
@@ -342,7 +354,12 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     filters: {
       query: 'Text search on deal name',
       company_id: 'Filter by company',
-      deal_status_id: 'Filter by status',
+      project_id: 'Filter by project',
+      responsible_id: 'Filter by responsible person',
+      pipeline_id: 'Filter by pipeline',
+      stage_status_id: 'Filter by stage: 1=open, 2=won, 3=lost',
+      type: 'Filter by type: 1=deal, 2=budget',
+      budget_status: 'Filter by budget status: 1=open, 2=closed',
     },
     includes: ['company', 'deal_status', 'responsible', 'project'],
     fields: {
@@ -376,8 +393,13 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     filters: {
       person_id: 'Filter by person',
       service_id: 'Filter by service',
+      project_id: 'Filter by project',
+      company_id: 'Filter by company',
+      event_id: 'Filter by event',
       after: 'Filter bookings after date (YYYY-MM-DD)',
       before: 'Filter bookings before date (YYYY-MM-DD)',
+      booking_type: 'Filter by type: event (absence) or service (budget)',
+      draft: 'Filter by tentative status: true/false',
     },
     includes: ['person', 'service', 'event'],
     fields: {
