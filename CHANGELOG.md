@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-02-03
+
+### Fixed
+
+- **MCP**: Clarify `query` parameter documentation - behavior varies by resource and may include related fields ([ee87df8])
+
+[ee87df8]: https://github.com/studiometa/productive-tools/commit/ee87df8
+
 ## [0.8.0] - 2026-02-03
 
 ### Added
