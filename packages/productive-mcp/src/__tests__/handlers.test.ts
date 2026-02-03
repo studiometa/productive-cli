@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import type { ProductiveCredentials } from '../auth.js';
 
+import { UserInputError } from '../errors.js';
 import { executeToolWithCredentials } from '../handlers.js';
 
 // Mock the ProductiveApi
@@ -846,6 +847,49 @@ describe('handlers', () => {
         expect(result.isError).toBe(true);
         expect(result.content[0].text).toContain('422');
         expect(result.content[0].text).toContain('Hints');
+      });
+
+      it('should handle errors without status codes', async () => {
+        mockApi.getProjects.mockRejectedValue(new Error('Network timeout'));
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'projects', action: 'list' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('Network timeout');
+      });
+
+      it('should handle non-Error thrown values', async () => {
+        mockApi.getProjects.mockRejectedValue('String error');
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'projects', action: 'list' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('String error');
+      });
+
+      it('should handle UserInputError thrown by handlers', async () => {
+        mockApi.getProjects.mockRejectedValue(
+          new UserInputError('Custom validation error', ['Hint 1', 'Hint 2']),
+        );
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'projects', action: 'list' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('**Input Error:**');
+        expect(result.content[0].text).toContain('Custom validation error');
+        expect(result.content[0].text).toContain('Hint 1');
       });
     });
 

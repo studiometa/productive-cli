@@ -171,6 +171,17 @@ describe('errors', () => {
         `);
       });
 
+      it('should format no user ID configured error', () => {
+        const error = ErrorMessages.noUserIdConfigured();
+        expect(error.toFormattedMessage()).toMatchInlineSnapshot(`
+          "**Input Error:** User ID not configured
+
+          **Hints:**
+          - The "me" action requires a user ID to be configured
+          - Use action="list" to find people, or configure the user ID"
+        `);
+      });
+
       it('should format missing comment target error', () => {
         const error = ErrorMessages.missingCommentTarget();
         expect(error.toFormattedMessage()).toMatchInlineSnapshot(`
