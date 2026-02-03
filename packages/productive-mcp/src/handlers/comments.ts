@@ -2,13 +2,15 @@
  * Comments resource handler
  */
 
-import type { HandlerContext, CommentArgs, ToolResult } from './types.js';
+import type { CommentArgs, HandlerContext, ToolResult } from './types.js';
 
+import { ErrorMessages } from '../errors.js';
 import { formatComment, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 /** Default includes for comments */
 const DEFAULT_COMMENT_INCLUDE = ['creator'];
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleComments(
   action: string,
@@ -23,15 +25,15 @@ export async function handleComments(
     : DEFAULT_COMMENT_INCLUDE;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getComment(id, { include });
     return jsonResult(formatComment(result.data, { ...formatOptions, included: result.included }));
   }
 
   if (action === 'create') {
-    if (!body) return errorResult('body is required for create');
+    if (!body) return inputErrorResult(ErrorMessages.missingRequiredFields('comment', ['body']));
     if (!task_id && !deal_id && !company_id) {
-      return errorResult('task_id, deal_id, or company_id is required for create');
+      return inputErrorResult(ErrorMessages.missingCommentTarget());
     }
     const result = await api.createComment({
       body,
@@ -43,8 +45,9 @@ export async function handleComments(
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
-    if (!body) return errorResult('body is required for update');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
+    if (!body)
+      return inputErrorResult(ErrorMessages.missingRequiredFields('comment update', ['body']));
     const result = await api.updateComment(id, { body });
     return jsonResult({ success: true, ...formatComment(result.data, formatOptions) });
   }
@@ -59,5 +62,5 @@ export async function handleComments(
     );
   }
 
-  return errorResult(`Invalid action "${action}" for comments. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'comments', VALID_ACTIONS));
 }

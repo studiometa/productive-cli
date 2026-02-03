@@ -2,10 +2,13 @@
  * Services resource handler
  */
 
-import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
-import { formatService, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatService } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list'];
 
 export async function handleServices(
   action: string,
@@ -19,5 +22,5 @@ export async function handleServices(
     return jsonResult(formatListResponse(result.data, formatService, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for services. Use: list`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'services', VALID_ACTIONS));
 }

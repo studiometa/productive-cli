@@ -2,10 +2,13 @@
  * Companies resource handler
  */
 
-import type { HandlerContext, CompanyArgs, ToolResult } from './types.js';
+import type { CompanyArgs, HandlerContext, ToolResult } from './types.js';
 
+import { ErrorMessages } from '../errors.js';
 import { formatCompany, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleCompanies(
   action: string,
@@ -16,19 +19,19 @@ export async function handleCompanies(
   const { id, name } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getCompany(id);
     return jsonResult(formatCompany(result.data, formatOptions));
   }
 
   if (action === 'create') {
-    if (!name) return errorResult('name is required for create');
+    if (!name) return inputErrorResult(ErrorMessages.missingRequiredFields('company', ['name']));
     const result = await api.createCompany({ name });
     return jsonResult({ success: true, ...formatCompany(result.data, formatOptions) });
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
     const updateData: Parameters<typeof api.updateCompany>[1] = {};
     if (name !== undefined) updateData.name = name;
     const result = await api.updateCompany(id, updateData);
@@ -40,5 +43,5 @@ export async function handleCompanies(
     return jsonResult(formatListResponse(result.data, formatCompany, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for companies. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'companies', VALID_ACTIONS));
 }

@@ -2,10 +2,13 @@
  * Time entries resource handler
  */
 
-import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
-import { formatTimeEntry, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatTimeEntry } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleTime(
   action: string,
@@ -16,14 +19,21 @@ export async function handleTime(
   const { id, person_id, service_id, task_id, time, date, note } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getTimeEntry(id);
     return jsonResult(formatTimeEntry(result.data, formatOptions));
   }
 
   if (action === 'create') {
     if (!person_id || !service_id || !time || !date) {
-      return errorResult('person_id, service_id, time, and date are required for create');
+      return inputErrorResult(
+        ErrorMessages.missingRequiredFields('time entry', [
+          'person_id',
+          'service_id',
+          'time',
+          'date',
+        ]),
+      );
     }
     const result = await api.createTimeEntry({
       person_id,
@@ -37,7 +47,7 @@ export async function handleTime(
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
     const updateData: Parameters<typeof api.updateTimeEntry>[1] = {};
     if (time !== undefined) updateData.time = time;
     if (date !== undefined) updateData.date = date;
@@ -51,5 +61,5 @@ export async function handleTime(
     return jsonResult(formatListResponse(result.data, formatTimeEntry, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for time. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'time', VALID_ACTIONS));
 }

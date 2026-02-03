@@ -4,11 +4,13 @@
 
 import type { HandlerContext, TaskArgs, ToolResult } from './types.js';
 
-import { formatTask, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatTask } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 /** Default includes for tasks */
 const DEFAULT_TASK_INCLUDE = ['project', 'project.company'];
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleTasks(
   action: string,
@@ -23,14 +25,16 @@ export async function handleTasks(
     : DEFAULT_TASK_INCLUDE;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getTask(id, { include });
     return jsonResult(formatTask(result.data, { ...formatOptions, included: result.included }));
   }
 
   if (action === 'create') {
     if (!title || !project_id || !task_list_id) {
-      return errorResult('title, project_id, and task_list_id are required for create');
+      return inputErrorResult(
+        ErrorMessages.missingRequiredFields('task', ['title', 'project_id', 'task_list_id']),
+      );
     }
     const result = await api.createTask({
       title,
@@ -43,7 +47,7 @@ export async function handleTasks(
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
     const updateData: Parameters<typeof api.updateTask>[1] = {};
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
@@ -62,5 +66,5 @@ export async function handleTasks(
     );
   }
 
-  return errorResult(`Invalid action "${action}" for tasks. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'tasks', VALID_ACTIONS));
 }
