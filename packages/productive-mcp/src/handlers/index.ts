@@ -10,8 +10,9 @@ import { ProductiveApi } from '@studiometa/productive-cli';
 
 import type { ProductiveCredentials } from '../auth.js';
 import type { McpFormatOptions } from '../formatters.js';
-import type { ToolResult, HandlerContext } from './types.js';
+import type { HandlerContext, ToolResult } from './types.js';
 
+import { ErrorMessages, isUserInputError } from '../errors.js';
 import { handleBookings } from './bookings.js';
 import { handleComments } from './comments.js';
 import { handleCompanies } from './companies.js';
@@ -25,10 +26,25 @@ import { handleServices } from './services.js';
 import { handleTasks } from './tasks.js';
 import { handleTime } from './time.js';
 import { handleTimers } from './timers.js';
-import { toStringFilter, errorResult } from './utils.js';
+import { errorResult, formatError, inputErrorResult, toStringFilter } from './utils.js';
 
 // Re-export types
 export type { ToolResult } from './types.js';
+
+/** Valid resources for the productive tool */
+const VALID_RESOURCES = [
+  'projects',
+  'time',
+  'tasks',
+  'services',
+  'people',
+  'companies',
+  'comments',
+  'timers',
+  'deals',
+  'bookings',
+  'reports',
+];
 
 /** Default page size for MCP (smaller than CLI to reduce token usage) */
 const DEFAULT_PER_PAGE = 20;
@@ -165,10 +181,22 @@ export async function executeToolWithCredentials(
         return await handleReports(action, restArgs, ctx);
 
       default:
-        return errorResult(`Unknown resource: ${resource}`);
+        return inputErrorResult(ErrorMessages.unknownResource(resource, VALID_RESOURCES));
     }
   } catch (error) {
+    // Handle UserInputError with formatted hints
+    if (isUserInputError(error)) {
+      return formatError(error);
+    }
+
+    // Handle API errors with status codes
     const message = error instanceof Error ? error.message : String(error);
+    const statusMatch = message.match(/(\d{3})/);
+    if (statusMatch) {
+      const statusCode = Number.parseInt(statusMatch[1], 10);
+      return inputErrorResult(ErrorMessages.apiError(statusCode, message));
+    }
+
     return errorResult(message);
   }
 }

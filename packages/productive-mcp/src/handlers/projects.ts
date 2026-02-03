@@ -2,10 +2,13 @@
  * Projects resource handler
  */
 
-import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
-import { formatProject, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatProject } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list', 'get'];
 
 export async function handleProjects(
   action: string,
@@ -16,7 +19,7 @@ export async function handleProjects(
   const { id } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getProject(id);
     return jsonResult(formatProject(result.data, formatOptions));
   }
@@ -26,5 +29,5 @@ export async function handleProjects(
     return jsonResult(formatListResponse(result.data, formatProject, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for projects. Use: list, get`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'projects', VALID_ACTIONS));
 }

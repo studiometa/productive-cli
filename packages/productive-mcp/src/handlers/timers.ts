@@ -4,8 +4,11 @@
 
 import type { HandlerContext, TimerArgs, ToolResult } from './types.js';
 
-import { formatTimer, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatTimer } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list', 'get', 'start', 'stop'];
 
 export async function handleTimers(
   action: string,
@@ -16,21 +19,21 @@ export async function handleTimers(
   const { id, service_id, time_entry_id } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getTimer(id, { include });
     return jsonResult(formatTimer(result.data, formatOptions));
   }
 
   if (action === 'start' || action === 'create') {
     if (!service_id && !time_entry_id) {
-      return errorResult('service_id or time_entry_id is required to start a timer');
+      return inputErrorResult(ErrorMessages.missingServiceForTimer());
     }
     const result = await api.startTimer({ service_id, time_entry_id });
     return jsonResult({ success: true, ...formatTimer(result.data, formatOptions) });
   }
 
   if (action === 'stop') {
-    if (!id) return errorResult('id is required to stop a timer');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('stop'));
     const result = await api.stopTimer(id);
     return jsonResult({ success: true, ...formatTimer(result.data, formatOptions) });
   }
@@ -40,5 +43,5 @@ export async function handleTimers(
     return jsonResult(formatListResponse(result.data, formatTimer, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for timers. Use: list, get, start, stop`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'timers', VALID_ACTIONS));
 }

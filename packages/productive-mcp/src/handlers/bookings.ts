@@ -2,13 +2,15 @@
  * Bookings resource handler
  */
 
-import type { HandlerContext, BookingArgs, ToolResult } from './types.js';
+import type { BookingArgs, HandlerContext, ToolResult } from './types.js';
 
+import { ErrorMessages } from '../errors.js';
 import { formatBooking, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 /** Default includes for bookings */
 const DEFAULT_BOOKING_INCLUDE = ['person', 'service'];
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleBookings(
   action: string,
@@ -23,17 +25,19 @@ export async function handleBookings(
     : DEFAULT_BOOKING_INCLUDE;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getBooking(id, { include });
     return jsonResult(formatBooking(result.data, { ...formatOptions, included: result.included }));
   }
 
   if (action === 'create') {
     if (!person_id || !started_on || !ended_on) {
-      return errorResult('person_id, started_on, and ended_on are required for create');
+      return inputErrorResult(
+        ErrorMessages.missingRequiredFields('booking', ['person_id', 'started_on', 'ended_on']),
+      );
     }
     if (!service_id && !event_id) {
-      return errorResult('service_id or event_id is required for create');
+      return inputErrorResult(ErrorMessages.missingBookingTarget());
     }
     const result = await api.createBooking({
       person_id,
@@ -48,7 +52,7 @@ export async function handleBookings(
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
     const updateData: Parameters<typeof api.updateBooking>[1] = {};
     if (started_on !== undefined) updateData.started_on = started_on;
     if (ended_on !== undefined) updateData.ended_on = ended_on;
@@ -68,5 +72,5 @@ export async function handleBookings(
     );
   }
 
-  return errorResult(`Invalid action "${action}" for bookings. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'bookings', VALID_ACTIONS));
 }

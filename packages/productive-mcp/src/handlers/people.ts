@@ -3,10 +3,13 @@
  */
 
 import type { ProductiveCredentials } from '../auth.js';
-import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
-import { formatPerson, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { formatListResponse, formatPerson } from '../formatters.js';
+import { inputErrorResult, jsonResult } from './utils.js';
+
+const VALID_ACTIONS = ['list', 'get', 'me'];
 
 export async function handlePeople(
   action: string,
@@ -18,7 +21,7 @@ export async function handlePeople(
   const { id } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const result = await api.getPerson(id);
     return jsonResult(formatPerson(result.data, formatOptions));
   }
@@ -30,6 +33,7 @@ export async function handlePeople(
     }
     return jsonResult({
       message: 'User ID not configured. Set userId in credentials to use this action.',
+      hint: 'Use action="list" to find people, or configure the user ID in your credentials.',
       organizationId: credentials.organizationId,
     });
   }
@@ -39,5 +43,5 @@ export async function handlePeople(
     return jsonResult(formatListResponse(result.data, formatPerson, result.meta, formatOptions));
   }
 
-  return errorResult(`Invalid action "${action}" for people. Use: list, get, me`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'people', VALID_ACTIONS));
 }

@@ -2,14 +2,16 @@
  * Deals resource handler
  */
 
-import type { HandlerContext, DealArgs, ToolResult } from './types.js';
+import type { DealArgs, HandlerContext, ToolResult } from './types.js';
 
+import { ErrorMessages } from '../errors.js';
 import { formatDeal, formatListResponse } from '../formatters.js';
-import { jsonResult, errorResult } from './utils.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 /** Default includes for deals */
 const DEFAULT_DEAL_INCLUDE_GET = ['company', 'deal_status', 'responsible'];
 const DEFAULT_DEAL_INCLUDE_LIST = ['company', 'deal_status'];
+const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
 export async function handleDeals(
   action: string,
@@ -20,7 +22,7 @@ export async function handleDeals(
   const { id, name, company_id } = args;
 
   if (action === 'get') {
-    if (!id) return errorResult('id is required for get action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
     const include = userInclude?.length
       ? [...new Set([...DEFAULT_DEAL_INCLUDE_GET, ...userInclude])]
       : DEFAULT_DEAL_INCLUDE_GET;
@@ -30,14 +32,14 @@ export async function handleDeals(
 
   if (action === 'create') {
     if (!name || !company_id) {
-      return errorResult('name and company_id are required for create');
+      return inputErrorResult(ErrorMessages.missingRequiredFields('deal', ['name', 'company_id']));
     }
     const result = await api.createDeal({ name, company_id });
     return jsonResult({ success: true, ...formatDeal(result.data, formatOptions) });
   }
 
   if (action === 'update') {
-    if (!id) return errorResult('id is required for update action');
+    if (!id) return inputErrorResult(ErrorMessages.missingId('update'));
     const updateData: Parameters<typeof api.updateDeal>[1] = {};
     if (name !== undefined) updateData.name = name;
     const result = await api.updateDeal(id, updateData);
@@ -62,5 +64,5 @@ export async function handleDeals(
     );
   }
 
-  return errorResult(`Invalid action "${action}" for deals. Use: list, get, create, update`);
+  return inputErrorResult(ErrorMessages.invalidAction(action, 'deals', VALID_ACTIONS));
 }

@@ -2,9 +2,10 @@
  * Reports resource handler
  */
 
-import type { HandlerContext, CommonArgs, ToolResult } from './types.js';
+import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
-import { jsonResult, errorResult } from './utils.js';
+import { ErrorMessages } from '../errors.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 /**
  * Report-specific args
@@ -53,6 +54,8 @@ const VALID_REPORT_TYPES = [
   'timesheet_reports',
 ];
 
+const VALID_ACTIONS = ['get'];
+
 export async function handleReports(
   action: string,
   args: ReportArgs,
@@ -62,17 +65,15 @@ export async function handleReports(
   const { report_type, group, from, to, person_id, project_id, company_id, deal_id, status } = args;
 
   if (action !== 'get') {
-    return errorResult(`Invalid action "${action}" for reports. Use: get`);
+    return inputErrorResult(ErrorMessages.invalidAction(action, 'reports', VALID_ACTIONS));
   }
 
   if (!report_type) {
-    return errorResult(`report_type is required. Valid types: ${VALID_REPORT_TYPES.join(', ')}`);
+    return inputErrorResult(ErrorMessages.missingReportType());
   }
 
   if (!VALID_REPORT_TYPES.includes(report_type)) {
-    return errorResult(
-      `Invalid report_type "${report_type}". Valid types: ${VALID_REPORT_TYPES.join(', ')}`,
-    );
+    return inputErrorResult(ErrorMessages.invalidReportType(report_type, VALID_REPORT_TYPES));
   }
 
   // Build filters based on report type
