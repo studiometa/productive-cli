@@ -24,9 +24,11 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     },
     filters: {
       query: 'Text search on project name',
-      project_type_id: 'Filter by project type',
+      project_type: 'Filter by project type: 1=internal, 2=client',
       company_id: 'Filter by company',
-      archived: 'Filter by archived status (true/false)',
+      responsible_id: 'Filter by project manager',
+      person_id: 'Filter by team member',
+      status: 'Filter by status: 1=active, 2=archived',
     },
     fields: {
       id: 'Unique project identifier',
