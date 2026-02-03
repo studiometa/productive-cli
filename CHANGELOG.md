@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-02-03
+
 ### Added
 
 - **CLI**: Shareable skill (`skills/SKILL.md`) for AI agents with commands reference and best practices ([1d8336c], [#14])
