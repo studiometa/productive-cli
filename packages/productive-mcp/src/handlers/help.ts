@@ -194,6 +194,11 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     filters: {
       project_id: 'Filter by project',
       deal_id: 'Filter by deal',
+      task_id: 'Filter by task',
+      person_id: 'Filter by person (trackable by)',
+      budget_status: 'Filter by budget status: 1=open, 2=delivered',
+      billing_type: 'Filter by billing type: 1=fixed, 2=actuals, 3=none',
+      time_tracking_enabled: 'Filter by time tracking: true/false',
     },
     fields: {
       id: 'Unique service identifier',
