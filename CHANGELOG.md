@@ -17,10 +17,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP**: Documentation improved with "Getting Task Context" section and common mistakes to avoid ([be0e07f], [#18])
 - **CLI**: Documentation clarified for `api` command - query params vs request body ([be0e07f], [#18])
 
+### Dependencies
+
+- Upgrade vitest `^2.1.8` → `^4.0.18` and @vitest/coverage-v8 `^2.1.9` → `^4.0.18` ([0367efa], [#19])
+- Upgrade vite `^6.0.7` → `^7.3.1` ([0367efa], [#19])
+- Upgrade @modelcontextprotocol/sdk `^1.0.4` → `^1.26.0` ([0367efa], [#19])
+
+### Fixed
+
+- Fix test mocks for vitest 4 compatibility — arrow functions replaced with function expressions for class constructors ([80cbb77], [#19])
+- Fix exit code assertions for 404 errors (`NOT_FOUND_ERROR = 5`) ([80cbb77], [#19])
+
 [47061f4]: https://github.com/studiometa/productive-tools/commit/47061f4
 [1873439]: https://github.com/studiometa/productive-tools/commit/1873439
 [be0e07f]: https://github.com/studiometa/productive-tools/commit/be0e07f
 [#18]: https://github.com/studiometa/productive-tools/pull/18
+[0367efa]: https://github.com/studiometa/productive-tools/commit/0367efa
+[80cbb77]: https://github.com/studiometa/productive-tools/commit/80cbb77
+[#19]: https://github.com/studiometa/productive-tools/pull/19
 
 ## [0.8.2] - 2026-02-03
 
