@@ -50,12 +50,12 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/coverage-v8": "^4.0.18",
     "memfs": "4.56.2",
     "oxlint": "^1.43.0",
     "typescript": "^5.7.3",
-    "vite": "^6.0.7",
-    "vitest": "^2.1.8"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=24.0.0"
