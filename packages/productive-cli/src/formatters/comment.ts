@@ -14,6 +14,7 @@ export interface FormattedComment {
   commentable_type: string;
   draft: boolean;
   pinned: boolean;
+  hidden: boolean;
   creator_id?: string;
   creator_name?: string;
   created_at?: string;
@@ -49,6 +50,7 @@ export function formatComment(comment: JsonApiResource, options?: FormatOptions)
     commentable_type: String(attrs.commentable_type || ''),
     draft: Boolean(attrs.draft),
     pinned: !!attrs.pinned_at,
+    hidden: Boolean(attrs.hidden),
   };
 
   if (opts.includeRelationshipIds && creatorId) {
