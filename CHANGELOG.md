@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.4] - 2026-02-10
+
+### Fixed
+
+- **MCP**: Add version to stderr startup message for debugging ([c5f9898])
+- Fix 0.8.3 version link in changelog ([0b181de])
+
+[c5f9898]: https://github.com/studiometa/productive-tools/commit/c5f9898
+[0b181de]: https://github.com/studiometa/productive-tools/commit/0b181de
+
 ## [0.8.3] - 2026-02-09
 
 ### Added
@@ -431,7 +441,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.8.3...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.8.4...HEAD
+[0.8.4]: https://github.com/studiometa/productive-tools/compare/0.8.3...0.8.4
 [0.8.3]: https://github.com/studiometa/productive-tools/compare/0.8.2...0.8.3
 [0.8.2]: https://github.com/studiometa/productive-tools/compare/0.8.1...0.8.2
 [0.8.1]: https://github.com/studiometa/productive-tools/compare/0.8.0...0.8.1
