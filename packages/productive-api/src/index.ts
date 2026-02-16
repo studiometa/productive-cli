@@ -39,6 +39,7 @@ export type {
 
 // Formatters
 export {
+  // Individual resource formatters
   formatTimeEntry,
   formatProject,
   formatTask,
@@ -50,16 +51,39 @@ export {
   formatDeal,
   formatBooking,
   formatBudget,
+  // List/single/auto formatting
   formatListResponse,
+  formatSingleResponse,
+  formatResponse,
+  // Pagination
+  formatPagination,
+  hasMorePages,
+  // Constants
+  DEFAULT_FORMAT_OPTIONS,
 } from './formatters/index.js';
 
 export type {
+  // Core types
   FormatOptions,
   FormattedPagination,
+  FormattedListResponse,
   JsonApiMeta,
   JsonApiResource,
   JsonApiResponse,
+  // Formatted resource types
+  FormattedTimeEntry,
+  FormattedProject,
+  FormattedTask,
+  FormattedPerson,
+  FormattedService,
+  FormattedBudget,
 } from './formatters/types.js';
+
+export type { FormattedCompany } from './formatters/company.js';
+export type { FormattedComment } from './formatters/comment.js';
+export type { FormattedTimer } from './formatters/timer.js';
+export type { FormattedDeal } from './formatters/deal.js';
+export type { FormattedBooking } from './formatters/booking.js';
 
 // Config (env vars + JSON file, no keychain)
 export { getConfig, setConfig, deleteConfig, clearConfig } from './config.js';
