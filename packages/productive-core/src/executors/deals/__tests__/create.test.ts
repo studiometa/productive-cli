@@ -28,6 +28,43 @@ describe('createDeal', () => {
     expect(result.data).toEqual(mockDeal);
   });
 
+  it('resolves responsibleId when provided', async () => {
+    const createDealApi = vi.fn().mockResolvedValue({ data: mockDeal });
+    const resolveValue = vi
+      .fn()
+      .mockResolvedValueOnce('100') // company
+      .mockResolvedValueOnce('200'); // responsible
+    const ctx = createTestExecutorContext({
+      api: { createDeal: createDealApi },
+      resolver: { resolveValue },
+    });
+
+    await createDeal({ name: 'Deal', companyId: 'Acme', responsibleId: 'John Doe' }, ctx);
+
+    expect(resolveValue).toHaveBeenCalledWith('John Doe', 'person');
+    expect(createDealApi).toHaveBeenCalledWith(expect.objectContaining({ responsible_id: '200' }));
+  });
+
+  it('passes optional fields (date, budget)', async () => {
+    const createDealApi = vi.fn().mockResolvedValue({ data: mockDeal });
+    const ctx = createTestExecutorContext({
+      api: { createDeal: createDealApi },
+    });
+
+    await createDeal(
+      { name: 'Budget Deal', companyId: '100', date: '2026-03-01', budget: true },
+      ctx,
+    );
+
+    expect(createDealApi).toHaveBeenCalledWith({
+      name: 'Budget Deal',
+      company_id: '100',
+      date: '2026-03-01',
+      budget: true,
+      responsible_id: undefined,
+    });
+  });
+
   it('passes through numeric company ID without resolving', async () => {
     const createDealApi = vi.fn().mockResolvedValue({ data: mockDeal });
     const resolveValue = vi.fn().mockResolvedValue('100');

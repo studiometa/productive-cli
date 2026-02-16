@@ -59,6 +59,11 @@ describe('buildTaskFilters', () => {
     );
   });
 
+  it('does not set status filter for unknown status values', () => {
+    const filters = buildTaskFilters({ status: 'unknown_status' });
+    expect(filters.status).toBeUndefined();
+  });
+
   it('maps due date filters', () => {
     const filters = buildTaskFilters({
       dueDate: '2026-03-15',

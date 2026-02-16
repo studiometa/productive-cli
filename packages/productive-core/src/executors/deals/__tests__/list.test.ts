@@ -25,6 +25,21 @@ describe('buildDealFilters', () => {
     });
   });
 
+  it('does not set filter for unknown status values', () => {
+    const filters = buildDealFilters({ status: 'unknown' });
+    expect(filters.stage_status_id).toBeUndefined();
+  });
+
+  it('does not set filter for unknown deal type values', () => {
+    const filters = buildDealFilters({ dealType: 'unknown' });
+    expect(filters.type).toBeUndefined();
+  });
+
+  it('does not set filter for unknown budget status values', () => {
+    const filters = buildDealFilters({ budgetStatus: 'unknown' });
+    expect(filters.budget_status).toBeUndefined();
+  });
+
   it('returns empty filter when no options set', () => {
     const filters = buildDealFilters({});
     expect(filters).toEqual({});

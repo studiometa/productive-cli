@@ -86,6 +86,22 @@ describe('listBookings', () => {
     );
   });
 
+  it('returns resolved metadata when resolver resolves filters', async () => {
+    const getBookings = vi.fn().mockResolvedValue(mockResponse);
+    const resolveFilters = vi.fn().mockResolvedValue({
+      resolved: { person_id: '100', with_draft: 'true' },
+      metadata: { person_id: { original: 'John', resolved: '100', type: 'person' } },
+    });
+    const ctx = createTestExecutorContext({
+      api: { getBookings },
+      resolver: { resolveFilters },
+    });
+
+    const result = await listBookings({ personId: 'John' }, ctx);
+
+    expect(result.resolved).toBeDefined();
+  });
+
   it('builds correct filter from typed options', async () => {
     const getBookings = vi.fn().mockResolvedValue(mockResponse);
     const ctx = createTestExecutorContext({ api: { getBookings } });
