@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **CLI**: `resolve` command for looking up resources by human-friendly identifiers ([#23])
+  - Resolve people by email: `productive resolve "user@example.com"`
+  - Resolve projects by number: `productive resolve "PRJ-123"`
+  - Resolve companies, deals, services by name
+  - `detect` subcommand for debugging pattern detection
+  - Quiet mode (`-q`) for scripting: `productive tasks list --assignee $(productive resolve "user@email" -q)`
+- **CLI**: Auto-resolution of human-friendly identifiers in all command filters ([#23])
+  - `--assignee user@example.com` → resolves email to person ID
+  - `--project PRJ-123` → resolves project number to ID
+  - `--company "Studio Meta"` → resolves company name to ID
+  - Works in tasks, time, services, bookings, projects, people, deals, reports commands
+- **MCP**: `resolve` action for finding resources by email, name, or number ([#23])
+  - `{ resource: "people", action: "resolve", query: "user@example.com" }`
+  - `{ resource: "projects", action: "resolve", query: "PRJ-123" }`
+- **MCP**: Auto-resolution in filter parameters for all resources ([#23])
+  - `{ filter: { assignee_id: "user@example.com" } }` → resolves automatically
+  - Response includes `_resolved` metadata with original input and resolved label
+- **MCP**: Auto-resolution in `get` action for ID parameters ([#23])
+  - `{ resource: "projects", action: "get", id: "PRJ-123" }` → works directly
+
 ## [0.8.5] - 2026-02-10
 
 ### Fixed
@@ -450,7 +474,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESM** module format
 - **XDG** compliant configuration storage
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.8.4...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.8.5...HEAD
+[#23]: https://github.com/studiometa/productive-tools/pull/23
 [0.8.4]: https://github.com/studiometa/productive-tools/compare/0.8.3...0.8.4
 [0.8.3]: https://github.com/studiometa/productive-tools/compare/0.8.2...0.8.3
 [0.8.2]: https://github.com/studiometa/productive-tools/compare/0.8.1...0.8.2
