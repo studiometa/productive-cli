@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { ProductiveApi, ProductiveApiError } from '../../api.js';
+import { parseFilters } from '../../utils/parse-filters.js';
 import {
   handleTasksCommand,
   showTasksHelp,
-  parseFilters,
   formatTime,
   getIncludedResource,
   stripAnsi,

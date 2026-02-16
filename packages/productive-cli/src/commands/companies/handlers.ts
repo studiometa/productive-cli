@@ -19,16 +19,7 @@ import { ValidationError } from '../../errors.js';
 import { formatCompany, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanCompanyDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
-
-function parseFilters(filterString: string): Record<string, string> {
-  const filters: Record<string, string> = {};
-  if (!filterString) return filters;
-  filterString.split(',').forEach((pair) => {
-    const [key, value] = pair.split('=');
-    if (key && value) filters[key.trim()] = value.trim();
-  });
-  return filters;
-}
+import { parseFilters } from '../../utils/parse-filters.js';
 
 export async function companiesList(ctx: CommandContext): Promise<void> {
   const spinner = ctx.createSpinner('Fetching companies...');

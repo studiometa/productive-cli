@@ -13,16 +13,7 @@ import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
 
 import { runCommand } from '../../error-handler.js';
-
-function parseFilters(filterString: string): Record<string, string> {
-  const filters: Record<string, string> = {};
-  if (!filterString) return filters;
-  filterString.split(',').forEach((pair) => {
-    const [key, value] = pair.split('=');
-    if (key && value) filters[key.trim()] = value.trim();
-  });
-  return filters;
-}
+import { parseFilters } from '../../utils/parse-filters.js';
 
 function formatReportData(data: unknown[]): unknown[] {
   return data.map((item: unknown) => {

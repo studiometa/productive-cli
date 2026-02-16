@@ -18,16 +18,7 @@ import { ValidationError } from '../../errors.js';
 import { formatTimer, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanTimerDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
-
-function parseFilters(filterString: string): Record<string, string> {
-  const filters: Record<string, string> = {};
-  if (!filterString) return filters;
-  filterString.split(',').forEach((pair) => {
-    const [key, value] = pair.split('=');
-    if (key && value) filters[key.trim()] = value.trim();
-  });
-  return filters;
-}
+import { parseFilters } from '../../utils/parse-filters.js';
 
 function parseListOptions(ctx: CommandContext): ListTimersOptions {
   const options: ListTimersOptions = {};

@@ -15,22 +15,7 @@ import type { OutputFormat } from '../../types.js';
 import { exitWithValidationError, runCommand } from '../../error-handler.js';
 import { formatProject, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanProjectDetailRenderer } from '../../renderers/index.js';
-
-/**
- * Parse filter string into key-value pairs
- */
-function parseFilters(filterString: string): Record<string, string> {
-  const filters: Record<string, string> = {};
-  if (!filterString) return filters;
-
-  filterString.split(',').forEach((pair) => {
-    const [key, value] = pair.split('=');
-    if (key && value) {
-      filters[key.trim()] = value.trim();
-    }
-  });
-  return filters;
-}
+import { parseFilters } from '../../utils/parse-filters.js';
 
 /**
  * Parse CLI options into ListProjectsOptions.
