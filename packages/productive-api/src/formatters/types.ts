@@ -2,10 +2,17 @@
  * Types for JSON:API resource formatting
  */
 
-import type { RelationshipData } from '../types.js';
+import type { ProductiveApiMeta, RelationshipData } from '../types.js';
 
 // Re-export for convenience
 export type { RelationshipData };
+
+/**
+ * JSON:API pagination metadata (raw from API).
+ * Alias for ProductiveApiMeta.
+ */
+export type { ProductiveApiMeta as JsonApiMeta };
+type JsonApiMeta = ProductiveApiMeta;
 
 /**
  * Generic JSON:API resource structure
@@ -24,20 +31,6 @@ export interface JsonApiResponse<T = JsonApiResource | JsonApiResource[]> {
   data: T;
   meta?: JsonApiMeta;
   included?: JsonApiResource[];
-}
-
-/**
- * JSON:API pagination metadata (raw from API)
- */
-export interface JsonApiMeta {
-  page?: number;
-  per_page?: number;
-  total?: number;
-  total_pages?: number;
-  current_page?: number;
-  total_count?: number;
-  page_size?: number;
-  max_page_size?: number;
 }
 
 /**

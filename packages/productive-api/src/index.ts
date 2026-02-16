@@ -37,9 +37,6 @@ export type {
   RelationshipData,
 } from './types.js';
 
-/** Backward-compatible alias for ProductiveApiMeta */
-export type { ProductiveApiMeta as JsonApiMeta } from './types.js';
-
 // Formatters
 export {
   formatTimeEntry,
@@ -57,14 +54,12 @@ export {
 } from './formatters/index.js';
 
 export type {
-  JsonApiResource,
-  JsonApiMeta as JsonApiResponseMeta,
   FormatOptions,
   FormattedPagination,
+  JsonApiMeta,
+  JsonApiResource,
+  JsonApiResponse,
 } from './formatters/types.js';
-
-// Re-export formatter types used by MCP
-export type { JsonApiResponse } from './formatters/types.js';
 
 // Utils
 export { stripHtml, truncate } from './utils/html.js';
