@@ -49,6 +49,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@studiometa/productive-api": "*",
     "@studiometa/productive-core": "*"
   },
   "devDependencies": {

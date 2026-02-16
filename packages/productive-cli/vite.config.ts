@@ -18,7 +18,12 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
-      external: [...builtinModules, ...builtinModules.map((m) => `node:${m}`)],
+      external: [
+        '@studiometa/productive-api',
+        '@studiometa/productive-core',
+        ...builtinModules,
+        ...builtinModules.map((m) => `node:${m}`),
+      ],
       output: {
         preserveModules: false,
       },
