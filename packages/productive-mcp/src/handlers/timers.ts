@@ -9,10 +9,7 @@ import type { HandlerContext, TimerArgs, ToolResult } from './types.js';
 import { ErrorMessages } from '../errors.js';
 import { formatListResponse, formatTimer } from '../formatters.js';
 import { getTimerHints } from '../hints.js';
-import { resolveFilters, resolveFilterValue, isNumericId } from './resolve.js';
 import { inputErrorResult, jsonResult } from './utils.js';
-
-const resolveFns = { resolveFilterValue, resolveFilters, isNumericId };
 
 const VALID_ACTIONS = ['list', 'get', 'start', 'stop'];
 
@@ -24,7 +21,7 @@ export async function handleTimers(
   const { api, formatOptions, filter, page, perPage, include } = ctx;
   const { id, service_id, time_entry_id } = args;
 
-  const execCtx = fromHandlerContext(ctx, resolveFns);
+  const execCtx = fromHandlerContext(ctx);
 
   if (action === 'get') {
     if (!id) return inputErrorResult(ErrorMessages.missingId('get'));

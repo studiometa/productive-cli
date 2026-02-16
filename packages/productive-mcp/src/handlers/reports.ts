@@ -12,10 +12,7 @@ import {
 import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 
 import { ErrorMessages } from '../errors.js';
-import { resolveFilters, resolveFilterValue, isNumericId } from './resolve.js';
 import { inputErrorResult, jsonResult } from './utils.js';
-
-const resolveFns = { resolveFilterValue, resolveFilters, isNumericId };
 
 interface ReportArgs extends CommonArgs {
   report_type?: string;
@@ -62,7 +59,7 @@ export async function handleReports(
     return inputErrorResult(ErrorMessages.invalidReportType(report_type, [...VALID_REPORT_TYPES]));
   }
 
-  const execCtx = fromHandlerContext(ctx, resolveFns);
+  const execCtx = fromHandlerContext(ctx);
 
   const result = await getReport(
     {

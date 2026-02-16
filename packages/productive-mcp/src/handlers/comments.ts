@@ -9,10 +9,7 @@ import type { CommentArgs, HandlerContext, ToolResult } from './types.js';
 import { ErrorMessages } from '../errors.js';
 import { formatComment, formatListResponse } from '../formatters.js';
 import { getCommentHints } from '../hints.js';
-import { resolveFilters, resolveFilterValue, isNumericId } from './resolve.js';
 import { inputErrorResult, jsonResult } from './utils.js';
-
-const resolveFns = { resolveFilterValue, resolveFilters, isNumericId };
 
 const VALID_ACTIONS = ['list', 'get', 'create', 'update'];
 
@@ -67,7 +64,7 @@ export async function handleComments(
   }
 
   if (action === 'list') {
-    const execCtx = fromHandlerContext(ctx, resolveFns);
+    const execCtx = fromHandlerContext(ctx);
     const result = await listComments(
       { page, perPage, additionalFilters: filter, include },
       execCtx,

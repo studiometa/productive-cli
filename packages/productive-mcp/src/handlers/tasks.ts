@@ -9,16 +9,8 @@ import type { HandlerContext, TaskArgs, ToolResult } from './types.js';
 import { ErrorMessages } from '../errors.js';
 import { formatListResponse, formatTask } from '../formatters.js';
 import { getTaskHints } from '../hints.js';
-import {
-  resolveFilters,
-  resolveFilterValue,
-  handleResolve,
-  isNumericId,
-  type ResolvableResourceType,
-} from './resolve.js';
+import { handleResolve, type ResolvableResourceType } from './resolve.js';
 import { inputErrorResult, jsonResult } from './utils.js';
-
-const resolveFns = { resolveFilterValue, resolveFilters, isNumericId };
 
 const DEFAULT_TASK_INCLUDE = ['project', 'project.company'];
 const VALID_ACTIONS = ['list', 'get', 'create', 'update', 'resolve'];
@@ -38,7 +30,7 @@ export async function handleTasks(
     return handleResolve({ query, type, project_id }, ctx);
   }
 
-  const execCtx = fromHandlerContext(ctx, resolveFns);
+  const execCtx = fromHandlerContext(ctx);
 
   if (action === 'get') {
     if (!id) return inputErrorResult(ErrorMessages.missingId('get'));

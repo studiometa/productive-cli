@@ -18,17 +18,8 @@ import type { CommonArgs, HandlerContext, ToolResult } from './types.js';
 import { ErrorMessages } from '../errors.js';
 import { formatListResponse, formatTimeEntry } from '../formatters.js';
 import { getTimeEntryHints } from '../hints.js';
-import {
-  resolveFilters,
-  resolveFilterValue,
-  handleResolve,
-  isNumericId,
-  type ResolvableResourceType,
-} from './resolve.js';
+import { handleResolve, type ResolvableResourceType } from './resolve.js';
 import { inputErrorResult, jsonResult } from './utils.js';
-
-/** Resolve functions to pass to the bridge */
-const resolveFns = { resolveFilterValue, resolveFilters, isNumericId };
 
 const VALID_ACTIONS = ['list', 'get', 'create', 'update', 'resolve'];
 
@@ -45,7 +36,7 @@ export async function handleTime(
     return handleResolve({ query, type, project_id }, ctx);
   }
 
-  const execCtx = fromHandlerContext(ctx, resolveFns);
+  const execCtx = fromHandlerContext(ctx);
 
   if (action === 'get') {
     if (!id) return inputErrorResult(ErrorMessages.missingId('get'));
