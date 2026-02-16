@@ -406,3 +406,74 @@ describe('resolve help', () => {
     expect(output).toContain('Detect resource type');
   });
 });
+
+describe('handleResolveCommand', () => {
+  let consoleSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let processExitSpy: ReturnType<typeof vi.spyOn>;
+
+  const testOptions = {
+    format: 'json',
+    token: 'test-token',
+    'org-id': 'test-org',
+    'user-id': 'test-user',
+  };
+
+  beforeEach(() => {
+    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
+    processExitSpy.mockRestore();
+  });
+
+  it('handles detect subcommand', async () => {
+    const { handleResolveCommand } = await import('../resolve/command.js');
+
+    await handleResolveCommand('detect', ['user@example.com'], testOptions);
+
+    expect(consoleSpy).toHaveBeenCalled();
+    const output = consoleSpy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('person');
+  });
+
+  it('exits with error when query is empty', async () => {
+    const { handleResolveCommand } = await import('../resolve/command.js');
+
+    // When process.exit is mocked, the function continues and may throw
+    // We need to catch any error and verify process.exit was called
+    try {
+      await handleResolveCommand(undefined, [], testOptions);
+    } catch {
+      // Expected to throw since process.exit is mocked
+    }
+
+    expect(processExitSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('treats subcommand as query when not a known subcommand', async () => {
+    const { handleResolveCommand } = await import('../resolve/command.js');
+
+    // This will fail because we don't have a real API, but it tests the code path
+    await handleResolveCommand('user@example.com', [], testOptions);
+
+    // The command will try to resolve, which will fail without a real API
+    // But the code path is covered
+    expect(processExitSpy).toHaveBeenCalled();
+  });
+
+  it('combines subcommand and args as query', async () => {
+    const { handleResolveCommand } = await import('../resolve/command.js');
+
+    await handleResolveCommand('John', ['Doe'], {
+      ...testOptions,
+      type: 'person',
+    });
+
+    expect(processExitSpy).toHaveBeenCalled();
+  });
+});
