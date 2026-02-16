@@ -10,7 +10,6 @@ import { ValidationError } from '../../errors.js';
 import { formatBooking, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanBookingDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
-import { resolveCommandFilters, tryResolveValue } from '../../utils/resolve-filters.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -104,7 +103,7 @@ export async function bookingsList(ctx: CommandContext): Promise<void> {
     }
 
     // Resolve any human-friendly identifiers (email, project number, etc.)
-    const { resolved: resolvedFilter } = await resolveCommandFilters(ctx, filter);
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter);
 
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getBookings({
@@ -219,11 +218,11 @@ export async function bookingsAdd(ctx: CommandContext): Promise<void> {
 
   await runCommand(async () => {
     // Resolve person ID if it's a human-friendly identifier
-    const resolvedPersonId = await tryResolveValue(ctx, personId, 'person');
+    const resolvedPersonId = await ctx.tryResolveValue(personId, 'person');
 
     // Resolve service ID if provided and is a human-friendly identifier
     const resolvedServiceId = ctx.options.service
-      ? await tryResolveValue(ctx, String(ctx.options.service), 'service')
+      ? await ctx.tryResolveValue(String(ctx.options.service), 'service')
       : undefined;
 
     const response = await ctx.api.createBooking({

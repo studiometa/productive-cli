@@ -15,7 +15,6 @@ import {
 } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
 import { parseDate, parseDateRange } from '../../utils/date.js';
-import { resolveCommandFilters, tryResolveValue } from '../../utils/resolve-filters.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -121,7 +120,7 @@ export async function timeList(ctx: CommandContext): Promise<void> {
     }
 
     // Resolve any human-friendly identifiers (email, project number, etc.)
-    const { resolved: resolvedFilter } = await resolveCommandFilters(ctx, filter);
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter);
 
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getTimeEntries({
@@ -225,10 +224,10 @@ export async function timeAdd(ctx: CommandContext): Promise<void> {
     const date = String(ctx.options.date || new Date().toISOString().split('T')[0]);
 
     // Resolve person ID if it's a human-friendly identifier
-    const resolvedPersonId = await tryResolveValue(ctx, personId, 'person');
+    const resolvedPersonId = await ctx.tryResolveValue(personId, 'person');
 
     // Resolve service ID if it's a human-friendly identifier (name)
-    const resolvedServiceId = await tryResolveValue(ctx, String(ctx.options.service), 'service');
+    const resolvedServiceId = await ctx.tryResolveValue(String(ctx.options.service), 'service');
 
     const response = await ctx.api.createTimeEntry({
       person_id: resolvedPersonId,

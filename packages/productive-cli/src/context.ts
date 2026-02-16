@@ -26,12 +26,31 @@
  */
 
 import type { OutputFormat, ProductiveConfig } from './types.js';
+import type { ResolvableResourceType } from './utils/resource-resolver.js';
 import type { Spinner } from './utils/spinner.js';
 
 import { ProductiveApi } from './api.js';
 import { getConfig } from './config.js';
 import { OutputFormatter, createSpinner } from './output.js';
 import { getCache, CacheStore } from './utils/cache.js';
+import {
+  resolveCommandFilters as resolveCommandFiltersImpl,
+  tryResolveValue as tryResolveValueImpl,
+  type ResolveCommandFiltersResult,
+  type ResolveCommandFiltersOptions,
+} from './utils/resolve-filters.js';
+
+// Default no-op resolver that returns filters unchanged (for testing)
+const noopResolveFilters = async (
+  filters: Record<string, string>,
+): Promise<ResolveCommandFiltersResult> => ({
+  resolved: filters,
+  metadata: {},
+  didResolve: false,
+});
+
+// Default no-op value resolver that returns original value (for testing)
+const noopTryResolveValue = async (value: string): Promise<string> => value;
 
 /**
  * Options passed to command context creation
@@ -78,6 +97,30 @@ export interface CommandContext {
 
   /** Get sort parameter */
   getSort(): string;
+
+  /**
+   * Resolve human-friendly identifiers in filters (emails, project numbers, etc.)
+   * @param filters - Filter object with potential human-friendly values
+   * @param typeMapping - Optional mapping of filter keys to resource types
+   * @param options - Resolution options
+   */
+  resolveFilters(
+    filters: Record<string, string>,
+    typeMapping?: Record<string, ResolvableResourceType>,
+    options?: ResolveCommandFiltersOptions,
+  ): Promise<ResolveCommandFiltersResult>;
+
+  /**
+   * Try to resolve a single value, returning original on failure.
+   * @param value - Value to resolve
+   * @param type - Resource type to resolve to
+   * @param options - Resolution options
+   */
+  tryResolveValue(
+    value: string,
+    type: ResolvableResourceType,
+    options?: { projectId?: string },
+  ): Promise<string>;
 }
 
 /**
@@ -102,7 +145,7 @@ export function createContext(options: CommandOptions = {}): CommandContext {
   const api = new ProductiveApi(options as Record<string, string | boolean>);
   const cache = getCache(options['no-cache'] !== true);
 
-  return {
+  const ctx: CommandContext = {
     api,
     formatter,
     config,
@@ -123,7 +166,25 @@ export function createContext(options: CommandOptions = {}): CommandContext {
     getSort(): string {
       return String(options.sort || '');
     },
+
+    resolveFilters(
+      filters: Record<string, string>,
+      typeMapping?: Record<string, ResolvableResourceType>,
+      resolveOptions?: ResolveCommandFiltersOptions,
+    ): Promise<ResolveCommandFiltersResult> {
+      return resolveCommandFiltersImpl(ctx, filters, typeMapping, resolveOptions);
+    },
+
+    tryResolveValue(
+      value: string,
+      type: ResolvableResourceType,
+      resolveOptions?: { projectId?: string },
+    ): Promise<string> {
+      return tryResolveValueImpl(ctx, value, type, resolveOptions);
+    },
   };
+
+  return ctx;
 }
 
 /**
@@ -197,6 +258,8 @@ export function createTestContext(overrides: Partial<CommandContext> = {}): Comm
     createSpinner: overrides.createSpinner ?? (() => noopSpinner),
     getPagination: overrides.getPagination ?? (() => ({ page: 1, perPage: 100 })),
     getSort: overrides.getSort ?? (() => ''),
+    resolveFilters: overrides.resolveFilters ?? noopResolveFilters,
+    tryResolveValue: overrides.tryResolveValue ?? noopTryResolveValue,
   };
 }
 

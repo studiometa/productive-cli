@@ -8,7 +8,6 @@ import type { OutputFormat } from '../../types.js';
 import { exitWithValidationError, runCommand } from '../../error-handler.js';
 import { formatProject, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanProjectDetailRenderer } from '../../renderers/index.js';
-import { resolveCommandFilters, tryResolveValue } from '../../utils/resolve-filters.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -77,7 +76,7 @@ export async function projectsList(ctx: CommandContext): Promise<void> {
     }
 
     // Resolve any human-friendly identifiers (email, company name, etc.)
-    const { resolved: resolvedFilter } = await resolveCommandFilters(ctx, filter, {
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
       company_id: 'company',
       responsible_id: 'person',
       person_id: 'person',
@@ -132,7 +131,7 @@ export async function projectsGet(args: string[], ctx: CommandContext): Promise<
 
   await runCommand(async () => {
     // Resolve project ID if it's a human-friendly identifier (e.g., PRJ-123)
-    const resolvedId = await tryResolveValue(ctx, id, 'project');
+    const resolvedId = await ctx.tryResolveValue(id, 'project');
 
     const response = await ctx.api.getProject(resolvedId);
     const project = response.data;

@@ -79,6 +79,13 @@ vi.mock('../../context.js', () => ({
       perPage: Number(options.size || options.s || 100),
     }),
     getSort: () => String(options.sort || ''),
+    // Resolution functions - return filters/values unchanged by default
+    resolveFilters: vi.fn(async (filters: Record<string, string>) => ({
+      resolved: filters,
+      metadata: {},
+      didResolve: false,
+    })),
+    tryResolveValue: vi.fn(async (value: string) => value),
   })),
 }));
 

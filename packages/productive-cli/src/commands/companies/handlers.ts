@@ -10,7 +10,6 @@ import { ValidationError } from '../../errors.js';
 import { formatCompany, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanCompanyDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
-import { tryResolveValue } from '../../utils/resolve-filters.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -96,7 +95,7 @@ export async function companiesGet(args: string[], ctx: CommandContext): Promise
 
   await runCommand(async () => {
     // Resolve company ID if it's a human-friendly identifier (name)
-    const resolvedId = await tryResolveValue(ctx, id, 'company');
+    const resolvedId = await ctx.tryResolveValue(id, 'company');
 
     const response = await ctx.api.getCompany(resolvedId);
     const company = response.data;

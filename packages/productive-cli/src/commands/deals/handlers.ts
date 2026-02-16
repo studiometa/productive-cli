@@ -10,7 +10,6 @@ import { ValidationError } from '../../errors.js';
 import { formatDeal, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanDealDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
-import { resolveCommandFilters, tryResolveValue } from '../../utils/resolve-filters.js';
 
 /**
  * Parse filter string into key-value pairs
@@ -94,7 +93,7 @@ export async function dealsList(ctx: CommandContext): Promise<void> {
     }
 
     // Resolve any human-friendly identifiers (company name, project number, etc.)
-    const { resolved: resolvedFilter } = await resolveCommandFilters(ctx, filter, {
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
       company_id: 'company',
       project_id: 'project',
       responsible_id: 'person',
@@ -150,7 +149,7 @@ export async function dealsGet(args: string[], ctx: CommandContext): Promise<voi
 
   await runCommand(async () => {
     // Resolve deal ID if it's a human-friendly identifier (e.g., D-123)
-    const resolvedId = await tryResolveValue(ctx, id, 'deal');
+    const resolvedId = await ctx.tryResolveValue(id, 'deal');
 
     const response = await ctx.api.getDeal(resolvedId, {
       include: ['company', 'deal_status', 'responsible', 'project'],
@@ -194,11 +193,11 @@ export async function dealsAdd(ctx: CommandContext): Promise<void> {
 
   await runCommand(async () => {
     // Resolve company ID if it's a human-friendly identifier
-    const companyId = await tryResolveValue(ctx, String(ctx.options.company), 'company');
+    const companyId = await ctx.tryResolveValue(String(ctx.options.company), 'company');
 
     // Resolve responsible ID if provided
     const responsibleId = ctx.options.responsible
-      ? await tryResolveValue(ctx, String(ctx.options.responsible), 'person')
+      ? await ctx.tryResolveValue(String(ctx.options.responsible), 'person')
       : undefined;
 
     const response = await ctx.api.createDeal({
@@ -252,7 +251,7 @@ export async function dealsUpdate(args: string[], ctx: CommandContext): Promise<
     if (ctx.options['end-date'] !== undefined) data.end_date = String(ctx.options['end-date']);
     if (ctx.options.responsible !== undefined) {
       // Resolve responsible ID if it's a human-friendly identifier
-      data.responsible_id = await tryResolveValue(ctx, String(ctx.options.responsible), 'person');
+      data.responsible_id = await ctx.tryResolveValue(String(ctx.options.responsible), 'person');
     }
     if (ctx.options.status !== undefined) data.deal_status_id = String(ctx.options.status);
 
