@@ -621,5 +621,65 @@ describe('resource-resolver', () => {
       expect(resolved.assignee_id).toBe('john@example.com');
       expect(metadata.assignee_id).toBeUndefined();
     });
+
+    it('keeps original value in else branch when results are empty', async () => {
+      mockApi.getProjects.mockResolvedValue({ data: [] });
+
+      const { resolved, metadata } = await resolveFilterIds(
+        mockApi as unknown as ProductiveApi,
+        { project_id: 'PRJ-999' },
+        { project_id: 'project' },
+      );
+
+      // Value is kept as original since no results
+      expect(resolved.project_id).toBe('PRJ-999');
+      expect(metadata.project_id).toBeUndefined();
+    });
+  });
+
+  describe('resolveFilterValue', () => {
+    let mockApi: {
+      getPeople: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mockApi = {
+        getPeople: vi.fn(),
+      };
+    });
+
+    it('throws ResolveError when no results found', async () => {
+      mockApi.getPeople.mockResolvedValue({ data: [] });
+
+      await expect(
+        resolveFilterValue(mockApi as unknown as ProductiveApi, 'unknown@example.com', 'person'),
+      ).rejects.toThrow(ResolveError);
+    });
+  });
+
+  describe('resolve with caching', () => {
+    let mockApi: {
+      getPeople: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      mockApi = {
+        getPeople: vi.fn(),
+      };
+    });
+
+    it('caches single result when orgId is provided', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+
+      const results = await resolve(mockApi as unknown as ProductiveApi, 'john@example.com', {
+        orgId: 'test-org-123',
+      });
+
+      expect(results).toHaveLength(1);
+      expect(results[0].id).toBe('500521');
+      // Caching is called internally but we can't directly verify without mocking setCachedResolve
+    });
   });
 });

@@ -414,6 +414,45 @@ describe('resolve handler', () => {
       expect(resolved.project_id).toBe('PRJ-999');
       expect(metadata.project_id).toBeUndefined();
     });
+
+    it('keeps original value in else branch when results array is empty', async () => {
+      // This tests the else branch at line 434 where results.length > 0 is false
+      mockApi.getPeople.mockResolvedValue({ data: [] });
+
+      const { resolved } = await resolveFilters(mockApi as unknown as ProductiveApi, {
+        person_id: 'nonexistent@example.com',
+      });
+
+      expect(resolved.person_id).toBe('nonexistent@example.com');
+    });
+  });
+
+  describe('handleResolve - error handling', () => {
+    let mockApi: {
+      getPeople: ReturnType<typeof vi.fn>;
+    };
+
+    let mockCtx: HandlerContext;
+
+    beforeEach(() => {
+      mockApi = {
+        getPeople: vi.fn(),
+      };
+
+      mockCtx = {
+        api: mockApi as unknown as ProductiveApi,
+        formatOptions: { compact: false },
+        perPage: 20,
+      };
+    });
+
+    it('re-throws non-UserInputError errors', async () => {
+      mockApi.getPeople.mockRejectedValue(new Error('Network error'));
+
+      await expect(handleResolve({ query: 'john@example.com' }, mockCtx)).rejects.toThrow(
+        'Network error',
+      );
+    });
   });
 
   describe('handleResolve', () => {
