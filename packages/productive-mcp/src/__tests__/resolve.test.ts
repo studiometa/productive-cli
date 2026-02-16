@@ -392,6 +392,28 @@ describe('resolve handler', () => {
 
       expect(resolved.person_id).toBe('unknown@example.com');
     });
+
+    it('keeps original value when API throws error', async () => {
+      mockApi.getPeople.mockRejectedValue(new Error('API Error'));
+
+      const { resolved, metadata } = await resolveFilters(mockApi as unknown as ProductiveApi, {
+        person_id: 'john@example.com',
+      });
+
+      expect(resolved.person_id).toBe('john@example.com');
+      expect(metadata.person_id).toBeUndefined();
+    });
+
+    it('keeps original value when resolution returns empty results', async () => {
+      mockApi.getProjects.mockResolvedValue({ data: [] });
+
+      const { resolved, metadata } = await resolveFilters(mockApi as unknown as ProductiveApi, {
+        project_id: 'PRJ-999',
+      });
+
+      expect(resolved.project_id).toBe('PRJ-999');
+      expect(metadata.project_id).toBeUndefined();
+    });
   });
 
   describe('handleResolve', () => {

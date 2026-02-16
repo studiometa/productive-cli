@@ -2365,5 +2365,49 @@ describe('smart ID resolution', () => {
       const content = JSON.parse(result.content[0].text as string);
       expect(content._hints).toBeUndefined();
     });
+
+    it('should not include hints for tasks get when no_hints is true', async () => {
+      mockApi.getTask.mockResolvedValue({
+        data: { id: '456', type: 'tasks', attributes: { title: 'Test Task' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'tasks',
+          action: 'get',
+          id: '456',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+  });
+
+  describe('tasks resource - resolve action', () => {
+    it('should handle resolve action for tasks resource', async () => {
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', attributes: { name: 'Test Project' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'tasks',
+          action: 'resolve',
+          query: 'PRJ-123',
+          type: 'project',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+    });
   });
 });
