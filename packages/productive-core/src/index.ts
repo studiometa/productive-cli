@@ -148,3 +148,15 @@ export type {
 // Budgets executors
 export { buildBudgetFilters, listBudgets } from './executors/budgets/index.js';
 export type { ListBudgetsOptions } from './executors/budgets/index.js';
+
+// Reports executors
+export {
+  buildReportFilters,
+  DEFAULT_GROUPS,
+  DEFAULT_INCLUDES,
+  getReport,
+  resolveGroup,
+  resolveIncludes,
+  VALID_REPORT_TYPES,
+} from './executors/reports/index.js';
+export type { GetReportOptions, ReportType } from './executors/reports/index.js';

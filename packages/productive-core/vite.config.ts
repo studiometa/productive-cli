@@ -20,6 +20,7 @@ export default defineConfig({
         'executors/comments/index': './src/executors/comments/index.ts',
         'executors/timers/index': './src/executors/timers/index.ts',
         'executors/budgets/index': './src/executors/budgets/index.ts',
+        'executors/reports/index': './src/executors/reports/index.ts',
       },
       formats: ['es'],
       fileName: (format, entryName) => `${entryName}.js`,
