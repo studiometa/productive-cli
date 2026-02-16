@@ -88,7 +88,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "@studiometa/productive-cli": "*",
+    "@studiometa/productive-api": "*",
+    "@studiometa/productive-core": "*",
     "h3": "^1.15.1",
     "zod": "4.3.6"
   },

@@ -6,7 +6,7 @@ import { UserInputError } from '../errors.js';
 import { executeToolWithCredentials } from '../handlers.js';
 
 // Mock the ProductiveApi
-vi.mock('@studiometa/productive-cli', () => {
+vi.mock('@studiometa/productive-api', () => {
   const mockApi = {
     getProjects: vi.fn(),
     getProject: vi.fn(),
@@ -67,7 +67,7 @@ vi.mock('@studiometa/productive-cli', () => {
   };
 });
 
-import { ProductiveApi } from '@studiometa/productive-cli';
+import { ProductiveApi } from '@studiometa/productive-api';
 
 describe('handlers', () => {
   const credentials: ProductiveCredentials = {

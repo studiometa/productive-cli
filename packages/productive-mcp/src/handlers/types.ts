@@ -3,7 +3,7 @@
  */
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import type { ProductiveApi } from '@studiometa/productive-cli';
+import type { ProductiveApi } from '@studiometa/productive-api';
 
 import type { McpFormatOptions } from '../formatters.js';
 

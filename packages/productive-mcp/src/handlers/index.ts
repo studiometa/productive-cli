@@ -6,7 +6,7 @@
  * - productive: resource + action based API
  */
 
-import { ProductiveApi } from '@studiometa/productive-cli';
+import { ProductiveApi } from '@studiometa/productive-api';
 
 import type { ProductiveCredentials } from '../auth.js';
 import type { McpFormatOptions } from '../formatters.js';
@@ -106,10 +106,12 @@ export async function executeToolWithCredentials(
 ): Promise<ToolResult> {
   // Initialize API client with provided credentials
   const api = new ProductiveApi({
-    token: credentials.apiToken,
-    'org-id': credentials.organizationId,
-    'user-id': credentials.userId,
-  } as Record<string, string>);
+    config: {
+      apiToken: credentials.apiToken,
+      organizationId: credentials.organizationId,
+      userId: credentials.userId,
+    },
+  });
 
   // Handle the single consolidated tool
   if (name !== 'productive') {

@@ -4,7 +4,7 @@
  * Provides a resolve action for finding resources by human-friendly identifiers.
  */
 
-import type { ProductiveApi } from '@studiometa/productive-cli';
+import type { ProductiveApi } from '@studiometa/productive-api';
 
 import type { HandlerContext, ToolResult } from './types.js';
 
