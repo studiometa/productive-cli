@@ -1,6 +1,13 @@
 /**
- * Handler implementations for projects command
+ * CLI adapter for projects command handlers.
  */
+
+import {
+  fromCommandContext,
+  listProjects,
+  getProject,
+  type ListProjectsOptions,
+} from '@studiometa/productive-core';
 
 import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
@@ -26,6 +33,34 @@ function parseFilters(filterString: string): Record<string, string> {
 }
 
 /**
+ * Parse CLI options into ListProjectsOptions.
+ */
+function parseListOptions(ctx: CommandContext): ListProjectsOptions {
+  const options: ListProjectsOptions = {};
+
+  const additionalFilters: Record<string, string> = {};
+  if (ctx.options.filter) {
+    Object.assign(additionalFilters, parseFilters(String(ctx.options.filter)));
+  }
+  if (Object.keys(additionalFilters).length > 0) {
+    options.additionalFilters = additionalFilters;
+  }
+
+  if (ctx.options.company) options.companyId = String(ctx.options.company);
+  if (ctx.options.responsible) options.responsibleId = String(ctx.options.responsible);
+  if (ctx.options.person) options.personId = String(ctx.options.person);
+  if (ctx.options.type) options.projectType = String(ctx.options.type);
+  if (ctx.options.status) options.status = String(ctx.options.status);
+
+  const { page, perPage } = ctx.getPagination();
+  options.page = page;
+  options.perPage = perPage;
+  options.sort = ctx.getSort();
+
+  return options;
+}
+
+/**
  * List projects
  */
 export async function projectsList(ctx: CommandContext): Promise<void> {
@@ -33,71 +68,17 @@ export async function projectsList(ctx: CommandContext): Promise<void> {
   spinner.start();
 
   await runCommand(async () => {
-    const filter: Record<string, string> = {};
-
-    // Parse generic filters first
-    if (ctx.options.filter) {
-      Object.assign(filter, parseFilters(String(ctx.options.filter)));
-    }
-
-    // Specific filter options (override generic filters)
-    if (ctx.options.company) {
-      filter.company_id = String(ctx.options.company);
-    }
-    if (ctx.options.responsible) {
-      filter.responsible_id = String(ctx.options.responsible);
-    }
-    if (ctx.options.person) {
-      filter.person_id = String(ctx.options.person);
-    }
-
-    // Project type filtering (internal/client)
-    if (ctx.options.type) {
-      const typeMap: Record<string, string> = {
-        internal: '1',
-        client: '2',
-      };
-      const typeValue = typeMap[String(ctx.options.type).toLowerCase()];
-      if (typeValue) {
-        filter.project_type = typeValue;
-      }
-    }
-
-    // Status filtering (active/archived)
-    if (ctx.options.status) {
-      const statusMap: Record<string, string> = {
-        active: '1',
-        archived: '2',
-      };
-      const statusValue = statusMap[String(ctx.options.status).toLowerCase()];
-      if (statusValue) {
-        filter.status = statusValue;
-      }
-    }
-
-    // Resolve any human-friendly identifiers (email, company name, etc.)
-    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
-      company_id: 'company',
-      responsible_id: 'person',
-      person_id: 'person',
-    });
-
-    const { page, perPage } = ctx.getPagination();
-    const response = await ctx.api.getProjects({
-      page,
-      perPage,
-      filter: resolvedFilter,
-      sort: ctx.getSort(),
-    });
+    const execCtx = fromCommandContext(ctx);
+    const options = parseListOptions(ctx);
+    const result = await listProjects(options, execCtx);
 
     spinner.succeed();
 
     const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
-    const formattedData = formatListResponse(response.data, formatProject, response.meta);
+    const formattedData = formatListResponse(result.data, formatProject, result.meta);
 
     if (format === 'csv' || format === 'table') {
-      // For CSV/table, flatten the data for OutputFormatter
-      const data = response.data.map((p) => ({
+      const data = result.data.map((p) => ({
         id: p.id,
         name: p.attributes.name,
         number: p.attributes.project_number || '',
@@ -107,7 +88,6 @@ export async function projectsList(ctx: CommandContext): Promise<void> {
       }));
       ctx.formatter.output(data);
     } else {
-      // Use renderer for json and human formats
       const renderCtx = createRenderContext({
         noColor: ctx.options['no-color'] === true,
       });
@@ -130,11 +110,9 @@ export async function projectsGet(args: string[], ctx: CommandContext): Promise<
   spinner.start();
 
   await runCommand(async () => {
-    // Resolve project ID if it's a human-friendly identifier (e.g., PRJ-123)
-    const resolvedId = await ctx.tryResolveValue(id, 'project');
-
-    const response = await ctx.api.getProject(resolvedId);
-    const project = response.data;
+    const execCtx = fromCommandContext(ctx);
+    const result = await getProject({ id }, execCtx);
+    const project = result.data;
 
     spinner.succeed();
 
@@ -144,7 +122,6 @@ export async function projectsGet(args: string[], ctx: CommandContext): Promise<
     if (format === 'json') {
       ctx.formatter.output(formattedData);
     } else {
-      // Use detail renderer for human format
       const renderCtx = createRenderContext({
         noColor: ctx.options['no-color'] === true,
       });

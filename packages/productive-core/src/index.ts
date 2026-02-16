@@ -42,3 +42,7 @@ export type {
   ListTimeEntriesOptions,
   UpdateTimeEntryOptions,
 } from './executors/time/index.js';
+
+// Project executors
+export { buildProjectFilters, getProject, listProjects } from './executors/projects/index.js';
+export type { GetProjectOptions, ListProjectsOptions } from './executors/projects/index.js';

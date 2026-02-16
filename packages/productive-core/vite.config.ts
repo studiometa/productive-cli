@@ -10,6 +10,7 @@ export default defineConfig({
         'context/from-command-context': './src/context/from-command-context.ts',
         'context/from-handler-context': './src/context/from-handler-context.ts',
         'executors/time/index': './src/executors/time/index.ts',
+        'executors/projects/index': './src/executors/projects/index.ts',
       },
       formats: ['es'],
       fileName: (format, entryName) => `${entryName}.js`,
