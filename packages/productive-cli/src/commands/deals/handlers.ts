@@ -2,6 +2,7 @@
  * CLI adapter for deals command handlers.
  */
 
+import { formatDeal, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listDeals,
@@ -17,7 +18,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError } from '../../errors.js';
-import { formatDeal, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanDealDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
 import { parseFilters } from '../../utils/parse-filters.js';

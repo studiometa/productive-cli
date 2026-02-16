@@ -2,6 +2,7 @@
  * CLI adapter for companies command handlers.
  */
 
+import { formatCompany, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listCompanies,
@@ -16,7 +17,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError } from '../../errors.js';
-import { formatCompany, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanCompanyDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
 import { parseFilters } from '../../utils/parse-filters.js';

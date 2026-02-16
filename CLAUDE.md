@@ -48,6 +48,27 @@ Key principle: **executors are pure functions with zero side effects** — all d
 
 Resource resolution (email → person ID, project number → project ID) is handled by `createResourceResolver()` in core. Bridge functions create a resolver automatically — CLI/MCP handlers just call `fromCommandContext(ctx)` or `fromHandlerContext(ctx)`.
 
+## Testing Rules
+
+These rules are **mandatory** for all code in this monorepo:
+
+1. **Each package must have its own test suite approaching 100% coverage.** Every source file must have corresponding tests. Coverage thresholds are enforced per package in `vite.config.ts`.
+
+2. **Dependency injection everywhere.** Tests must use DI instead of `vi.mock()` wherever possible. The only acceptable uses of `vi.mock()` are for mocking Node.js built-in modules (e.g., `node:fs`, `node:os`) or third-party modules that don't support DI.
+   - **productive-core**: Use `createTestExecutorContext()` — never mock modules.
+   - **productive-cli**: Use `createTestContext()` with mock API/config/cache — test handler functions directly.
+   - **productive-mcp**: Use `createTestHandlerContext()` — test handler functions directly.
+   - **productive-api**: Use constructor injection (`new ProductiveApi({ config, fetch, cache })`) — mock the `fetch` function, never the module.
+
+3. **File system operations must be mocked.** Never read/write real user files in tests. Use `memfs` (already a devDependency) or mock `node:fs` to avoid side effects. The `config-store.ts`, `keychain-store.ts`, and `sqlite-cache.ts` tests must all use in-memory or mocked file systems.
+
+4. **Test file conventions:**
+   - Colocated tests go in `__tests__/` directories next to the source file.
+   - Test file names match source: `foo.ts` → `__tests__/foo.test.ts`.
+   - CLI command tests are centralized in `src/commands/__tests__/` (one file per resource).
+
+5. **No real API calls in tests.** All HTTP requests must be mocked via DI (injected `fetch`) or mock API objects.
+
 Build order: `productive-api` → `productive-core` → `productive-cli` / `productive-mcp`
 
 After changing `productive-core` source, rebuild before running CLI/MCP tests:

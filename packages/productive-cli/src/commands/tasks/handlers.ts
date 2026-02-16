@@ -2,6 +2,7 @@
  * CLI adapter for tasks command handlers.
  */
 
+import { formatTask, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listTasks,
@@ -17,7 +18,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError } from '../../errors.js';
-import { formatTask, formatListResponse } from '../../formatters/index.js';
 import {
   render,
   createRenderContext,

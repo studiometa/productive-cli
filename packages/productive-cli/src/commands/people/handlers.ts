@@ -2,6 +2,7 @@
  * CLI adapter for people command handlers.
  */
 
+import { formatPerson, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listPeople,
@@ -13,7 +14,6 @@ import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
 
 import { exitWithValidationError, runCommand } from '../../error-handler.js';
-import { formatPerson, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanPersonDetailRenderer } from '../../renderers/index.js';
 import { parseFilters } from '../../utils/parse-filters.js';
 

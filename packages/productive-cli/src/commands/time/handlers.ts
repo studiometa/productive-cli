@@ -10,6 +10,7 @@
  * All business logic lives in @studiometa/productive-core executors.
  */
 
+import { formatTimeEntry, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listTimeEntries,
@@ -26,7 +27,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError, ConfigError } from '../../errors.js';
-import { formatTimeEntry, formatListResponse } from '../../formatters/index.js';
 import {
   render,
   createRenderContext,

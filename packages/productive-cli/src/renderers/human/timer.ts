@@ -2,7 +2,8 @@
  * Human-readable renderers for Timer resources
  */
 
-import type { FormattedTimer, FormattedListResponse } from '../../formatters/types.js';
+import type { FormattedTimer, FormattedListResponse } from '@studiometa/productive-api';
+
 import type { RenderContext, ListRenderer, Renderer } from '../types.js';
 
 import { colors } from '../../utils/colors.js';

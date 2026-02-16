@@ -2,6 +2,7 @@
  * CLI adapter for comments command handlers.
  */
 
+import { formatComment, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listComments,
@@ -14,7 +15,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError } from '../../errors.js';
-import { formatComment, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanCommentDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
 import { parseFilters } from '../../utils/parse-filters.js';

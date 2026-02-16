@@ -2,6 +2,7 @@
  * CLI adapter for projects command handlers.
  */
 
+import { formatProject, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listProjects,
@@ -13,7 +14,6 @@ import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
 
 import { exitWithValidationError, runCommand } from '../../error-handler.js';
-import { formatProject, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanProjectDetailRenderer } from '../../renderers/index.js';
 import { parseFilters } from '../../utils/parse-filters.js';
 

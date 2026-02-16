@@ -2,6 +2,7 @@
  * CLI adapter for bookings command handlers.
  */
 
+import { formatBooking, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listBookings,
@@ -13,7 +14,6 @@ import type { OutputFormat } from '../../types.js';
 
 import { handleError, exitWithValidationError, runCommand } from '../../error-handler.js';
 import { ValidationError } from '../../errors.js';
-import { formatBooking, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext, humanBookingDetailRenderer } from '../../renderers/index.js';
 import { colors } from '../../utils/colors.js';
 import { parseFilters } from '../../utils/parse-filters.js';

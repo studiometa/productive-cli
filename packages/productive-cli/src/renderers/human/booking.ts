@@ -2,7 +2,8 @@
  * Human-readable renderers for Booking resources
  */
 
-import type { FormattedBooking, FormattedListResponse } from '../../formatters/types.js';
+import type { FormattedBooking, FormattedListResponse } from '@studiometa/productive-api';
+
 import type { RenderContext, ListRenderer, Renderer } from '../types.js';
 
 import { colors } from '../../utils/colors.js';

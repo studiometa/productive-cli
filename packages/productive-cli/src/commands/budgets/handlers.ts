@@ -2,6 +2,7 @@
  * CLI adapter for budgets command handlers.
  */
 
+import { formatBudget, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
   listBudgets,
@@ -12,7 +13,6 @@ import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
 
 import { runCommand } from '../../error-handler.js';
-import { formatBudget, formatListResponse } from '../../formatters/index.js';
 import { render, createRenderContext } from '../../renderers/index.js';
 import { parseFilters } from '../../utils/parse-filters.js';
 
