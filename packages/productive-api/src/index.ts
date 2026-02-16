@@ -61,5 +61,8 @@ export type {
   JsonApiResponse,
 } from './formatters/types.js';
 
+// Config (env vars + JSON file, no keychain)
+export { getConfig, setConfig, deleteConfig, clearConfig } from './config.js';
+
 // Utils
 export { stripHtml, truncate } from './utils/html.js';
