@@ -7,6 +7,8 @@ export default defineConfig({
       entry: {
         index: './src/index.ts',
         'context/index': './src/context/index.ts',
+        'context/from-command-context': './src/context/from-command-context.ts',
+        'context/from-handler-context': './src/context/from-handler-context.ts',
         'executors/time/index': './src/executors/time/index.ts',
       },
       formats: ['es'],

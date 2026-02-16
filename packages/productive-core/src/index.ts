@@ -14,6 +14,12 @@ export type {
   ResourceResolver,
 } from './context/index.js';
 export { createTestExecutorContext, defaultTestConfig, noopResolver } from './context/index.js';
+export { fromCommandContext, type CommandContextLike } from './context/index.js';
+export {
+  fromHandlerContext,
+  type HandlerContextLike,
+  type McpResolveFunctions,
+} from './context/index.js';
 
 // Executor types
 export type { Executor, ExecutorResult, PaginationOptions } from './executors/types.js';
