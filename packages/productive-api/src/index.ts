@@ -90,3 +90,4 @@ export { getConfig, setConfig, deleteConfig, clearConfig } from './config.js';
 
 // Utils
 export { stripHtml, truncate } from './utils/html.js';
+export { ConfigStore } from './utils/config-store.js';
