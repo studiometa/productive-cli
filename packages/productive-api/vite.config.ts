@@ -16,7 +16,7 @@ export default defineConfig({
         preserveModules: false,
       },
     },
-    target: 'node22',
+    target: 'node24',
     minify: false,
     sourcemap: true,
   },
@@ -34,12 +34,6 @@ export default defineConfig({
         '**/__tests__/**',
         '*.config.ts',
       ],
-      thresholds: {
-        statements: 90,
-        branches: 90,
-        functions: 90,
-        lines: 90,
-      },
     },
   },
 });

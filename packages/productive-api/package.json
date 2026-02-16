@@ -22,9 +22,9 @@
     "test:ci": "vitest run --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0-beta.4",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.1"
+    "vite": "^8.0.0-beta.14",
+    "vitest": "^4.1.0-beta.4"
   }
 }
