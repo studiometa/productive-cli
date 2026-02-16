@@ -17,19 +17,19 @@ productive(resource, action, [parameters...])
 
 ### Resources & Actions
 
-| Resource    | Actions                                   | Description             |
-| ----------- | ----------------------------------------- | ----------------------- |
-| `projects`  | `list`, `get`, `help`                     | Project management      |
-| `time`      | `list`, `get`, `create`, `update`, `help` | Time tracking           |
-| `tasks`     | `list`, `get`, `create`, `update`, `help` | Task management         |
-| `services`  | `list`, `get`, `help`                     | Budget line items       |
-| `people`    | `list`, `get`, `me`, `help`               | Team members            |
-| `companies` | `list`, `get`, `create`, `update`, `help` | Client companies        |
-| `comments`  | `list`, `get`, `create`, `update`, `help` | Comments on tasks/deals |
-| `timers`    | `list`, `get`, `start`, `stop`, `help`    | Active timers           |
-| `deals`     | `list`, `get`, `create`, `update`, `help` | Sales deals             |
-| `bookings`  | `list`, `get`, `create`, `update`, `help` | Resource scheduling     |
-| `reports`   | `get`, `help`                             | Generate reports        |
+| Resource    | Actions                                              | Description             |
+| ----------- | ---------------------------------------------------- | ----------------------- |
+| `projects`  | `list`, `get`, `resolve`, `help`                     | Project management      |
+| `time`      | `list`, `get`, `create`, `update`, `resolve`, `help` | Time tracking           |
+| `tasks`     | `list`, `get`, `create`, `update`, `resolve`, `help` | Task management         |
+| `services`  | `list`, `get`, `resolve`, `help`                     | Budget line items       |
+| `people`    | `list`, `get`, `me`, `resolve`, `help`               | Team members            |
+| `companies` | `list`, `get`, `create`, `update`, `resolve`, `help` | Client companies        |
+| `comments`  | `list`, `get`, `create`, `update`, `help`            | Comments on tasks/deals |
+| `timers`    | `list`, `get`, `start`, `stop`, `help`               | Active timers           |
+| `deals`     | `list`, `get`, `create`, `update`, `resolve`, `help` | Sales deals             |
+| `bookings`  | `list`, `get`, `create`, `update`, `help`            | Resource scheduling     |
+| `reports`   | `get`, `help`                                        | Generate reports        |
 
 ### Getting Help
 
@@ -58,6 +58,92 @@ Returns filters, fields, includes, and examples for that resource.
 | `include`  | array   | Related resources to include                                                             |
 | `query`    | string  | Text search (behavior varies by resource - may search related fields like project names) |
 | `no_hints` | boolean | Disable contextual hints in responses (default: false)                                   |
+
+## Smart ID Resolution
+
+Use human-friendly identifiers instead of numeric IDs. The server automatically resolves:
+
+- **Emails** → Person IDs: `user@example.com` → `500521`
+- **Project numbers** → Project IDs: `PRJ-123` or `P-123` → `777332`
+- **Deal numbers** → Deal IDs: `D-456` or `DEAL-456` → `888123`
+- **Names** → IDs: Company names, service names (with project context)
+
+### Auto-Resolution in Filters
+
+Filters automatically resolve human-friendly values:
+
+```json
+// Email resolved to person ID
+{
+  "resource": "tasks",
+  "action": "list",
+  "filter": { "assignee_id": "user@example.com" }
+}
+
+// Project number resolved
+{
+  "resource": "time",
+  "action": "list",
+  "filter": { "project_id": "PRJ-123" }
+}
+```
+
+Response includes `_resolved` metadata showing what was resolved:
+
+```json
+{
+  "data": [...],
+  "_resolved": {
+    "assignee_id": {
+      "input": "user@example.com",
+      "id": "500521",
+      "label": "John Doe"
+    }
+  }
+}
+```
+
+### Auto-Resolution in Get Actions
+
+Use human-friendly IDs directly in `get` actions:
+
+```json
+{ "resource": "projects", "action": "get", "id": "PRJ-123" }
+{ "resource": "people", "action": "get", "id": "user@example.com" }
+{ "resource": "deals", "action": "get", "id": "D-456" }
+```
+
+### Explicit Resolution with `resolve` Action
+
+Look up resources by human-friendly identifiers:
+
+```json
+// Resolve email to person
+{ "resource": "people", "action": "resolve", "query": "user@example.com" }
+
+// Resolve project number
+{ "resource": "projects", "action": "resolve", "query": "PRJ-123" }
+
+// Resolve with type hint (when pattern is ambiguous)
+{ "resource": "time", "action": "resolve", "query": "Development", "type": "service", "project_id": "777332" }
+```
+
+Response:
+
+```json
+{
+  "matches": [
+    {
+      "id": "500521",
+      "label": "John Doe",
+      "type": "person",
+      "exact": true
+    }
+  ],
+  "query": "user@example.com",
+  "detected_type": "person"
+}
+```
 
 ## Examples by Resource
 

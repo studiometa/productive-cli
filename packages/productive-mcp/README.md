@@ -14,6 +14,7 @@ MCP (Model Context Protocol) server for [Productive.io](https://productive.io) A
 - 🌐 Deploy once, share with your team via Claude Desktop custom connectors
 - 🐳 Docker-ready for easy deployment
 - ⚡ **Token-optimized** - Single tool design minimizes context usage (~180 tokens)
+- 🆔 **Smart ID resolution** - Use emails, project numbers instead of numeric IDs
 - 📦 Built on [@studiometa/productive-cli](../productive-cli)
 
 ## Usage Modes

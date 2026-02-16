@@ -54,6 +54,71 @@ Three methods (in priority order):
 
 Always use `--format json` for parsing and automation.
 
+## Smart ID Resolution
+
+Use human-friendly identifiers instead of numeric IDs in any command:
+
+### Auto-Resolution in Filters
+
+```bash
+# Email → Person ID
+productive tasks list --assignee "user@example.com"
+productive time list --person "john@company.com"
+
+# Project number → Project ID
+productive tasks list --project "PRJ-123"
+productive time list --project "P-456"
+
+# Company/deal names
+productive deals list --company "Studio Meta"
+productive tasks list --company "Acme Corp"
+```
+
+### Resolve Command
+
+Lookup resources by human-friendly identifiers:
+
+```bash
+# Resolve email to person ID
+productive resolve "user@example.com"
+# Output: 500521  John Doe  (person)  [exact]
+
+# Resolve project number
+productive resolve "PRJ-123"
+# Output: 777332  My Project  (project)  [exact]
+
+# Quiet mode for scripting
+productive resolve "user@example.com" -q
+# Output: 500521
+
+# Detect pattern type
+productive resolve detect "user@example.com"
+# Output: person
+
+# JSON output
+productive resolve "PRJ-123" --format json
+```
+
+### Use in Scripts
+
+```bash
+# Get person ID and use in filter
+PERSON_ID=$(productive resolve "user@example.com" -q)
+productive time list --person "$PERSON_ID"
+
+# Or use auto-resolution directly (simpler)
+productive time list --person "user@example.com"
+```
+
+### Supported Patterns
+
+| Pattern             | Example             | Resolves To        |
+| ------------------- | ------------------- | ------------------ |
+| Email               | `user@example.com`  | Person ID          |
+| Project number      | `PRJ-123`, `P-123`  | Project ID         |
+| Deal number         | `D-456`, `DEAL-456` | Deal ID            |
+| Name (with context) | `"Studio Meta"`     | Company/Service ID |
+
 ## Commands
 
 ### Projects
