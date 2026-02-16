@@ -40,11 +40,13 @@ productive-mcp     → productive-core    # MCP server handlers, OAuth
 ```
 
 - **productive-api**: `ProductiveApi` (explicit config injection), resource types, formatters, `ProductiveApiError`, `ApiCache` interface
-- **productive-core**: pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, bridge functions (`fromCommandContext`, `fromHandlerContext`)
-- **productive-cli**: CLI commands, human/table/CSV renderers, keychain config, SQLite cache
-- **productive-mcp**: MCP tool handlers, OAuth, MCP-specific compact formatters
+- **productive-core**: pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, `createResourceResolver()` factory, bridge functions (`fromCommandContext`, `fromHandlerContext`)
+- **productive-cli**: CLI commands, human/table/CSV renderers, keychain config, SQLite cache. Formatters re-export from `productive-api`.
+- **productive-mcp**: MCP tool handlers, OAuth, MCP-specific compact formatters. `resolve.ts` is a thin wrapper around core's resolver.
 
 Key principle: **executors are pure functions with zero side effects** — all dependencies injected via `ExecutorContext`. Tests use `createTestExecutorContext()` with no `vi.mock` needed.
+
+Resource resolution (email → person ID, project number → project ID) is handled by `createResourceResolver()` in core. Bridge functions create a resolver automatically — CLI/MCP handlers just call `fromCommandContext(ctx)` or `fromHandlerContext(ctx)`.
 
 Build order: `productive-api` → `productive-core` → `productive-cli` / `productive-mcp`
 
