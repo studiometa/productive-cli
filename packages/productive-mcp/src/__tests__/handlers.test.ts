@@ -1830,3 +1830,584 @@ describe('include parameter', () => {
     });
   });
 });
+
+describe('smart ID resolution', () => {
+  const credentials: ProductiveCredentials = {
+    apiToken: 'test-token',
+    organizationId: 'test-org',
+    userId: 'test-user',
+  };
+
+  let mockApi: ReturnType<typeof ProductiveApi>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockApi = new ProductiveApi({}) as ReturnType<typeof ProductiveApi>;
+  });
+
+  describe('time resource', () => {
+    it('should resolve person email in create action', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+      mockApi.createTimeEntry.mockResolvedValue({
+        data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'time',
+          action: 'create',
+          person_id: 'john@example.com',
+          service_id: '456',
+          time: 480,
+          date: '2024-01-15',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getPeople).toHaveBeenCalled();
+      expect(mockApi.createTimeEntry).toHaveBeenCalledWith(
+        expect.objectContaining({ person_id: '500521' }),
+      );
+    });
+
+    it('should resolve filter with email in list action', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+      mockApi.getTimeEntries.mockResolvedValue({
+        data: [{ id: '1', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } }],
+        meta: { current_page: 1, total_pages: 1 },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'time',
+          action: 'list',
+          filter: { person_id: 'john@example.com' },
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getPeople).toHaveBeenCalled();
+      expect(mockApi.getTimeEntries).toHaveBeenCalledWith(
+        expect.objectContaining({ filter: { person_id: '500521' } }),
+      );
+      // Check resolution metadata is included
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._resolved).toBeDefined();
+      expect(content._resolved.person_id).toBeDefined();
+    });
+
+    it('should handle resolve action for time resource', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'time',
+          action: 'resolve',
+          query: 'john@example.com',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+      expect(content.matches[0].id).toBe('500521');
+    });
+  });
+
+  describe('deals resource', () => {
+    it('should resolve deal number in get action', async () => {
+      mockApi.getDeals.mockResolvedValue({
+        data: [{ id: '888', attributes: { name: 'Test Deal' } }],
+      });
+      mockApi.getDeal.mockResolvedValue({
+        data: { id: '888', type: 'deals', attributes: { name: 'Test Deal' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'deals',
+          action: 'get',
+          id: 'D-123',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getDeals).toHaveBeenCalled();
+      expect(mockApi.getDeal).toHaveBeenCalledWith('888', expect.anything());
+    });
+
+    it('should resolve company name in create action', async () => {
+      mockApi.getCompanies.mockResolvedValue({
+        data: [{ id: '999', attributes: { name: 'Test Company' } }],
+      });
+      mockApi.createDeal.mockResolvedValue({
+        data: { id: '888', type: 'deals', attributes: { name: 'New Deal' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'deals',
+          action: 'create',
+          name: 'New Deal',
+          company_id: 'Test Company',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getCompanies).toHaveBeenCalled();
+      expect(mockApi.createDeal).toHaveBeenCalledWith(
+        expect.objectContaining({ company_id: '999' }),
+      );
+    });
+
+    it('should handle resolve action for deals resource', async () => {
+      mockApi.getDeals.mockResolvedValue({
+        data: [{ id: '888', attributes: { name: 'Test Deal' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'deals',
+          action: 'resolve',
+          query: 'D-123',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+    });
+  });
+
+  describe('people resource', () => {
+    it('should resolve email in get action', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+      mockApi.getPerson.mockResolvedValue({
+        data: {
+          id: '500521',
+          type: 'people',
+          attributes: { first_name: 'John', last_name: 'Doe' },
+        },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'people',
+          action: 'get',
+          id: 'john@example.com',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getPeople).toHaveBeenCalled();
+      expect(mockApi.getPerson).toHaveBeenCalledWith('500521');
+    });
+
+    it('should handle resolve action for people resource', async () => {
+      mockApi.getPeople.mockResolvedValue({
+        data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'people',
+          action: 'resolve',
+          query: 'john@example.com',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+      expect(content.matches[0].type).toBe('person');
+    });
+  });
+
+  describe('tasks resource', () => {
+    it('should resolve project number in filter', async () => {
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', attributes: { name: 'Test Project' } }],
+      });
+      mockApi.getTasks.mockResolvedValue({
+        data: [{ id: '1', type: 'tasks', attributes: { title: 'Task 1' } }],
+        meta: { current_page: 1, total_pages: 1 },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'tasks',
+          action: 'list',
+          filter: { project_id: 'PRJ-123' },
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getProjects).toHaveBeenCalled();
+      expect(mockApi.getTasks).toHaveBeenCalledWith(
+        expect.objectContaining({ filter: expect.objectContaining({ project_id: '777' }) }),
+      );
+    });
+  });
+
+  describe('projects resource', () => {
+    it('should resolve project number in get action', async () => {
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', attributes: { name: 'Test Project' } }],
+      });
+      mockApi.getProject.mockResolvedValue({
+        data: { id: '777', type: 'projects', attributes: { name: 'Test Project' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'projects',
+          action: 'get',
+          id: 'PRJ-123',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getProjects).toHaveBeenCalled();
+      expect(mockApi.getProject).toHaveBeenCalledWith('777');
+    });
+
+    it('should resolve filter with company name in list action', async () => {
+      mockApi.getCompanies.mockResolvedValue({
+        data: [{ id: '999', attributes: { name: 'Test Company' } }],
+      });
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', type: 'projects', attributes: { name: 'Test Project' } }],
+        meta: { current_page: 1, total_pages: 1 },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'projects',
+          action: 'list',
+          filter: { company_id: 'Test Company' },
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._resolved).toBeDefined();
+    });
+
+    it('should handle resolve action for projects resource', async () => {
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', attributes: { name: 'Test Project' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'projects',
+          action: 'resolve',
+          query: 'PRJ-123',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+    });
+  });
+
+  describe('deals resource - list resolution', () => {
+    it('should resolve filter with company name in list action', async () => {
+      mockApi.getCompanies.mockResolvedValue({
+        data: [{ id: '999', attributes: { name: 'Test Company' } }],
+      });
+      mockApi.getDeals.mockResolvedValue({
+        data: [{ id: '888', type: 'deals', attributes: { name: 'Test Deal' } }],
+        meta: { current_page: 1, total_pages: 1 },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'deals',
+          action: 'list',
+          filter: { company_id: 'Test Company' },
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._resolved).toBeDefined();
+    });
+  });
+
+  describe('people resource - list resolution', () => {
+    it('should resolve filter with email in list action', async () => {
+      mockApi.getPeople
+        .mockResolvedValueOnce({
+          data: [{ id: '500521', attributes: { first_name: 'John', last_name: 'Doe' } }],
+        })
+        .mockResolvedValueOnce({
+          data: [
+            { id: '500521', type: 'people', attributes: { first_name: 'John', last_name: 'Doe' } },
+          ],
+          meta: { current_page: 1, total_pages: 1 },
+        });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'people',
+          action: 'list',
+          filter: { creator_id: 'john@example.com' },
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._resolved).toBeDefined();
+    });
+  });
+
+  describe('time resource - service resolution', () => {
+    it('should resolve service_id in create action', async () => {
+      mockApi.getServices.mockResolvedValue({
+        data: [{ id: '111', attributes: { name: 'Development' } }],
+      });
+      mockApi.createTimeEntry.mockResolvedValue({
+        data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'time',
+          action: 'create',
+          person_id: '123',
+          service_id: 'Development',
+          project_id: '777',
+          time: 480,
+          date: '2024-01-15',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      expect(mockApi.getServices).toHaveBeenCalled();
+      expect(mockApi.createTimeEntry).toHaveBeenCalledWith(
+        expect.objectContaining({ service_id: '111' }),
+      );
+    });
+  });
+
+  describe('companies resource - resolve action', () => {
+    it('should handle resolve action for companies resource', async () => {
+      mockApi.getCompanies.mockResolvedValue({
+        data: [{ id: '999', attributes: { name: 'Test Company' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'companies',
+          action: 'resolve',
+          query: 'Test',
+          type: 'company',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+    });
+  });
+
+  describe('no_hints option', () => {
+    it('should not include hints for time get when no_hints is true', async () => {
+      mockApi.getTimeEntry.mockResolvedValue({
+        data: { id: '123', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'time',
+          action: 'get',
+          id: '123',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should not include hints for projects get when no_hints is true', async () => {
+      mockApi.getProject.mockResolvedValue({
+        data: { id: '777', type: 'projects', attributes: { name: 'Test Project' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'projects',
+          action: 'get',
+          id: '777',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should not include hints for people get when no_hints is true', async () => {
+      mockApi.getPerson.mockResolvedValue({
+        data: {
+          id: '500521',
+          type: 'people',
+          attributes: { first_name: 'John', last_name: 'Doe' },
+        },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'people',
+          action: 'get',
+          id: '500521',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should not include hints for people me when no_hints is true', async () => {
+      mockApi.getPerson.mockResolvedValue({
+        data: {
+          id: 'test-user',
+          type: 'people',
+          attributes: { first_name: 'Test', last_name: 'User' },
+        },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'people',
+          action: 'me',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should not include hints for deals get when no_hints is true', async () => {
+      mockApi.getDeal.mockResolvedValue({
+        data: { id: '888', type: 'deals', attributes: { name: 'Test Deal' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'deals',
+          action: 'get',
+          id: '888',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should not include hints for tasks get when no_hints is true', async () => {
+      mockApi.getTask.mockResolvedValue({
+        data: { id: '456', type: 'tasks', attributes: { title: 'Test Task' } },
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'tasks',
+          action: 'get',
+          id: '456',
+          no_hints: true,
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._hints).toBeUndefined();
+    });
+  });
+
+  describe('tasks resource - resolve action', () => {
+    it('should handle resolve action for tasks resource', async () => {
+      mockApi.getProjects.mockResolvedValue({
+        data: [{ id: '777', attributes: { name: 'Test Project' } }],
+      });
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'tasks',
+          action: 'resolve',
+          query: 'PRJ-123',
+          type: 'project',
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content.matches).toBeDefined();
+    });
+  });
+});

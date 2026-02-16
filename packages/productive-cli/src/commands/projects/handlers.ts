@@ -75,11 +75,18 @@ export async function projectsList(ctx: CommandContext): Promise<void> {
       }
     }
 
+    // Resolve any human-friendly identifiers (email, company name, etc.)
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
+      company_id: 'company',
+      responsible_id: 'person',
+      person_id: 'person',
+    });
+
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getProjects({
       page,
       perPage,
-      filter,
+      filter: resolvedFilter,
       sort: ctx.getSort(),
     });
 
@@ -123,7 +130,10 @@ export async function projectsGet(args: string[], ctx: CommandContext): Promise<
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getProject(id);
+    // Resolve project ID if it's a human-friendly identifier (e.g., PRJ-123)
+    const resolvedId = await ctx.tryResolveValue(id, 'project');
+
+    const response = await ctx.api.getProject(resolvedId);
     const project = response.data;
 
     spinner.succeed();

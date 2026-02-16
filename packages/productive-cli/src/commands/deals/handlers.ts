@@ -92,11 +92,18 @@ export async function dealsList(ctx: CommandContext): Promise<void> {
       }
     }
 
+    // Resolve any human-friendly identifiers (company name, project number, etc.)
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
+      company_id: 'company',
+      project_id: 'project',
+      responsible_id: 'person',
+    });
+
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getDeals({
       page,
       perPage,
-      filter,
+      filter: resolvedFilter,
       sort: ctx.getSort(),
       include: ['company', 'deal_status', 'responsible'],
     });
@@ -141,7 +148,10 @@ export async function dealsGet(args: string[], ctx: CommandContext): Promise<voi
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getDeal(id, {
+    // Resolve deal ID if it's a human-friendly identifier (e.g., D-123)
+    const resolvedId = await ctx.tryResolveValue(id, 'deal');
+
+    const response = await ctx.api.getDeal(resolvedId, {
       include: ['company', 'deal_status', 'responsible', 'project'],
     });
     const deal = response.data;
@@ -182,12 +192,20 @@ export async function dealsAdd(ctx: CommandContext): Promise<void> {
   }
 
   await runCommand(async () => {
+    // Resolve company ID if it's a human-friendly identifier
+    const companyId = await ctx.tryResolveValue(String(ctx.options.company), 'company');
+
+    // Resolve responsible ID if provided
+    const responsibleId = ctx.options.responsible
+      ? await ctx.tryResolveValue(String(ctx.options.responsible), 'person')
+      : undefined;
+
     const response = await ctx.api.createDeal({
       name: String(ctx.options.name),
-      company_id: String(ctx.options.company),
+      company_id: companyId,
       date: ctx.options.date ? String(ctx.options.date) : undefined,
       budget: ctx.options.budget === true,
-      responsible_id: ctx.options.responsible ? String(ctx.options.responsible) : undefined,
+      responsible_id: responsibleId,
     });
 
     spinner.succeed();
@@ -231,8 +249,10 @@ export async function dealsUpdate(args: string[], ctx: CommandContext): Promise<
     if (ctx.options.name !== undefined) data.name = String(ctx.options.name);
     if (ctx.options.date !== undefined) data.date = String(ctx.options.date);
     if (ctx.options['end-date'] !== undefined) data.end_date = String(ctx.options['end-date']);
-    if (ctx.options.responsible !== undefined)
-      data.responsible_id = String(ctx.options.responsible);
+    if (ctx.options.responsible !== undefined) {
+      // Resolve responsible ID if it's a human-friendly identifier
+      data.responsible_id = await ctx.tryResolveValue(String(ctx.options.responsible), 'person');
+    }
     if (ctx.options.status !== undefined) data.deal_status_id = String(ctx.options.status);
 
     if (Object.keys(data).length === 0) {

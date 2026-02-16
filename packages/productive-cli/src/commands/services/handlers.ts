@@ -83,11 +83,14 @@ export async function servicesList(ctx: CommandContext): Promise<void> {
       filter.time_tracking_enabled = ctx.options['time-tracking'] ? 'true' : 'false';
     }
 
+    // Resolve any human-friendly identifiers (email, project number, etc.)
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter);
+
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getServices({
       page,
       perPage,
-      filter,
+      filter: resolvedFilter,
     });
 
     spinner.succeed();

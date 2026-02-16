@@ -79,11 +79,17 @@ export async function peopleList(ctx: CommandContext): Promise<void> {
       }
     }
 
+    // Resolve any human-friendly identifiers (company name, project number, etc.)
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter, {
+      company_id: 'company',
+      project_id: 'project',
+    });
+
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getPeople({
       page,
       perPage,
-      filter,
+      filter: resolvedFilter,
       sort: ctx.getSort(),
     });
 
@@ -126,7 +132,10 @@ export async function peopleGet(args: string[], ctx: CommandContext): Promise<vo
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getPerson(id);
+    // Resolve person ID if it's a human-friendly identifier (e.g., email)
+    const resolvedId = await ctx.tryResolveValue(id, 'person');
+
+    const response = await ctx.api.getPerson(resolvedId);
     const person = response.data;
 
     spinner.succeed();

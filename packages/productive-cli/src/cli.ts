@@ -13,6 +13,7 @@ import { handleDealsCommand, showDealsHelp } from './commands/deals/index.js';
 import { handlePeopleCommand, showPeopleHelp } from './commands/people/index.js';
 import { handleProjectsCommand, showProjectsHelp } from './commands/projects/index.js';
 import { handleReportsCommand, showReportsHelp } from './commands/reports/index.js';
+import { handleResolveCommand, showResolveHelp } from './commands/resolve/index.js';
 import { handleServicesCommand, showServicesHelp } from './commands/services/index.js';
 import { handleTasksCommand, showTasksHelp } from './commands/tasks/index.js';
 import { handleTimeCommand, showTimeHelp } from './commands/time/index.js';
@@ -100,6 +101,10 @@ ${colors.bold('COMMANDS:')}
     project             Project reports
     budget              Budget reports
     person              Person reports
+
+  resolve             Resolve human-friendly identifiers to IDs
+    <query>             Resolve by email, name, project number, etc.
+    detect <query>      Detect resource type from pattern
 
   cache               Manage CLI cache
     status              Show cache statistics
@@ -340,6 +345,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         handleCacheCommand(subcommand || 'status', positional, options);
+        break;
+
+      case 'resolve':
+        if (wantsHelp) {
+          showResolveHelp(subcommand);
+          process.exit(0);
+        }
+        await handleResolveCommand(subcommand, positional, options);
         break;
 
       case 'api':

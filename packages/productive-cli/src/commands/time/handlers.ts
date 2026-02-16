@@ -119,11 +119,14 @@ export async function timeList(ctx: CommandContext): Promise<void> {
       }
     }
 
+    // Resolve any human-friendly identifiers (email, project number, etc.)
+    const { resolved: resolvedFilter } = await ctx.resolveFilters(filter);
+
     const { page, perPage } = ctx.getPagination();
     const response = await ctx.api.getTimeEntries({
       page,
       perPage,
-      filter,
+      filter: resolvedFilter,
       sort: ctx.getSort(),
     });
 
@@ -220,9 +223,15 @@ export async function timeAdd(ctx: CommandContext): Promise<void> {
   await runCommand(async () => {
     const date = String(ctx.options.date || new Date().toISOString().split('T')[0]);
 
+    // Resolve person ID if it's a human-friendly identifier
+    const resolvedPersonId = await ctx.tryResolveValue(personId, 'person');
+
+    // Resolve service ID if it's a human-friendly identifier (name)
+    const resolvedServiceId = await ctx.tryResolveValue(String(ctx.options.service), 'service');
+
     const response = await ctx.api.createTimeEntry({
-      person_id: personId,
-      service_id: String(ctx.options.service),
+      person_id: resolvedPersonId,
+      service_id: resolvedServiceId,
       date,
       time: parseInt(String(ctx.options.time)),
       note: String(ctx.options.note || ''),

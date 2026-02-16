@@ -152,8 +152,56 @@ Available commands:
   budgets      Manage budgets
   cache        Manage CLI cache
   api          Make custom API requests
+  resolve      Resolve human-friendly IDs (email, project number)
   completion   Generate shell completion scripts
 ```
+
+### Smart ID Resolution
+
+Use human-friendly identifiers instead of numeric IDs:
+
+```bash
+# Resolve email to person ID
+productive resolve "user@example.com"
+# Output: 500521  John Doe  (person)  [exact]
+
+# Resolve project number
+productive resolve "PRJ-123"
+
+# Quiet mode for scripting
+productive resolve "user@example.com" -q
+# Output: 500521
+
+# JSON output
+productive resolve "PRJ-123" --format json
+
+# Detect pattern type without resolving
+productive resolve detect "user@example.com"
+# Output: person
+```
+
+**Auto-resolution in filters:**
+
+All commands automatically resolve human-friendly identifiers:
+
+```bash
+# Email resolved to person ID
+productive tasks list --assignee "user@example.com"
+productive time list --person "john@company.com"
+
+# Project number resolved
+productive tasks list --project "PRJ-123"
+productive time list --project "P-456"
+```
+
+**Supported patterns:**
+
+| Pattern        | Example             | Resolves To |
+| -------------- | ------------------- | ----------- |
+| Email          | `user@example.com`  | Person ID   |
+| Project number | `PRJ-123`, `P-123`  | Project ID  |
+| Deal number    | `D-456`, `DEAL-456` | Deal ID     |
+| Name           | `"Studio Meta"`     | Company ID  |
 
 ### Configuration
 

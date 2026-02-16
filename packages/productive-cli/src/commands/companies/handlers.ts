@@ -94,7 +94,10 @@ export async function companiesGet(args: string[], ctx: CommandContext): Promise
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getCompany(id);
+    // Resolve company ID if it's a human-friendly identifier (name)
+    const resolvedId = await ctx.tryResolveValue(id, 'company');
+
+    const response = await ctx.api.getCompany(resolvedId);
     const company = response.data;
 
     spinner.succeed();
