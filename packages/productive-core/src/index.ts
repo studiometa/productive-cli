@@ -14,11 +14,15 @@ export type {
   ResourceResolver,
 } from './context/index.js';
 export { createTestExecutorContext, defaultTestConfig, noopResolver } from './context/index.js';
-export { fromCommandContext, type CommandContextLike } from './context/index.js';
+export {
+  fromCommandContext,
+  type CommandContextLike,
+  type FromCommandContextOptions,
+} from './context/index.js';
 export {
   fromHandlerContext,
   type HandlerContextLike,
-  type McpResolveFunctions,
+  type FromHandlerContextOptions,
 } from './context/index.js';
 
 // Resource resolver

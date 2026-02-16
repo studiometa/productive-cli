@@ -1,64 +1,37 @@
 /**
  * Bridge from CLI CommandContext to ExecutorContext.
  *
- * Creates an ExecutorContext that delegates to the CLI's existing
- * resolver and API instances, allowing executors to be used
- * from CLI command handlers.
+ * Creates an ExecutorContext that uses the core resource resolver,
+ * optionally with a cache provided by the CLI.
  */
 
 import type { ProductiveApi } from '@studiometa/productive-api';
 
-import type { ExecutorContext, ResourceResolver, ResolvableResourceType } from './types.js';
+import type { ExecutorContext } from './types.js';
+
+import { createResourceResolver, type ResolverCache } from '../resolvers/index.js';
 
 /**
  * Minimal interface for what we need from CommandContext.
- * Uses ProductiveApi directly for type compatibility.
  */
 export interface CommandContextLike {
   api: ProductiveApi;
   config: { userId?: string; organizationId?: string };
-  resolveFilters(
-    filters: Record<string, string>,
-    typeMapping?: Record<string, string>,
-  ): Promise<{
-    resolved: Record<string, string>;
-    metadata: Record<string, unknown>;
-    didResolve?: boolean;
-  }>;
-  tryResolveValue(value: string, type: string, options?: { projectId?: string }): Promise<string>;
 }
 
 /**
- * Create a ResourceResolver that delegates to CommandContext methods.
+ * Options for creating an executor context from a command context.
  */
-function createResolverFromCommandContext(ctx: CommandContextLike): ResourceResolver {
-  return {
-    async resolveValue(
-      value: string,
-      type: ResolvableResourceType,
-      options?: { projectId?: string },
-    ): Promise<string> {
-      return ctx.tryResolveValue(value, type, options);
-    },
-
-    async resolveFilters(
-      filters: Record<string, string>,
-      typeMapping?: Record<string, ResolvableResourceType>,
-    ): Promise<{
-      resolved: Record<string, string>;
-      metadata: Record<string, never>;
-    }> {
-      const result = await ctx.resolveFilters(filters, typeMapping);
-      return {
-        resolved: result.resolved,
-        metadata: result.metadata as Record<string, never>,
-      };
-    },
-  };
+export interface FromCommandContextOptions {
+  /** Optional cache for the resource resolver */
+  cache?: ResolverCache;
 }
 
 /**
  * Create an ExecutorContext from a CLI CommandContext.
+ *
+ * Uses the core's createResourceResolver for ID resolution,
+ * with optional cache injection from the CLI layer.
  *
  * @example
  * ```typescript
@@ -72,13 +45,21 @@ function createResolverFromCommandContext(ctx: CommandContextLike): ResourceReso
  * }
  * ```
  */
-export function fromCommandContext(ctx: CommandContextLike): ExecutorContext {
+export function fromCommandContext(
+  ctx: CommandContextLike,
+  options: FromCommandContextOptions = {},
+): ExecutorContext {
+  const orgId = ctx.config.organizationId ?? '';
+
   return {
     api: ctx.api,
-    resolver: createResolverFromCommandContext(ctx),
+    resolver: createResourceResolver(ctx.api, {
+      cache: options.cache,
+      orgId,
+    }),
     config: {
       userId: ctx.config.userId,
-      organizationId: ctx.config.organizationId ?? '',
+      organizationId: orgId,
     },
   };
 }
