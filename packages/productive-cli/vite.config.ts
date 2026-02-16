@@ -41,9 +41,12 @@ export default defineConfig({
       exclude: [
         'node_modules/**',
         'dist/**',
-        'src/cli.ts', // CLI entry point, tested manually
-        'src/index.ts', // Entry point export file
+        'src/cli.ts', // CLI entry point, tested via e2e
+        'src/index.ts', // Entry point, CLI is not a library
         'src/types.ts', // Type definitions only
+        'src/commands/*/index.ts', // Barrel re-exports
+        'src/renderers/index.ts', // Barrel re-export
+        'src/renderers/human/index.ts', // Barrel re-export
         'scripts/**',
         '**/*.test.ts',
         '**/__tests__/**',
