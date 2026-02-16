@@ -136,7 +136,9 @@ export class KanbanRenderer implements ListRenderer<FormattedTask> {
       }
     }
 
-    const columns = Array.from(statusMap.values()).toSorted((a, b) => a.name.localeCompare(b.name));
+    const columns = Array.from(statusMap.values())
+      .slice()
+      .toSorted((a, b) => a.name.localeCompare(b.name));
 
     if (defaultColumn.tasks.length > 0) {
       columns.push(defaultColumn);
