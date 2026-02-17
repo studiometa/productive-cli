@@ -44,8 +44,6 @@ interface SingleExecutorResult {
 interface CreateConfig<TArgs> {
   /** Fields that must be present for create */
   required: (keyof TArgs)[];
-  /** Custom validation (return error message or undefined if valid) */
-  validate?: (args: TArgs) => string | undefined;
   /** Custom validation that returns a ToolResult on error, or undefined if valid */
   validateArgs?: (args: TArgs) => ToolResult | undefined;
   /** Map args to executor options */
@@ -236,14 +234,6 @@ export function createResourceHandler<TArgs extends CommonArgs = CommonArgs>(
       if (createConfig.validateArgs) {
         const errorResult = createConfig.validateArgs(args);
         if (errorResult) return errorResult;
-      }
-
-      // Run custom validation if provided
-      if (createConfig.validate) {
-        const errorMessage = createConfig.validate(args);
-        if (errorMessage) {
-          return inputErrorResult(ErrorMessages.missingRequiredFields(displayName, [errorMessage]));
-        }
       }
 
       const options = createConfig.mapOptions(args);

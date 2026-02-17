@@ -302,6 +302,22 @@ describe('createResourceHandler', () => {
   });
 
   describe('update action', () => {
+    it('should return error when update is not configured', async () => {
+      const handler = createResourceHandler({
+        resource: 'tasks',
+        actions: ['list'],
+        formatter: mockFormatter,
+        executors: {
+          list: vi.fn(),
+        },
+      });
+
+      const result = await handler('update', { id: '1' }, createMockHandlerContext());
+
+      expect(result.isError).toBe(true);
+      expect((result.content[0] as { text: string }).text).toContain('Invalid action');
+    });
+
     it('should return error when id is missing', async () => {
       const handler = createResourceHandler({
         resource: 'tasks',

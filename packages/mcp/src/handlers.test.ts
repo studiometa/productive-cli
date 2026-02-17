@@ -1428,6 +1428,33 @@ describe('handlers', () => {
         expect(mockApi.stopTimer).toHaveBeenCalledWith('123');
       });
 
+      it('should handle create action (alias for start)', async () => {
+        const mockResponse = {
+          data: { id: '789', type: 'timers', attributes: { started_at: '2024-01-15T10:00:00Z' } },
+        };
+        mockApi.startTimer.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'timers', action: 'create', service_id: '123' },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        expect(mockApi.startTimer).toHaveBeenCalled();
+      });
+
+      it('should return error for create without service', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'timers', action: 'create' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('service_id is required');
+      });
+
       it('should return error for invalid action', async () => {
         const result = await executeToolWithCredentials(
           'productive',
@@ -1863,6 +1890,66 @@ describe('include parameter', () => {
           include: expect.arrayContaining(['creator', 'deal']),
         }),
       );
+    });
+
+    it('should resolve task commentable hints for get', async () => {
+      const mockResponse = {
+        data: {
+          id: '1',
+          type: 'comments',
+          attributes: { body: 'Comment 1', commentable_type: 'task' },
+          relationships: { task: { data: { id: '55' } } },
+        },
+      };
+      mockApi.getComment.mockResolvedValue(mockResponse);
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'comments', action: 'get', id: '1' },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+    });
+
+    it('should resolve deal commentable hints for get', async () => {
+      const mockResponse = {
+        data: {
+          id: '1',
+          type: 'comments',
+          attributes: { body: 'Comment 1', commentable_type: 'deal' },
+          relationships: { deal: { data: { id: '99' } } },
+        },
+      };
+      mockApi.getComment.mockResolvedValue(mockResponse);
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'comments', action: 'get', id: '1' },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+    });
+
+    it('should resolve company commentable hints for get', async () => {
+      const mockResponse = {
+        data: {
+          id: '1',
+          type: 'comments',
+          attributes: { body: 'Comment 1', commentable_type: 'company' },
+          relationships: { company: { data: { id: '77' } } },
+        },
+      };
+      mockApi.getComment.mockResolvedValue(mockResponse);
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'comments', action: 'get', id: '1' },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
     });
   });
 
