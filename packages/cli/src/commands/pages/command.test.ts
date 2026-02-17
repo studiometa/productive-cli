@@ -1,12 +1,22 @@
 /**
  * Tests for pages command routing
+ *
+ * Note: These tests mock the handlers to test the switch case routing.
+ * Handler-level tests are in pages.test.ts which tests handlers directly with mock API.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { handlePagesCommand } from './command.js';
 
-// Test that the command routing works for all subcommand aliases
+// Mock the handlers module for command routing tests
+vi.mock('./handlers.js', () => ({
+  pagesList: vi.fn().mockResolvedValue(undefined),
+  pagesGet: vi.fn().mockResolvedValue(undefined),
+  pagesAdd: vi.fn().mockResolvedValue(undefined),
+  pagesUpdate: vi.fn().mockResolvedValue(undefined),
+  pagesDelete: vi.fn().mockResolvedValue(undefined),
+}));
 
 describe('handlePagesCommand routing', () => {
   let processExitSpy: ReturnType<typeof vi.spyOn>;
@@ -21,86 +31,57 @@ describe('handlePagesCommand routing', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    vi.clearAllMocks();
   });
 
   afterEach(() => vi.restoreAllMocks());
 
   it('routes list subcommand', async () => {
-    // The command will fail due to missing API config, but it routes correctly
-    try {
-      await handlePagesCommand('list', [], mockOptions);
-    } catch {
-      // Expected - exitWithValidationError throws after process.exit
-    }
-    // Command was executed (even if it failed due to missing config)
-    expect(processExitSpy).toHaveBeenCalled();
+    await handlePagesCommand('list', [], mockOptions);
+    const { pagesList } = await import('./handlers.js');
+    expect(pagesList).toHaveBeenCalled();
   });
 
   it('routes ls alias to list handler', async () => {
-    try {
-      await handlePagesCommand('ls', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalled();
+    await handlePagesCommand('ls', [], mockOptions);
+    const { pagesList } = await import('./handlers.js');
+    expect(pagesList).toHaveBeenCalled();
   });
 
   it('routes get subcommand', async () => {
-    // Missing id should exit with code 3
-    try {
-      await handlePagesCommand('get', [], mockOptions);
-    } catch {
-      // Expected - exitWithValidationError throws
-    }
-    expect(processExitSpy).toHaveBeenCalledWith(3);
+    await handlePagesCommand('get', ['123'], mockOptions);
+    const { pagesGet } = await import('./handlers.js');
+    expect(pagesGet).toHaveBeenCalled();
   });
 
   it('routes add subcommand', async () => {
-    try {
-      await handlePagesCommand('add', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalled();
+    await handlePagesCommand('add', [], mockOptions);
+    const { pagesAdd } = await import('./handlers.js');
+    expect(pagesAdd).toHaveBeenCalled();
   });
 
   it('routes create alias to add handler', async () => {
-    try {
-      await handlePagesCommand('create', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalled();
+    await handlePagesCommand('create', [], mockOptions);
+    const { pagesAdd } = await import('./handlers.js');
+    expect(pagesAdd).toHaveBeenCalled();
   });
 
   it('routes update subcommand', async () => {
-    // Missing id should exit with code 3
-    try {
-      await handlePagesCommand('update', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalledWith(3);
+    await handlePagesCommand('update', ['123'], mockOptions);
+    const { pagesUpdate } = await import('./handlers.js');
+    expect(pagesUpdate).toHaveBeenCalled();
   });
 
   it('routes delete subcommand', async () => {
-    // Missing id should exit with code 3
-    try {
-      await handlePagesCommand('delete', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalledWith(3);
+    await handlePagesCommand('delete', ['123'], mockOptions);
+    const { pagesDelete } = await import('./handlers.js');
+    expect(pagesDelete).toHaveBeenCalled();
   });
 
   it('routes rm alias to delete handler', async () => {
-    // Missing id should exit with code 3
-    try {
-      await handlePagesCommand('rm', [], mockOptions);
-    } catch {
-      // Expected
-    }
-    expect(processExitSpy).toHaveBeenCalledWith(3);
+    await handlePagesCommand('rm', ['123'], mockOptions);
+    const { pagesDelete } = await import('./handlers.js');
+    expect(pagesDelete).toHaveBeenCalled();
   });
 
   it('exits with error for unknown subcommand', async () => {
