@@ -104,4 +104,38 @@ describe('formatBudget', () => {
     expect(result.billable).toBe(false);
     expect(result.currency).toBe('USD');
   });
+
+  it('handles empty string values for date and currency fields', () => {
+    const result = formatBudget({
+      id: '7',
+      type: 'budgets',
+      attributes: {
+        name: 'Budget with empty dates',
+        started_on: '',
+        ended_on: '',
+        currency: '',
+      },
+    });
+    expect(result.name).toBe('Budget with empty dates');
+    expect(result.started_on).toBeUndefined();
+    expect(result.ended_on).toBeUndefined();
+    expect(result.currency).toBeUndefined();
+  });
+
+  it('handles null values for date and currency fields', () => {
+    const result = formatBudget({
+      id: '8',
+      type: 'budgets',
+      attributes: {
+        name: 'Budget with null dates',
+        started_on: null,
+        ended_on: null,
+        currency: null,
+      },
+    });
+    expect(result.name).toBe('Budget with null dates');
+    expect(result.started_on).toBeUndefined();
+    expect(result.ended_on).toBeUndefined();
+    expect(result.currency).toBeUndefined();
+  });
 });

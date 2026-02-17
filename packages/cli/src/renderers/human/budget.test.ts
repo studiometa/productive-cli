@@ -142,4 +142,81 @@ describe('HumanBudgetDetailRenderer', () => {
     expect(output).not.toContain('Start date:');
     expect(output).not.toContain('Currency:');
   });
+
+  it('renders over-budget time with colors', () => {
+    new HumanBudgetDetailRenderer().render(
+      {
+        id: '5',
+        name: 'Over Budget Time',
+        total_time_budget: 100,
+        remaining_time_budget: -20,
+      },
+      ctx,
+    );
+    expect(spy).toHaveBeenCalled();
+    const output = spy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('Time:');
+  });
+
+  it('renders over-budget monetary with colors', () => {
+    new HumanBudgetDetailRenderer().render(
+      {
+        id: '6',
+        name: 'Over Budget Money',
+        total_monetary_budget: 5000,
+        remaining_monetary_budget: -500,
+        currency: 'USD',
+      },
+      ctx,
+    );
+    expect(spy).toHaveBeenCalled();
+    const output = spy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('Cost:');
+  });
+
+  it('renders budget with zero remaining time', () => {
+    new HumanBudgetDetailRenderer().render(
+      {
+        id: '7',
+        name: 'Zero Remaining',
+        total_time_budget: 100,
+        remaining_time_budget: 0,
+      },
+      ctx,
+    );
+    expect(spy).toHaveBeenCalled();
+    const output = spy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('Time:');
+  });
+
+  it('renders budget with undefined remaining time', () => {
+    new HumanBudgetDetailRenderer().render(
+      {
+        id: '8',
+        name: 'Undefined Remaining',
+        total_time_budget: 100,
+        remaining_time_budget: undefined,
+      },
+      ctx,
+    );
+    expect(spy).toHaveBeenCalled();
+    const output = spy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('Time:');
+  });
+
+  it('renders budget with zero remaining monetary', () => {
+    new HumanBudgetDetailRenderer().render(
+      {
+        id: '9',
+        name: 'Zero Remaining Money',
+        total_monetary_budget: 5000,
+        remaining_monetary_budget: 0,
+        currency: 'EUR',
+      },
+      ctx,
+    );
+    expect(spy).toHaveBeenCalled();
+    const output = spy.mock.calls.map((c) => c.join(' ')).join('\n');
+    expect(output).toContain('Cost:');
+  });
 });

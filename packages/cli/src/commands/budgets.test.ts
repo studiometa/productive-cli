@@ -122,7 +122,7 @@ describe('budgets command', () => {
       });
     });
 
-    it('should filter budgets by billable', async () => {
+    it('should filter budgets by billable string', async () => {
       const getBudgets = vi.fn().mockResolvedValue({ data: [], meta: { total: 0 } });
 
       const ctx = createTestContext({
@@ -137,6 +137,159 @@ describe('budgets command', () => {
         perPage: 100,
         filter: { billable: 'true' },
       });
+    });
+
+    it('should filter budgets by billable boolean', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({ data: [], meta: { total: 0 } });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { billable: true, format: 'json' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(getBudgets).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 100,
+        filter: { billable: 'true' },
+      });
+    });
+
+    it('should filter budgets by company', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({ data: [], meta: { total: 0 } });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { company: '789', format: 'json' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(getBudgets).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 100,
+        filter: { company_id: '789' },
+      });
+    });
+
+    it('should filter budgets by budget-type', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({ data: [], meta: { total: 0 } });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { 'budget-type': 'time_and_materials', format: 'json' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(getBudgets).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 100,
+        filter: { budget_type: 'time_and_materials' },
+      });
+    });
+
+    it('should apply additional filters from filter option', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({ data: [], meta: { total: 0 } });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { filter: 'status=active,custom_field=value', format: 'json' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(getBudgets).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 100,
+        filter: { status: 'active', custom_field: 'value' },
+      });
+    });
+
+    it('should list budgets in csv format', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({
+        data: [
+          {
+            id: '1',
+            type: 'budgets',
+            attributes: {
+              name: 'Q1 Budget',
+              billable: true,
+              total_time_budget: 100,
+              remaining_time_budget: 50,
+              total_monetary_budget: 10000,
+              remaining_monetary_budget: 5000,
+            },
+          },
+        ],
+        meta: { total: 1 },
+      });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list budgets in table format', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({
+        data: [
+          {
+            id: '2',
+            type: 'budgets',
+            attributes: {
+              name: 'Q2 Budget',
+              billable: false,
+              total_time_budget: 200,
+              remaining_time_budget: 100,
+              total_monetary_budget: null,
+              remaining_monetary_budget: null,
+            },
+          },
+        ],
+        meta: { total: 1 },
+      });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { format: 'table' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should handle budgets with missing attributes in csv format', async () => {
+      const getBudgets = vi.fn().mockResolvedValue({
+        data: [
+          {
+            id: '3',
+            type: 'budgets',
+            attributes: {
+              name: null,
+              billable: undefined,
+              total_time_budget: null,
+              remaining_time_budget: undefined,
+            },
+          },
+        ],
+        meta: { total: 1 },
+      });
+
+      const ctx = createTestContext({
+        api: { getBudgets } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+
+      await budgetsList(ctx);
+
+      expect(consoleLogSpy).toHaveBeenCalled();
     });
 
     it('should handle pagination options', async () => {
@@ -232,6 +385,7 @@ describe('budgets command', () => {
 
       const ctx = createTestContext({
         api: { getBudget } as unknown as ProductiveApi,
+        options: { format: 'human' },
       });
 
       await budgetsGet(['1'], ctx);
@@ -262,6 +416,58 @@ describe('budgets command', () => {
       expect(getBudget).toHaveBeenCalledWith('1');
     });
 
+    it('should use f shorthand for format', async () => {
+      const getBudget = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'budgets',
+          attributes: {
+            name: 'Test Budget',
+            total_time_budget: 100,
+          },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { getBudget } as unknown as ProductiveApi,
+        options: { f: 'json' },
+      });
+
+      await budgetsGet(['1'], ctx);
+
+      expect(getBudget).toHaveBeenCalledWith('1');
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should render in human format with no-color option', async () => {
+      const getBudget = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'budgets',
+          attributes: {
+            name: 'Budget with no-color',
+            billable: false,
+            started_on: '2024-01-01',
+            ended_on: '2024-12-31',
+            total_time_budget: 1000,
+            remaining_time_budget: 500,
+            total_monetary_budget: 50000,
+            remaining_monetary_budget: 25000,
+          },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { getBudget } as unknown as ProductiveApi,
+        options: { format: 'human', 'no-color': true },
+      });
+
+      await budgetsGet(['1'], ctx);
+
+      expect(getBudget).toHaveBeenCalledWith('1');
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
     it('should exit with error if no ID provided', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
@@ -288,6 +494,19 @@ describe('budgets command', () => {
       await budgetsGet(['999'], ctx);
 
       expect(processExitSpy).toHaveBeenCalledWith(5);
+    });
+
+    it('should handle unexpected errors', async () => {
+      const getBudget = vi.fn().mockRejectedValue(new Error('Unexpected error'));
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({
+        api: { getBudget } as unknown as ProductiveApi,
+      });
+
+      await budgetsGet(['999'], ctx);
+
+      expect(processExitSpy).toHaveBeenCalledWith(1);
     });
   });
 
