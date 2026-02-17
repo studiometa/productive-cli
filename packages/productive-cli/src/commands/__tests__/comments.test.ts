@@ -274,6 +274,105 @@ describe('comments command', () => {
     });
   });
 
+  describe('commentsList formats', () => {
+    const mockComment = {
+      id: '1',
+      type: 'comments',
+      attributes: {
+        body: 'Test comment body',
+        commentable_type: 'task',
+        created_at: '2024-01-15T10:00:00Z',
+      },
+    };
+
+    it('should list comments in csv format', async () => {
+      const getComments = vi.fn().mockResolvedValue({ data: [mockComment], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getComments } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+
+      await commentsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list comments in human format', async () => {
+      const getComments = vi.fn().mockResolvedValue({ data: [mockComment], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getComments } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await commentsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('commentsGet formats', () => {
+    it('should get a comment in human format', async () => {
+      const getComment = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'comments',
+          attributes: {
+            body: 'Test body',
+            commentable_type: 'task',
+            created_at: '2024-01-15T10:00:00Z',
+          },
+        },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getComment } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await commentsGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('commentsAdd formats', () => {
+    it('should create a comment in human format', async () => {
+      const createComment = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'comments', attributes: { body: 'Hello' } },
+      });
+      const ctx = createTestContext({
+        api: { createComment } as unknown as ProductiveApi,
+        options: { body: 'Hello', task: '123', format: 'human' },
+      });
+
+      await commentsAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should exit with error when multiple parents are provided', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({
+        options: { body: 'Hello', task: '123', deal: '456' },
+      });
+
+      await commentsAdd(ctx);
+      expect(processExitSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('commentsUpdate formats', () => {
+    it('should update a comment in human format', async () => {
+      const updateComment = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'comments', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateComment } as unknown as ProductiveApi,
+        options: { body: 'Updated', format: 'human' },
+      });
+
+      await commentsUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

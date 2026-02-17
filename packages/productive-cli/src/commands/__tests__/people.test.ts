@@ -272,6 +272,44 @@ describe('people command', () => {
     });
   });
 
+  describe('format variants', () => {
+    const mockPerson = {
+      id: '1',
+      type: 'people',
+      attributes: { first_name: 'John', last_name: 'Doe', email: 'john@example.com', role: 1 },
+    };
+
+    it('should list people in csv format', async () => {
+      const getPeople = vi.fn().mockResolvedValue({ data: [mockPerson], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getPeople } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+      await peopleList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list people in human format', async () => {
+      const getPeople = vi.fn().mockResolvedValue({ data: [mockPerson], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getPeople } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await peopleList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should get a person in human format', async () => {
+      const getPerson = vi.fn().mockResolvedValue({ data: mockPerson, included: [] });
+      const ctx = createTestContext({
+        api: { getPerson } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await peopleGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

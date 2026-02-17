@@ -7,7 +7,13 @@ import { stripAnsi, truncateText, padText } from '../../renderers/human/kanban.j
 import { formatTime } from '../../renderers/human/task.js';
 import { parseFilters } from '../../utils/parse-filters.js';
 import { handleTasksCommand } from '../tasks/command.js';
-import { tasksList, tasksGet, getIncludedResource } from '../tasks/handlers.js';
+import {
+  tasksList,
+  tasksGet,
+  tasksAdd,
+  tasksUpdate,
+  getIncludedResource,
+} from '../tasks/handlers.js';
 import { showTasksHelp } from '../tasks/help.js';
 
 describe('tasks helpers', () => {
@@ -471,6 +477,222 @@ describe('tasks command', () => {
       await tasksGet(['999'], ctx);
 
       expect(processExitSpy).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('tasksList formats', () => {
+    const mockTask = {
+      id: '1',
+      type: 'tasks',
+      attributes: {
+        title: 'Test task',
+        number: 42,
+        worked_time: 120,
+        initial_estimate: 480,
+        due_date: '2024-02-01',
+      },
+      relationships: {
+        project: { data: { id: 'p1' } },
+        assignee: { data: { id: 'a1' } },
+        workflow_status: { data: { id: 'ws1' } },
+      },
+    };
+    const mockIncluded = [
+      { id: 'p1', type: 'projects', attributes: { name: 'Project A' } },
+      { id: 'a1', type: 'people', attributes: { first_name: 'John', last_name: 'Doe' } },
+      { id: 'ws1', type: 'workflow_statuses', attributes: { name: 'In Progress' } },
+    ];
+
+    it('should list tasks in csv format', async () => {
+      const getTasks = vi.fn().mockResolvedValue({
+        data: [mockTask],
+        meta: { total: 1 },
+        included: mockIncluded,
+      });
+
+      const ctx = createTestContext({
+        api: { getTasks } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+
+      await tasksList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list tasks in human format', async () => {
+      const getTasks = vi.fn().mockResolvedValue({
+        data: [mockTask],
+        meta: { total: 1 },
+        included: mockIncluded,
+      });
+
+      const ctx = createTestContext({
+        api: { getTasks } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await tasksList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('tasksGet formats', () => {
+    it('should get a task in human format', async () => {
+      const getTask = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'tasks',
+          attributes: { title: 'Test task', number: 42 },
+        },
+        included: [],
+      });
+
+      const ctx = createTestContext({
+        api: { getTask } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await tasksGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('tasksAdd', () => {
+    it('should create a task in json format', async () => {
+      const createTask = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'tasks',
+          attributes: { title: 'New task', number: 99, due_date: '2024-03-01' },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { createTask } as unknown as ProductiveApi,
+        options: {
+          title: 'New task',
+          project: '123',
+          'task-list': '456',
+          format: 'json',
+        },
+      });
+
+      await tasksAdd(ctx);
+      expect(createTask).toHaveBeenCalled();
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should create a task in human format', async () => {
+      const createTask = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'tasks',
+          attributes: { title: 'New task', number: 99, due_date: '2024-03-01' },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { createTask } as unknown as ProductiveApi,
+        options: {
+          title: 'New task',
+          project: '123',
+          'task-list': '456',
+          format: 'human',
+        },
+      });
+
+      await tasksAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should exit with error when title is missing', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({ options: { project: '123', 'task-list': '456' } });
+      await tasksAdd(ctx);
+
+      expect(processExitSpy).toHaveBeenCalled();
+    });
+
+    it('should exit with error when project is missing', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({ options: { title: 'Test', 'task-list': '456' } });
+      await tasksAdd(ctx);
+
+      expect(processExitSpy).toHaveBeenCalled();
+    });
+
+    it('should exit with error when task-list is missing', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({ options: { title: 'Test', project: '123' } });
+      await tasksAdd(ctx);
+
+      expect(processExitSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('tasksUpdate', () => {
+    it('should update a task in json format', async () => {
+      const updateTask = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'tasks', attributes: { title: 'Updated' } },
+      });
+
+      const ctx = createTestContext({
+        api: { updateTask } as unknown as ProductiveApi,
+        options: { title: 'Updated', format: 'json' },
+      });
+
+      await tasksUpdate(['1'], ctx);
+      expect(updateTask).toHaveBeenCalled();
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should update a task in human format', async () => {
+      const updateTask = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'tasks', attributes: { title: 'Updated' } },
+      });
+
+      const ctx = createTestContext({
+        api: { updateTask } as unknown as ProductiveApi,
+        options: { title: 'Updated', format: 'human' },
+      });
+
+      await tasksUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should exit with error when id is missing', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({ options: { title: 'Updated' } });
+      try {
+        await tasksUpdate([], ctx);
+      } catch {
+        // exitWithValidationError throws
+      }
+
+      expect(processExitSpy).toHaveBeenCalledWith(3);
+    });
+
+    it('should exit with error when no updates specified', async () => {
+      const updateTask = vi.fn().mockRejectedValue(
+        Object.assign(new Error('No updates specified'), {
+          name: 'ExecutorValidationError',
+          field: 'options',
+        }),
+      );
+
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({
+        api: { updateTask } as unknown as ProductiveApi,
+        options: { format: 'json' },
+      });
+
+      await tasksUpdate(['1'], ctx);
+      expect(processExitSpy).toHaveBeenCalled();
     });
   });
 

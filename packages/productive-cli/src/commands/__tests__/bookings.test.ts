@@ -354,6 +354,124 @@ describe('bookings command', () => {
     });
   });
 
+  describe('bookingsList formats', () => {
+    const mockBooking = {
+      id: '1',
+      type: 'bookings',
+      attributes: {
+        started_on: '2024-01-15',
+        ended_on: '2024-01-19',
+        time: 480,
+        total_time: 2400,
+        draft: false,
+      },
+    };
+
+    it('should list bookings in csv format', async () => {
+      const getBookings = vi.fn().mockResolvedValue({
+        data: [mockBooking],
+        meta: { total: 1 },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getBookings } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+
+      await bookingsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list bookings in human format', async () => {
+      const getBookings = vi.fn().mockResolvedValue({
+        data: [mockBooking],
+        meta: { total: 1 },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getBookings } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await bookingsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('bookingsGet formats', () => {
+    it('should get a booking in human format', async () => {
+      const getBooking = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'bookings',
+          attributes: { started_on: '2024-01-15', ended_on: '2024-01-19', time: 480, draft: false },
+        },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getBooking } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+
+      await bookingsGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('bookingsAdd formats', () => {
+    it('should create a booking in human format', async () => {
+      const createBooking = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'bookings',
+          attributes: { started_on: '2024-01-15', ended_on: '2024-01-19', draft: true },
+        },
+      });
+      const ctx = createTestContext({
+        api: { createBooking } as unknown as ProductiveApi,
+        options: {
+          person: '123',
+          from: '2024-01-15',
+          to: '2024-01-19',
+          service: '456',
+          tentative: true,
+          format: 'human',
+        },
+      });
+
+      await bookingsAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('bookingsUpdate formats', () => {
+    it('should update a booking in human format', async () => {
+      const updateBooking = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'bookings', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateBooking } as unknown as ProductiveApi,
+        options: { from: '2024-01-20', format: 'human' },
+      });
+
+      await bookingsUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should handle --confirm flag', async () => {
+      const updateBooking = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'bookings', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateBooking } as unknown as ProductiveApi,
+        options: { confirm: true, format: 'json' },
+      });
+
+      await bookingsUpdate(['1'], ctx);
+      expect(updateBooking).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

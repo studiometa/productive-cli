@@ -375,6 +375,88 @@ describe('deals command', () => {
     });
   });
 
+  describe('format variants', () => {
+    const mockDeal = {
+      id: '1',
+      type: 'deals',
+      attributes: {
+        name: 'Big Deal',
+        sales_status_id: 1,
+        value: 50000,
+        currency: 'EUR',
+        probability: 75,
+        created_at: '2024-01-15T10:00:00Z',
+      },
+      relationships: {
+        company: { data: { id: 'c1' } },
+        responsible: { data: { id: 'p1' } },
+      },
+    };
+
+    it('should list deals in csv format', async () => {
+      const getDeals = vi
+        .fn()
+        .mockResolvedValue({ data: [mockDeal], meta: { total: 1 }, included: [] });
+      const ctx = createTestContext({
+        api: { getDeals } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+      await dealsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list deals in human format', async () => {
+      const getDeals = vi
+        .fn()
+        .mockResolvedValue({ data: [mockDeal], meta: { total: 1 }, included: [] });
+      const ctx = createTestContext({
+        api: { getDeals } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await dealsList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should get a deal in human format', async () => {
+      const getDeal = vi.fn().mockResolvedValue({ data: mockDeal, included: [] });
+      const ctx = createTestContext({
+        api: { getDeal } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await dealsGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should create a deal in human format', async () => {
+      const createDeal = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'deals',
+          attributes: { name: 'New Deal', sales_status_id: 1, created_at: '2024-01-15T10:00:00Z' },
+          relationships: { company: { data: { id: '100' } } },
+        },
+      });
+      const ctx = createTestContext({
+        api: { createDeal } as unknown as ProductiveApi,
+        options: { name: 'New Deal', company: '100', format: 'human' },
+      });
+      await dealsAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should update a deal in human format', async () => {
+      const updateDeal = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'deals', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateDeal } as unknown as ProductiveApi,
+        options: { name: 'Updated', format: 'human' },
+      });
+      await dealsUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

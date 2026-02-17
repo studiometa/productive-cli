@@ -201,6 +201,81 @@ describe('companies command', () => {
     });
   });
 
+  describe('format variants', () => {
+    const mockCompany = {
+      id: '1',
+      type: 'companies',
+      attributes: {
+        name: 'Acme Corp',
+        email: 'hello@acme.com',
+        created_at: '2024-01-15T10:00:00Z',
+      },
+    };
+
+    it('should list companies in csv format', async () => {
+      const getCompanies = vi.fn().mockResolvedValue({
+        data: [mockCompany],
+        meta: { total: 1 },
+      });
+      const ctx = createTestContext({
+        api: { getCompanies } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+      await companiesList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list companies in human format', async () => {
+      const getCompanies = vi.fn().mockResolvedValue({
+        data: [mockCompany],
+        meta: { total: 1 },
+      });
+      const ctx = createTestContext({
+        api: { getCompanies } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await companiesList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should get a company in human format', async () => {
+      const getCompany = vi.fn().mockResolvedValue({
+        data: mockCompany,
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getCompany } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await companiesGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should create a company in human format', async () => {
+      const createCompany = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'companies', attributes: { name: 'New Co' } },
+      });
+      const ctx = createTestContext({
+        api: { createCompany } as unknown as ProductiveApi,
+        options: { name: 'New Co', format: 'human' },
+      });
+      await companiesAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should update a company in human format', async () => {
+      const updateCompany = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'companies', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateCompany } as unknown as ProductiveApi,
+        options: { name: 'Renamed', format: 'human' },
+      });
+      await companiesUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

@@ -266,6 +266,68 @@ describe('timers command', () => {
     });
   });
 
+  describe('format variants', () => {
+    const mockTimer = {
+      id: '1',
+      type: 'timers',
+      attributes: { started_at: '2024-01-15T10:00:00Z', stopped_at: null, total_time: 60 },
+    };
+
+    it('should list timers in csv format', async () => {
+      const getTimers = vi.fn().mockResolvedValue({ data: [mockTimer], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getTimers } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+      await timersList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list timers in human format', async () => {
+      const getTimers = vi.fn().mockResolvedValue({ data: [mockTimer], meta: { total: 1 } });
+      const ctx = createTestContext({
+        api: { getTimers } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timersList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should get a timer in human format', async () => {
+      const getTimer = vi.fn().mockResolvedValue({ data: mockTimer, included: [] });
+      const ctx = createTestContext({
+        api: { getTimer } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timersGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should start a timer in human format', async () => {
+      const startTimer = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'timers', attributes: { started_at: '2024-01-15T10:00:00Z' } },
+      });
+      const ctx = createTestContext({
+        api: { startTimer } as unknown as ProductiveApi,
+        options: { service: '123', format: 'human' },
+      });
+      await timersStart(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should stop a timer in human format', async () => {
+      const stopTimer = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'timers', attributes: { total_time: 120 } },
+      });
+      const ctx = createTestContext({
+        api: { stopTimer } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timersStop(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should exit with error for unknown subcommand', async () => {
       const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);

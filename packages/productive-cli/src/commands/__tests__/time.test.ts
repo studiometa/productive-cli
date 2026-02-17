@@ -567,6 +567,109 @@ describe('time command', () => {
     });
   });
 
+  describe('format variants', () => {
+    const mockTimeEntry = {
+      id: '1',
+      type: 'time_entries',
+      attributes: {
+        date: '2024-01-15',
+        time: 480,
+        note: 'Dev work',
+        created_at: '2024-01-15T10:00:00Z',
+        updated_at: '2024-01-15T10:00:00Z',
+      },
+      relationships: {
+        person: { data: { id: 'p1' } },
+        service: { data: { id: 's1' } },
+        project: { data: { id: 'pr1' } },
+      },
+    };
+
+    it('should list time entries in csv format', async () => {
+      const getTimeEntries = vi.fn().mockResolvedValue({
+        data: [mockTimeEntry],
+        meta: { total: 1 },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getTimeEntries } as unknown as ProductiveApi,
+        options: { format: 'csv' },
+      });
+      await timeList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should list time entries in human format', async () => {
+      const getTimeEntries = vi.fn().mockResolvedValue({
+        data: [mockTimeEntry],
+        meta: { total: 1 },
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getTimeEntries } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timeList(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should get time entry in human format', async () => {
+      const getTimeEntry = vi.fn().mockResolvedValue({
+        data: mockTimeEntry,
+        included: [],
+      });
+      const ctx = createTestContext({
+        api: { getTimeEntry } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timeGet(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should create time entry in human format', async () => {
+      const createTimeEntry = vi.fn().mockResolvedValue({
+        data: {
+          id: '1',
+          type: 'time_entries',
+          attributes: { date: '2024-01-15', time: 480, note: 'Dev' },
+        },
+      });
+      const ctx = createTestContext({
+        api: { createTimeEntry } as unknown as ProductiveApi,
+        options: {
+          person: '123',
+          service: '456',
+          time: 480,
+          format: 'human',
+        },
+      });
+      await timeAdd(ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should update time entry in human format', async () => {
+      const updateTimeEntry = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'time_entries', attributes: {} },
+      });
+      const ctx = createTestContext({
+        api: { updateTimeEntry } as unknown as ProductiveApi,
+        options: { time: 240, format: 'human' },
+      });
+      await timeUpdate(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should delete time entry in human format', async () => {
+      const deleteTimeEntry = vi.fn().mockResolvedValue({ data: null });
+      const ctx = createTestContext({
+        api: { deleteTimeEntry } as unknown as ProductiveApi,
+        options: { format: 'human' },
+      });
+      await timeDelete(['1'], ctx);
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+  });
+
   describe('command routing', () => {
     it('should handle unknown subcommand', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
