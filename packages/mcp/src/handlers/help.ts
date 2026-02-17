@@ -382,7 +382,8 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
   },
 
   deals: {
-    description: 'Sales deals and opportunities',
+    description:
+      'Sales deals, opportunities, and budgets. Budgets are deals with budget=true — use filter[type]=2 to list only budgets.',
     actions: {
       list: 'List deals with optional filters',
       get: 'Get a single deal by ID',
@@ -405,6 +406,7 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       name: 'Deal name',
       number: 'Deal number',
       date: 'Deal date',
+      budget: 'Whether this deal is a budget (true/false)',
       status: 'Current status (from deal_status)',
     },
     examples: [
@@ -415,6 +417,10 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       {
         description: 'List deals for a company',
         params: { resource: 'deals', action: 'list', filter: { company_id: '12345' } },
+      },
+      {
+        description: 'List only budgets',
+        params: { resource: 'deals', action: 'list', filter: { type: '2' } },
       },
     ],
   },
@@ -452,52 +458,6 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       {
         description: 'List my bookings',
         params: { resource: 'bookings', action: 'list', filter: { person_id: 'me' } },
-      },
-    ],
-  },
-
-  budgets: {
-    description: 'Budget tracking and financial overview',
-    actions: {
-      list: 'List budgets with optional filters',
-      get: 'Get a single budget by ID with full details',
-    },
-    filters: {
-      project_id: 'Filter by project',
-      company_id: 'Filter by company',
-      deal_id: 'Filter by deal',
-      billable: 'Filter by billable status (true/false)',
-      budget_type: 'Filter by budget type',
-    },
-    fields: {
-      id: 'Unique budget identifier',
-      name: 'Budget name',
-      budget_type: 'Type of budget',
-      billable: 'Whether the budget is billable',
-      started_on: 'Budget start date (YYYY-MM-DD)',
-      ended_on: 'Budget end date (YYYY-MM-DD)',
-      currency: 'Budget currency code',
-      total_time_budget: 'Total time budget in minutes',
-      remaining_time_budget: 'Remaining time budget in minutes',
-      total_monetary_budget: 'Total monetary budget',
-      remaining_monetary_budget: 'Remaining monetary budget',
-    },
-    examples: [
-      {
-        description: 'List all budgets',
-        params: { resource: 'budgets', action: 'list' },
-      },
-      {
-        description: 'List budgets for a project',
-        params: { resource: 'budgets', action: 'list', filter: { project_id: '12345' } },
-      },
-      {
-        description: 'Get budget details',
-        params: { resource: 'budgets', action: 'get', id: '67890' },
-      },
-      {
-        description: 'List billable budgets',
-        params: { resource: 'budgets', action: 'list', filter: { billable: 'true' } },
       },
     ],
   },
