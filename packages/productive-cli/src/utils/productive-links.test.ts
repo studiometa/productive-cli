@@ -16,7 +16,7 @@ import {
 } from './productive-links.js';
 
 // Mock the config module
-vi.mock('../../config.js', () => ({
+vi.mock('../config.js', () => ({
   getConfig: vi.fn(() => ({ organizationId: 'test-org-123' })),
 }));
 
@@ -171,12 +171,12 @@ describe('productive-links', () => {
 describe('productive-links without org ID', () => {
   beforeEach(async () => {
     setColorEnabled(true);
-    const configModule = await import('../../config.js');
+    const configModule = await import('../config.js');
     vi.mocked(configModule.getConfig).mockReturnValue({ organizationId: undefined } as any);
   });
 
   afterEach(async () => {
-    const configModule = await import('../../config.js');
+    const configModule = await import('../config.js');
     vi.mocked(configModule.getConfig).mockReturnValue({ organizationId: 'test-org-123' } as any);
   });
 

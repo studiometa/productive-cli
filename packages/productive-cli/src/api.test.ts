@@ -5,7 +5,7 @@ import { setConfig, clearConfig } from './config.js';
 import { disableCache, resetCache } from './utils/cache.js';
 
 // Mock keychain to avoid reading real keychain values in tests
-vi.mock('../utils/keychain-store.js', () => ({
+vi.mock('./utils/keychain-store.js', () => ({
   isKeychainAvailable: vi.fn().mockReturnValue(false),
   getKeychainBackend: vi.fn().mockReturnValue('none'),
   getKeychainValue: vi.fn().mockReturnValue(null),

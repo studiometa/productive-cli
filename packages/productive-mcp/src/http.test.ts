@@ -3,7 +3,7 @@ import { createServer, type Server as HttpServer } from 'node:http';
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 
 // Mock the handlers
-vi.mock('../handlers.js', () => ({
+vi.mock('./handlers.js', () => ({
   executeToolWithCredentials: vi.fn().mockImplementation((name, args, _credentials) => {
     if (name === 'failing_tool') {
       throw new Error('Tool execution failed');

@@ -10,7 +10,7 @@ vi.mock('@studiometa/productive-api', () => ({
 }));
 
 // Mock the handlers
-vi.mock('../handlers.js', () => ({
+vi.mock('./handlers.js', () => ({
   executeToolWithCredentials: vi.fn().mockImplementation((name, args, creds) => {
     return Promise.resolve({
       content: [{ type: 'text', text: JSON.stringify({ tool: name, args, creds }) }],

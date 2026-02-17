@@ -15,7 +15,7 @@ const mockGetPendingRefreshJobs = vi.fn();
 const mockGetRefreshQueueCount = vi.fn();
 const mockClearRefreshQueue = vi.fn();
 
-vi.mock('../sqlite-cache.js', () => ({
+vi.mock('./sqlite-cache.js', () => ({
   getSqliteCache: vi.fn(() => ({
     cacheGet: mockCacheGet,
     cacheGetWithMeta: mockCacheGetWithMeta,
@@ -227,7 +227,7 @@ describe('CacheStore', () => {
     expect(result).toEqual({ data: 'test' });
     expect(mockCacheGetWithMeta).toHaveBeenCalled();
 
-    const { getSqliteCache } = await import('../sqlite-cache.js');
+    const { getSqliteCache } = await import('./sqlite-cache.js');
     expect(getSqliteCache).toHaveBeenCalledWith('org-1');
   });
 
@@ -241,7 +241,7 @@ describe('CacheStore', () => {
     await cache.getAsync('/projects', {}, 'org-2');
 
     // Should have called getSqliteCache for each org change
-    const { getSqliteCache } = await import('../sqlite-cache.js');
+    const { getSqliteCache } = await import('./sqlite-cache.js');
     expect(getSqliteCache).toHaveBeenCalledWith('org-1');
     expect(getSqliteCache).toHaveBeenCalledWith('org-2');
   });

@@ -4,7 +4,7 @@ import * as configModule from '../config.js';
 import { handleConfigCommand } from './config.js';
 
 // Mock dependencies
-vi.mock('../../config.js', () => ({
+vi.mock('../config.js', () => ({
   getConfig: vi.fn(),
   setConfig: vi.fn().mockReturnValue({ stored: true, location: 'config file' }),
   clearConfig: vi.fn(),
@@ -13,7 +13,7 @@ vi.mock('../../config.js', () => ({
   getKeychainBackend: vi.fn().mockReturnValue('none'),
 }));
 
-vi.mock('../../output.js', () => ({
+vi.mock('../output.js', () => ({
   OutputFormatter: vi.fn(function (format, noColor) {
     return {
       format,

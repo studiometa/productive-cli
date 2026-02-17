@@ -378,7 +378,7 @@ describe('resolve help', () => {
   });
 
   it('shows main resolve help', async () => {
-    const { showResolveHelp } = await import('../resolve/help.js');
+    const { showResolveHelp } = await import('./resolve/help.js');
     showResolveHelp();
 
     expect(consoleSpy).toHaveBeenCalled();
@@ -390,7 +390,7 @@ describe('resolve help', () => {
   });
 
   it('shows detect subcommand help', async () => {
-    const { showResolveHelp } = await import('../resolve/help.js');
+    const { showResolveHelp } = await import('./resolve/help.js');
     showResolveHelp('detect');
 
     expect(consoleSpy).toHaveBeenCalled();
@@ -425,7 +425,7 @@ describe('handleResolveCommand', () => {
   });
 
   it('handles detect subcommand', async () => {
-    const { handleResolveCommand } = await import('../resolve/command.js');
+    const { handleResolveCommand } = await import('./resolve/command.js');
 
     await handleResolveCommand('detect', ['user@example.com'], testOptions);
 
@@ -435,7 +435,7 @@ describe('handleResolveCommand', () => {
   });
 
   it('exits with error when query is empty', async () => {
-    const { handleResolveCommand } = await import('../resolve/command.js');
+    const { handleResolveCommand } = await import('./resolve/command.js');
 
     // When process.exit is mocked, the function continues and may throw
     // We need to catch any error and verify process.exit was called
@@ -449,7 +449,7 @@ describe('handleResolveCommand', () => {
   });
 
   it('treats subcommand as query when not a known subcommand', async () => {
-    const { handleResolveCommand } = await import('../resolve/command.js');
+    const { handleResolveCommand } = await import('./resolve/command.js');
 
     // This will fail because we don't have a real API, but it tests the code path
     await handleResolveCommand('user@example.com', [], testOptions);
@@ -460,7 +460,7 @@ describe('handleResolveCommand', () => {
   });
 
   it('combines subcommand and args as query', async () => {
-    const { handleResolveCommand } = await import('../resolve/command.js');
+    const { handleResolveCommand } = await import('./resolve/command.js');
 
     await handleResolveCommand('John', ['Doe'], {
       ...testOptions,

@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { getConfig, setConfig, clearConfig, showConfig, validateConfig } from './config.js';
 
 // Mock keychain to avoid reading real keychain values in tests
-vi.mock('../utils/keychain-store.js', () => ({
+vi.mock('./utils/keychain-store.js', () => ({
   isKeychainAvailable: vi.fn().mockReturnValue(false),
   getKeychainBackend: vi.fn().mockReturnValue('none'),
   getKeychainValue: vi.fn().mockReturnValue(null),

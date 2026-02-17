@@ -10,11 +10,11 @@ const mockCache = {
 };
 
 // Mock dependencies
-vi.mock('../cache.js', () => ({
+vi.mock('./cache.js', () => ({
   getCache: vi.fn(() => mockCache),
 }));
 
-vi.mock('../../config.js', () => ({
+vi.mock('../config.js', () => ({
   getConfig: vi.fn(),
 }));
 

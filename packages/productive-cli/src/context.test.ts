@@ -4,7 +4,7 @@ import { createContext, createTestContext, withContext, type CommandContext } fr
 import { OutputFormatter } from './output.js';
 
 // Mock dependencies
-vi.mock('../api.js', () => ({
+vi.mock('./api.js', () => ({
   ProductiveApi: vi.fn(function () {
     return {
       getProjects: vi.fn(),
@@ -23,7 +23,7 @@ vi.mock('../api.js', () => ({
   },
 }));
 
-vi.mock('../config.js', () => ({
+vi.mock('./config.js', () => ({
   getConfig: vi.fn().mockReturnValue({
     apiToken: 'test-token',
     organizationId: 'test-org',
@@ -32,7 +32,7 @@ vi.mock('../config.js', () => ({
   }),
 }));
 
-vi.mock('../utils/cache.js', () => ({
+vi.mock('./utils/cache.js', () => ({
   getCache: vi.fn().mockReturnValue({
     get: vi.fn().mockReturnValue(null),
     set: vi.fn(),

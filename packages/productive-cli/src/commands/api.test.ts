@@ -8,7 +8,7 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch as any;
 
 // Mock output and config
-vi.mock('../../output.js', () => ({
+vi.mock('../output.js', () => ({
   OutputFormatter: vi.fn(function (format, noColor) {
     return {
       format,
@@ -28,7 +28,7 @@ vi.mock('../../output.js', () => ({
   })),
 }));
 
-vi.mock('../../config.js', () => ({
+vi.mock('../config.js', () => ({
   getConfig: vi.fn(() => ({
     apiToken: 'test-token',
     organizationId: 'test-org-id',
