@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-02-17
+
 ### Fixed
 
 - **MCP**: Fix tool schema missing `pages`, `discussions`, `budgets`, `attachments` resources and `delete`, `resolve`, `reopen` actions — MCP clients rejected valid resources ([5c982a8], [#37])
@@ -113,7 +115,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `vi.mock()` and dynamic `import()` paths after test file relocation ([#26])
 - Silence `console.error` in unknown subcommand tests to clean up test output ([#26])
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.1...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.2...HEAD
+[0.9.2]: https://github.com/studiometa/productive-tools/compare/0.9.1...0.9.2
 [5c982a8]: https://github.com/studiometa/productive-tools/commit/5c982a8
 [59afd31]: https://github.com/studiometa/productive-tools/commit/59afd31
 [56ce4c8]: https://github.com/studiometa/productive-tools/commit/56ce4c8
