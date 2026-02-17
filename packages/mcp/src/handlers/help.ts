@@ -498,6 +498,10 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       {
         description: 'List billable budgets',
         params: { resource: 'budgets', action: 'list', filter: { billable: 'true' } },
+      },
+    ],
+  },
+
   pages: {
     description: 'Manage pages (wiki/docs) within projects',
     actions: {

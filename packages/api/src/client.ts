@@ -943,6 +943,29 @@ export class ProductiveApi {
     perPage?: number;
     filter?: Record<string, string>;
   }): Promise<ProductiveApiResponse<ProductiveAttachment[]>> {
+    const query: Record<string, string> = {};
+
+    if (params?.page) query['page[number]'] = String(params.page);
+    if (params?.perPage) query['page[size]'] = String(params.perPage);
+    if (params?.filter) {
+      Object.entries(params.filter).forEach(([key, value]) => {
+        query[`filter[${key}]`] = value;
+      });
+    }
+
+    return this.request<ProductiveApiResponse<ProductiveAttachment[]>>('/attachments', { query });
+  }
+
+  async getAttachment(id: string): Promise<ProductiveApiResponse<ProductiveAttachment>> {
+    return this.request<ProductiveApiResponse<ProductiveAttachment>>(`/attachments/${id}`);
+  }
+
+  async deleteAttachment(id: string): Promise<void> {
+    await this.request<void>(`/attachments/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Pages
   async getPages(params?: {
     page?: number;
@@ -961,15 +984,6 @@ export class ProductiveApi {
       });
     }
 
-    return this.request<ProductiveApiResponse<ProductiveAttachment[]>>('/attachments', { query });
-  }
-
-  async getAttachment(id: string): Promise<ProductiveApiResponse<ProductiveAttachment>> {
-    return this.request<ProductiveApiResponse<ProductiveAttachment>>(`/attachments/${id}`);
-  }
-
-  async deleteAttachment(id: string): Promise<void> {
-    await this.request<void>(`/attachments/${id}`, {
     return this.request<ProductiveApiResponse<ProductivePage[]>>('/pages', { query });
   }
 

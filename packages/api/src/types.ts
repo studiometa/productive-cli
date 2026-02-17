@@ -287,6 +287,8 @@ export interface ProductiveAttachment {
     attachable_type?: string;
   };
   relationships?: Record<string, RelationshipData>;
+}
+
 export interface ProductivePage {
   id: string;
   type: 'pages';

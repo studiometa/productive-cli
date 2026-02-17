@@ -210,6 +210,9 @@ function getFormatterForType(
       ) => Record<string, unknown>;
     case 'attachments':
       return formatAttachment as (
+        item: JsonApiResource,
+        options?: FormatOptions,
+      ) => Record<string, unknown>;
     case 'pages':
       return formatPage as (
         item: JsonApiResource,

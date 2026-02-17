@@ -230,6 +230,11 @@ export function formatAttachment(
   const result = cliFormatAttachment(attachment, MCP_FORMAT_OPTIONS);
   if (options?.compact) {
     return compactify(result, ['url']);
+  }
+  return result;
+}
+
+/**
  * Format page for agent consumption
  */
 export function formatPage(

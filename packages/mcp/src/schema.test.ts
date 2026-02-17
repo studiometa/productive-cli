@@ -44,13 +44,15 @@ describe('schema', () => {
 
     it('should reject invalid actions', () => {
       expect(() => parse(ActionSchema, 'destroy')).toThrow();
+    });
+
     it('should accept new actions', () => {
       expect(parse(ActionSchema, 'delete')).toBe('delete');
       expect(parse(ActionSchema, 'resolve')).toBe('resolve');
       expect(parse(ActionSchema, 'reopen')).toBe('reopen');
     });
 
-    it('should reject invalid actions', () => {
+    it('should reject truly invalid actions', () => {
       expect(() => parse(ActionSchema, 'invalid_action')).toThrow();
       expect(() => parse(ActionSchema, '')).toThrow();
     });
@@ -167,7 +169,6 @@ describe('schema', () => {
     it('should format validation errors', () => {
       const result = safeValidateToolInput({
         resource: 'invalid',
-        action: 'destroy',
         action: 'invalid_action',
       });
 

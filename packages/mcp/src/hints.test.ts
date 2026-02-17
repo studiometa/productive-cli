@@ -339,6 +339,9 @@ describe('hints', () => {
       const bookingsHint = hints.related_resources?.find((h) => h.resource === 'bookings');
       expect(bookingsHint).toBeDefined();
       expect(bookingsHint?.example.filter).toEqual({ budget_id: '12345' });
+    });
+  });
+
   describe('getPageHints', () => {
     it('returns hints with page ID', () => {
       const hints = getPageHints('12345');
