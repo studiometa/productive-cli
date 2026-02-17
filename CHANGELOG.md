@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-02-17
+
 ### Fixed
 
 - **API**: Auto-migrate legacy config from `~/.config/` to `~/Library/Application Support/` on macOS ([8ba9e89], [#36])
 - **CLI**: Print one-time notice when config migration occurs ([8ba9e89], [#36])
+- **API**: Add missing `repository` field in productive-api `package.json` (fixes npm provenance error) ([b68c5f6])
+- **API**: Add missing `author` and `keywords` in productive-api `package.json` ([a620069])
 
 ## [0.9.0] - 2026-02-17
 
@@ -99,8 +103,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `vi.mock()` and dynamic `import()` paths after test file relocation ([#26])
 - Silence `console.error` in unknown subcommand tests to clean up test output ([#26])
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.1...HEAD
+[0.9.1]: https://github.com/studiometa/productive-tools/compare/0.9.0...0.9.1
 [8ba9e89]: https://github.com/studiometa/productive-tools/commit/8ba9e89
+[b68c5f6]: https://github.com/studiometa/productive-tools/commit/b68c5f6
+[a620069]: https://github.com/studiometa/productive-tools/commit/a620069
 [#36]: https://github.com/studiometa/productive-tools/pull/36
 [0.9.0]: https://github.com/studiometa/productive-tools/compare/0.8.5...0.9.0
 [95c5cbe]: https://github.com/studiometa/productive-tools/commit/95c5cbe
