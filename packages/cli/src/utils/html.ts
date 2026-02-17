@@ -1,6 +1,12 @@
 /**
  * HTML text utilities for cleaning up API responses
+ *
+ * Delegates to the base `stripHtml` from @studiometa/productive-api for
+ * tag stripping and entity decoding, then layers on terminal-specific features
+ * (link extraction, clickable URLs).
  */
+
+import { stripHtml as baseStripHtml } from '@studiometa/productive-api';
 
 import { isColorEnabled, colors } from './colors.js';
 
@@ -51,36 +57,18 @@ function extractLinks(html: string): {
  * - Strips all other HTML tags
  * - Decodes common HTML entities
  * - Trims and normalizes whitespace
+ *
+ * Delegates to the base `stripHtml` from the API package for tag stripping
+ * and entity decoding, then restores links as clickable terminal hyperlinks.
  */
 export function stripHtml(html: string | null | undefined): string {
   if (!html) return '';
 
-  // First extract links to preserve them
+  // First extract links to preserve them as placeholders
   const { text: htmlWithPlaceholders, links } = extractLinks(html);
 
-  let text = htmlWithPlaceholders
-    // Convert line-breaking tags to newlines
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/(p|div|li|tr)>/gi, '\n')
-    .replace(/<\/?(ul|ol)>/gi, '\n')
-    // Convert list items to bullet points
-    .replace(/<li[^>]*>/gi, '• ')
-    // Strip remaining HTML tags (including images with data-uri)
-    .replace(/<[^>]+>/g, '')
-    // Decode common HTML entities
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
-    .replace(/&apos;/gi, "'")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
-    // Normalize whitespace
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  // Delegate to base implementation for tag stripping and entity decoding
+  let text = baseStripHtml(htmlWithPlaceholders);
 
   // Restore links as clickable terminal links
   for (const [placeholder, { url, text: linkText }] of links) {
