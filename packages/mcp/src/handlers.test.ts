@@ -2025,6 +2025,79 @@ describe('include parameter', () => {
         }),
       );
     });
+
+    it('should handle get action with no_hints', async () => {
+      const mockResponse = {
+        data: {
+          id: '1',
+          type: 'attachments',
+          attributes: { name: 'file.png', content_type: 'image/png', size: 1024 },
+        },
+      };
+      mockApi.getAttachment.mockResolvedValue(mockResponse);
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'attachments', action: 'get', id: '1', no_hints: true },
+        credentials,
+      );
+
+      expect(result.isError).toBeFalsy();
+      const content = JSON.parse(result.content[0].text as string);
+      // When no_hints is true, _hints should not be included
+      expect(content._hints).toBeUndefined();
+    });
+
+    it('should pass task_id filter', async () => {
+      const mockResponse = { data: [], meta: {} };
+      mockApi.getAttachments.mockResolvedValue(mockResponse);
+
+      await executeToolWithCredentials(
+        'productive',
+        { resource: 'attachments', action: 'list', task_id: '456' },
+        credentials,
+      );
+
+      expect(mockApi.getAttachments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: expect.objectContaining({ task_id: '456' }),
+        }),
+      );
+    });
+
+    it('should pass comment_id filter', async () => {
+      const mockResponse = { data: [], meta: {} };
+      mockApi.getAttachments.mockResolvedValue(mockResponse);
+
+      await executeToolWithCredentials(
+        'productive',
+        { resource: 'attachments', action: 'list', comment_id: '789' },
+        credentials,
+      );
+
+      expect(mockApi.getAttachments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: expect.objectContaining({ comment_id: '789' }),
+        }),
+      );
+    });
+
+    it('should pass deal_id filter', async () => {
+      const mockResponse = { data: [], meta: {} };
+      mockApi.getAttachments.mockResolvedValue(mockResponse);
+
+      await executeToolWithCredentials(
+        'productive',
+        { resource: 'attachments', action: 'list', deal_id: '101' },
+        credentials,
+      );
+
+      expect(mockApi.getAttachments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: expect.objectContaining({ deal_id: '101' }),
+        }),
+      );
+    });
   });
 
   describe('timers', () => {
