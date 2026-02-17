@@ -3,7 +3,7 @@ import type { ProductiveApi } from '@studiometa/productive-api';
 import { ResolveError } from '@studiometa/productive-core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import type { CommandContext } from './../context.js';
+import type { CommandContext } from '../context.js';
 
 import {
   resolveCommandFilters,

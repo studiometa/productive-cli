@@ -18,7 +18,7 @@ vi.mock('../../config.js', () => ({
   getConfig: vi.fn(),
 }));
 
-import { getConfig } from './../config.js';
+import { getConfig } from '../config.js';
 import { processRefreshQueue, getRefreshQueueCount } from './refresh-queue.js';
 
 describe('refresh-queue', () => {

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import type { ProductiveApi } from './../api.js';
+import type { ProductiveApi } from '../api.js';
 
-import { createTestContext } from './../context.js';
+import { createTestContext } from '../context.js';
 import { commentsList, commentsGet, commentsAdd, commentsUpdate } from './comments/handlers.js';
 import { handleCommentsCommand } from './comments/index.js';
 

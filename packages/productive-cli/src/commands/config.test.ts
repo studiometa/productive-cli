@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import * as configModule from './../config.js';
+import * as configModule from '../config.js';
 import { handleConfigCommand } from './config.js';
 
 // Mock dependencies

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestExecutorContext } from './../../context/test-utils.js';
-import { ExecutorValidationError } from './../time/index.js';
+import { createTestExecutorContext } from '../../context/test-utils.js';
+import { ExecutorValidationError } from '../time/index.js';
 import { updateDeal } from './update.js';
 
 describe('updateDeal', () => {

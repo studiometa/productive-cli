@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createTestExecutorContext } from './../../context/test-utils.js';
+import { createTestExecutorContext } from '../../context/test-utils.js';
 import { createBooking } from './create.js';
 
 describe('createBooking', () => {

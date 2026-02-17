@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
-import type { RenderContext } from './../types.js';
+import type { RenderContext } from '../types.js';
 
 import { HumanPersonListRenderer } from './person.js';
 

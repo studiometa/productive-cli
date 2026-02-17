@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import type { ProductiveApi } from './../api.js';
+import type { ProductiveApi } from '../api.js';
 
-import { createTestContext } from './../context.js';
+import { createTestContext } from '../context.js';
 import { budgetsList } from './budgets/handlers.js';
 import { handleBudgetsCommand } from './budgets/index.js';
 

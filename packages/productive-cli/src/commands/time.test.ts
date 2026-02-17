@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import type { ProductiveApi } from './../api.js';
+import type { ProductiveApi } from '../api.js';
 
-import { createTestContext } from './../context.js';
+import { createTestContext } from '../context.js';
 import { timeList, timeGet, timeAdd, timeUpdate, timeDelete } from './time/handlers.js';
 import { handleTimeCommand } from './time/index.js';
 

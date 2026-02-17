@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import type { ProductiveApi } from './../api.js';
+import type { ProductiveApi } from '../api.js';
 
-import { createTestContext } from './../context.js';
+import { createTestContext } from '../context.js';
 import { bookingsList, bookingsGet, bookingsAdd, bookingsUpdate } from './bookings/handlers.js';
 import { handleBookingsCommand } from './bookings/index.js';
 

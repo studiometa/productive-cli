@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-import type { ProductiveApi } from './../api.js';
+import type { ProductiveApi } from '../api.js';
 
-import { createTestContext } from './../context.js';
-import { stripAnsi, truncateText, padText } from './../renderers/human/kanban.js';
-import { formatTime } from './../renderers/human/task.js';
-import { parseFilters } from './../utils/parse-filters.js';
+import { createTestContext } from '../context.js';
+import { stripAnsi, truncateText, padText } from '../renderers/human/kanban.js';
+import { formatTime } from '../renderers/human/task.js';
+import { parseFilters } from '../utils/parse-filters.js';
 import { handleTasksCommand } from './tasks/command.js';
 import {
   tasksList,
