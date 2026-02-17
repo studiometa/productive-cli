@@ -19,6 +19,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **CLI**: Add `--budget` flag to `productive deals list` as shortcut for `--type budget` ([898587e], [#40])
 - **MCP**: Add helpful redirect error when agents try `resource=budgets` — points to `deals` with `filter[type]=2` ([898587e], [b1abbed], [#40])
+- **MCP**: Add `delete` action to time handler — was missing from MCP while available in CLI and core ([6408d3b], [#43])
+- **MCP**: Add `resolve` action to help docs for projects, tasks, time, deals, people, companies ([e213594], [#42])
+- **MCP**: Document ID resolution patterns in help — `get` descriptions now mention supported formats ([cc3e59e], [#47])
+- **MCP**: Extract `createResourceHandler` factory for MCP handlers — refactors projects as proof of concept ([1dff6d8], [#50])
+- **CLI**: Extract `createCommandRouter` utility — refactors tasks command as proof of concept ([d273eae], [#49])
+
+### Fixed
+
+- **MCP**: Remove false `get` action from services help — no `getService(id)` exists ([832b709], [#41])
+- **MCP**: Remove stale budget mocks from handler tests ([11d99ef], [#45])
+- **Core**: Add empty-update validation to `updateComment` executor — was missing unlike all other update executors ([d6a2d5f], [#46])
+- **CLI**: Remove stale `budgets` from available commands hint in error message ([6eb55c2], [#44])
+
+### Changed
+
+- **CLI**: Deduplicate HTML utility — `stripHtml` now delegates to API's base implementation ([5404334], [#48])
+
+### Tests
+
+- **CLI**: Add `command.test.ts` routing tests for 12 resources ([a61244c], [#51])
+- **CLI**: Add tests for CSV, table, JSON, and kanban renderers ([453cbe4], [#53])
+- **CLI**: Improve `cache.ts` test coverage with 53 new test cases ([f775d56], [#52])
 
 ## [0.9.2] - 2026-02-17
 
@@ -131,7 +153,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.2...HEAD
 [898587e]: https://github.com/studiometa/productive-tools/commit/898587e
 [b1abbed]: https://github.com/studiometa/productive-tools/commit/b1abbed
+[d6a2d5f]: https://github.com/studiometa/productive-tools/commit/d6a2d5f
+[6eb55c2]: https://github.com/studiometa/productive-tools/commit/6eb55c2
+[5404334]: https://github.com/studiometa/productive-tools/commit/5404334
+[a61244c]: https://github.com/studiometa/productive-tools/commit/a61244c
+[453cbe4]: https://github.com/studiometa/productive-tools/commit/453cbe4
+[f775d56]: https://github.com/studiometa/productive-tools/commit/f775d56
+[d273eae]: https://github.com/studiometa/productive-tools/commit/d273eae
+[11d99ef]: https://github.com/studiometa/productive-tools/commit/11d99ef
+[832b709]: https://github.com/studiometa/productive-tools/commit/832b709
+[e213594]: https://github.com/studiometa/productive-tools/commit/e213594
+[6408d3b]: https://github.com/studiometa/productive-tools/commit/6408d3b
+[cc3e59e]: https://github.com/studiometa/productive-tools/commit/cc3e59e
+[1dff6d8]: https://github.com/studiometa/productive-tools/commit/1dff6d8
 [#40]: https://github.com/studiometa/productive-tools/pull/40
+[#41]: https://github.com/studiometa/productive-tools/issues/41
+[#42]: https://github.com/studiometa/productive-tools/issues/42
+[#43]: https://github.com/studiometa/productive-tools/issues/43
+[#44]: https://github.com/studiometa/productive-tools/issues/44
+[#45]: https://github.com/studiometa/productive-tools/issues/45
+[#46]: https://github.com/studiometa/productive-tools/issues/46
+[#47]: https://github.com/studiometa/productive-tools/issues/47
+[#48]: https://github.com/studiometa/productive-tools/issues/48
+[#49]: https://github.com/studiometa/productive-tools/issues/49
+[#50]: https://github.com/studiometa/productive-tools/issues/50
+[#51]: https://github.com/studiometa/productive-tools/issues/51
+[#52]: https://github.com/studiometa/productive-tools/issues/52
+[#53]: https://github.com/studiometa/productive-tools/issues/53
 [0.9.2]: https://github.com/studiometa/productive-tools/compare/0.9.1...0.9.2
 [5c982a8]: https://github.com/studiometa/productive-tools/commit/5c982a8
 [59afd31]: https://github.com/studiometa/productive-tools/commit/59afd31
