@@ -5,6 +5,7 @@
 import { formatTimer, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
+  getTimer,
   listTimers,
   startTimer,
   stopTimer,
@@ -85,12 +86,13 @@ export async function timersGet(args: string[], ctx: CommandContext): Promise<vo
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getTimer(id, { include: ['time_entry'] });
+    const execCtx = fromCommandContext(ctx);
+    const result = await getTimer({ id, include: ['time_entry'] }, execCtx);
 
     spinner.succeed();
 
     const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
-    const formattedData = formatTimer(response.data);
+    const formattedData = formatTimer(result.data);
 
     if (format === 'json') {
       ctx.formatter.output(formattedData);

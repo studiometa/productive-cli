@@ -9,7 +9,9 @@ export async function createBooking(
   ctx: ExecutorContext,
 ): Promise<ExecutorResult<ProductiveBooking>> {
   const personId = await ctx.resolver.resolveValue(options.personId, 'person');
-  const serviceId = await ctx.resolver.resolveValue(options.serviceId, 'service');
+  const serviceId = options.serviceId
+    ? await ctx.resolver.resolveValue(options.serviceId, 'service')
+    : undefined;
 
   const response = await ctx.api.createBooking({
     person_id: personId,
@@ -17,8 +19,10 @@ export async function createBooking(
     started_on: options.startedOn,
     ended_on: options.endedOn,
     time: options.time,
+    total_time: options.totalTime,
     percentage: options.percentage,
     booking_method_id: options.bookingMethodId,
+    draft: options.draft,
     note: options.note,
     event_id: options.eventId,
   });

@@ -10,12 +10,14 @@ export async function updateBooking(
   options: UpdateBookingOptions,
   ctx: ExecutorContext,
 ): Promise<ExecutorResult<ProductiveBooking>> {
-  const data: Record<string, string | number | undefined> = {};
+  const data: Record<string, string | number | boolean | undefined> = {};
 
   if (options.startedOn !== undefined) data.started_on = options.startedOn;
   if (options.endedOn !== undefined) data.ended_on = options.endedOn;
   if (options.time !== undefined) data.time = options.time;
+  if (options.totalTime !== undefined) data.total_time = options.totalTime;
   if (options.percentage !== undefined) data.percentage = options.percentage;
+  if (options.draft !== undefined) data.draft = options.draft;
   if (options.note !== undefined) data.note = options.note;
 
   if (Object.keys(data).length === 0) {

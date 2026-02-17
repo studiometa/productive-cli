@@ -5,7 +5,10 @@
 import { formatBooking, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
+  getBooking,
   listBookings,
+  createBooking,
+  updateBooking,
   type ListBookingsOptions,
 } from '@studiometa/productive-core';
 
@@ -107,15 +110,16 @@ export async function bookingsGet(args: string[], ctx: CommandContext): Promise<
   spinner.start();
 
   await runCommand(async () => {
-    // Bookings get uses include which the executor doesn't pass through — call API directly
-    const response = await ctx.api.getBooking(id, {
-      include: ['person', 'service', 'event', 'approver'],
-    });
+    const execCtx = fromCommandContext(ctx);
+    const result = await getBooking(
+      { id, include: ['person', 'service', 'event', 'approver'] },
+      execCtx,
+    );
 
     spinner.succeed();
 
     const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
-    const formattedData = formatBooking(response.data, { included: response.included });
+    const formattedData = formatBooking(result.data, { included: result.included });
 
     if (format === 'json') {
       ctx.formatter.output(formattedData);
@@ -156,29 +160,28 @@ export async function bookingsAdd(ctx: CommandContext): Promise<void> {
   }
 
   await runCommand(async () => {
-    const resolvedPersonId = await ctx.tryResolveValue(personId, 'person');
-    const resolvedServiceId = ctx.options.service
-      ? await ctx.tryResolveValue(String(ctx.options.service), 'service')
-      : undefined;
-
-    const response = await ctx.api.createBooking({
-      person_id: resolvedPersonId,
-      service_id: resolvedServiceId,
-      event_id: ctx.options.event ? String(ctx.options.event) : undefined,
-      started_on: String(ctx.options.from),
-      ended_on: String(ctx.options.to),
-      time: ctx.options.time ? parseInt(String(ctx.options.time)) : undefined,
-      total_time: ctx.options['total-time']
-        ? parseInt(String(ctx.options['total-time']))
-        : undefined,
-      percentage: ctx.options.percentage ? parseInt(String(ctx.options.percentage)) : undefined,
-      draft: ctx.options.tentative === true,
-      note: ctx.options.note ? String(ctx.options.note) : undefined,
-    });
+    const execCtx = fromCommandContext(ctx);
+    const result = await createBooking(
+      {
+        personId,
+        serviceId: ctx.options.service ? String(ctx.options.service) : undefined,
+        eventId: ctx.options.event ? String(ctx.options.event) : undefined,
+        startedOn: String(ctx.options.from),
+        endedOn: String(ctx.options.to),
+        time: ctx.options.time ? parseInt(String(ctx.options.time)) : undefined,
+        totalTime: ctx.options['total-time']
+          ? parseInt(String(ctx.options['total-time']))
+          : undefined,
+        percentage: ctx.options.percentage ? parseInt(String(ctx.options.percentage)) : undefined,
+        draft: ctx.options.tentative === true,
+        note: ctx.options.note ? String(ctx.options.note) : undefined,
+      },
+      execCtx,
+    );
 
     spinner.succeed();
 
-    const booking = response.data;
+    const booking = result.data;
     const format = ctx.options.format || ctx.options.f || 'human';
 
     if (format === 'json') {
@@ -204,30 +207,38 @@ export async function bookingsUpdate(args: string[], ctx: CommandContext): Promi
   spinner.start();
 
   await runCommand(async () => {
-    const data: Parameters<typeof ctx.api.updateBooking>[1] = {};
+    const execCtx = fromCommandContext(ctx);
 
-    if (ctx.options.from !== undefined) data.started_on = String(ctx.options.from);
-    if (ctx.options.to !== undefined) data.ended_on = String(ctx.options.to);
-    if (ctx.options.time !== undefined) data.time = parseInt(String(ctx.options.time));
-    if (ctx.options['total-time'] !== undefined)
-      data.total_time = parseInt(String(ctx.options['total-time']));
-    if (ctx.options.percentage !== undefined)
-      data.percentage = parseInt(String(ctx.options.percentage));
-    if (ctx.options.tentative !== undefined) data.draft = ctx.options.tentative === true;
-    if (ctx.options.confirm !== undefined) data.draft = false;
-    if (ctx.options.note !== undefined) data.note = String(ctx.options.note);
+    // Build draft value: --confirm overrides --tentative
+    let draft: boolean | undefined;
+    if (ctx.options.confirm !== undefined) draft = false;
+    else if (ctx.options.tentative !== undefined) draft = ctx.options.tentative === true;
 
-    if (Object.keys(data).length === 0) {
-      spinner.fail();
-      throw ValidationError.invalid('options', data, 'No updates specified.');
-    }
+    const result = await updateBooking(
+      {
+        id,
+        startedOn: ctx.options.from !== undefined ? String(ctx.options.from) : undefined,
+        endedOn: ctx.options.to !== undefined ? String(ctx.options.to) : undefined,
+        time: ctx.options.time !== undefined ? parseInt(String(ctx.options.time)) : undefined,
+        totalTime:
+          ctx.options['total-time'] !== undefined
+            ? parseInt(String(ctx.options['total-time']))
+            : undefined,
+        percentage:
+          ctx.options.percentage !== undefined
+            ? parseInt(String(ctx.options.percentage))
+            : undefined,
+        draft,
+        note: ctx.options.note !== undefined ? String(ctx.options.note) : undefined,
+      },
+      execCtx,
+    );
 
-    const response = await ctx.api.updateBooking(id, data);
     spinner.succeed();
 
     const format = ctx.options.format || ctx.options.f || 'human';
     if (format === 'json') {
-      ctx.formatter.output({ status: 'success', id: response.data.id });
+      ctx.formatter.output({ status: 'success', id: result.data.id });
     } else {
       ctx.formatter.success(`Booking ${id} updated`);
     }

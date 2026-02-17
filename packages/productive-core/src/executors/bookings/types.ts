@@ -23,12 +23,14 @@ export interface GetBookingOptions {
 
 export interface CreateBookingOptions {
   personId: string;
-  serviceId: string;
+  serviceId?: string;
   startedOn: string;
   endedOn: string;
   time?: number;
+  totalTime?: number;
   percentage?: number;
   bookingMethodId?: number;
+  draft?: boolean;
   note?: string;
   eventId?: string;
 }
@@ -38,6 +40,8 @@ export interface UpdateBookingOptions {
   startedOn?: string;
   endedOn?: string;
   time?: number;
+  totalTime?: number;
   percentage?: number;
+  draft?: boolean;
   note?: string;
 }

@@ -5,7 +5,9 @@
 import { formatComment, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
+  getComment,
   listComments,
+  createComment,
   updateComment,
   type ListCommentsOptions,
 } from '@studiometa/productive-core';
@@ -90,12 +92,13 @@ export async function commentsGet(args: string[], ctx: CommandContext): Promise<
   spinner.start();
 
   await runCommand(async () => {
-    const response = await ctx.api.getComment(id, { include: ['creator'] });
+    const execCtx = fromCommandContext(ctx);
+    const result = await getComment({ id, include: ['creator'] }, execCtx);
 
     spinner.succeed();
 
     const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
-    const formattedData = formatComment(response.data);
+    const formattedData = formatComment(result.data);
 
     if (format === 'json') {
       ctx.formatter.output(formattedData);
@@ -149,19 +152,23 @@ export async function commentsAdd(ctx: CommandContext): Promise<void> {
   }
 
   await runCommand(async () => {
-    const response = await ctx.api.createComment({
-      body: String(ctx.options.body),
-      task_id: ctx.options.task ? String(ctx.options.task) : undefined,
-      deal_id: ctx.options.deal ? String(ctx.options.deal) : undefined,
-      company_id: ctx.options.company ? String(ctx.options.company) : undefined,
-      invoice_id: ctx.options.invoice ? String(ctx.options.invoice) : undefined,
-      person_id: ctx.options.person ? String(ctx.options.person) : undefined,
-      discussion_id: ctx.options.discussion ? String(ctx.options.discussion) : undefined,
-    });
+    const execCtx = fromCommandContext(ctx);
+    const result = await createComment(
+      {
+        body: String(ctx.options.body),
+        taskId: ctx.options.task ? String(ctx.options.task) : undefined,
+        dealId: ctx.options.deal ? String(ctx.options.deal) : undefined,
+        companyId: ctx.options.company ? String(ctx.options.company) : undefined,
+        invoiceId: ctx.options.invoice ? String(ctx.options.invoice) : undefined,
+        personId: ctx.options.person ? String(ctx.options.person) : undefined,
+        discussionId: ctx.options.discussion ? String(ctx.options.discussion) : undefined,
+      },
+      execCtx,
+    );
 
     spinner.succeed();
 
-    const comment = response.data;
+    const comment = result.data;
     const format = ctx.options.format || ctx.options.f || 'human';
 
     if (format === 'json') {

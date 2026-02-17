@@ -13,6 +13,9 @@ export async function createComment(
     task_id: options.taskId,
     deal_id: options.dealId,
     company_id: options.companyId,
+    invoice_id: options.invoiceId,
+    person_id: options.personId,
+    discussion_id: options.discussionId,
   });
 
   return { data: response.data };

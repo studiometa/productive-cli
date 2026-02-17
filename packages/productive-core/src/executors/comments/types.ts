@@ -18,6 +18,9 @@ export interface CreateCommentOptions {
   taskId?: string;
   dealId?: string;
   companyId?: string;
+  invoiceId?: string;
+  personId?: string;
+  discussionId?: string;
 }
 
 export interface UpdateCommentOptions {
