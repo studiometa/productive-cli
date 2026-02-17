@@ -626,3 +626,56 @@ describe('ResolveError', () => {
     expect(json.type).toBeUndefined();
   });
 });
+
+// ============================================================================
+// createResourceResolver — resolveFilters edge cases
+// ============================================================================
+
+describe('createResourceResolver resolveFilters', () => {
+  it('caches resolved results when cache is provided', async () => {
+    const cache = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn().mockResolvedValue(undefined),
+    };
+
+    const api = mockApi({
+      getPeople: vi.fn().mockResolvedValue({
+        data: [mockPerson('100', 'John', 'Doe', 'john@test.com')],
+        meta: {},
+      }),
+    });
+
+    const resolver = createResourceResolver(api, { cache, orgId: 'org1' });
+    const { resolved } = await resolver.resolveFilters({ person_id: 'john@test.com' });
+
+    expect(resolved.person_id).toBe('100');
+    expect(cache.set).toHaveBeenCalled();
+  });
+
+  it('keeps original value when resolve returns no results', async () => {
+    const api = mockApi({
+      getPeople: vi.fn().mockResolvedValue({ data: [], meta: {} }),
+    });
+
+    const resolver = createResourceResolver(api);
+    const { resolved, metadata } = await resolver.resolveFilters({
+      person_id: 'nobody@test.com',
+    });
+
+    expect(resolved.person_id).toBe('nobody@test.com');
+    expect(metadata.person_id).toBeUndefined();
+  });
+
+  it('keeps original value when resolve throws', async () => {
+    const api = mockApi({
+      getPeople: vi.fn().mockRejectedValue(new Error('Network error')),
+    });
+
+    const resolver = createResourceResolver(api);
+    const { resolved } = await resolver.resolveFilters({
+      person_id: 'john@test.com',
+    });
+
+    expect(resolved.person_id).toBe('john@test.com');
+  });
+});
