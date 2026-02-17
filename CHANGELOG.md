@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **All**: Remove `budgets` resource — the Productive.io API has no `/budgets` endpoint, budgets are deals with `type=2` ([898587e], [b1abbed], [#40])
+- **API**: Remove `ProductiveBudget` type, `getBudgets()`, `getBudget()` client methods, `formatBudget()` formatter ([898587e], [#40])
+- **Core**: Remove `budgets` from `RESOURCES` constant, delete budgets executors ([898587e], [#40])
+- **CLI**: Remove `productive budgets` command, renderer, shell completions, productive links ([898587e], [#40])
+- **MCP**: Remove budgets handler, hints, and formatter ([898587e], [#40])
+
+### Added
+
+- **CLI**: Add `--budget` flag to `productive deals list` as shortcut for `--type budget` ([898587e], [#40])
+- **MCP**: Add helpful redirect error when agents try `resource=budgets` — points to `deals` with `filter[type]=2` ([898587e], [b1abbed], [#40])
+
 ## [0.9.2] - 2026-02-17
 
 ### Fixed
@@ -116,6 +129,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Silence `console.error` in unknown subcommand tests to clean up test output ([#26])
 
 [Unreleased]: https://github.com/studiometa/productive-tools/compare/0.9.2...HEAD
+[898587e]: https://github.com/studiometa/productive-tools/commit/898587e
+[b1abbed]: https://github.com/studiometa/productive-tools/commit/b1abbed
+[#40]: https://github.com/studiometa/productive-tools/pull/40
 [0.9.2]: https://github.com/studiometa/productive-tools/compare/0.9.1...0.9.2
 [5c982a8]: https://github.com/studiometa/productive-tools/commit/5c982a8
 [59afd31]: https://github.com/studiometa/productive-tools/commit/59afd31
