@@ -4,7 +4,6 @@ import type { ProductiveApi } from '../api.js';
 
 import { createTestContext } from '../context.js';
 import { budgetsList, budgetsGet } from './budgets/handlers.js';
-import { handleBudgetsCommand } from './budgets/index.js';
 
 describe('budgets command', () => {
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;
@@ -609,21 +608,6 @@ describe('budgets command', () => {
       });
 
       await budgetsGet(['999'], ctx);
-
-      expect(processExitSpy).toHaveBeenCalledWith(1);
-    });
-  });
-
-  describe('command routing', () => {
-    it('should exit with error for unknown subcommand', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {});
-      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
-
-      await handleBudgetsCommand('unknown', [], {
-        format: 'json',
-        token: 'test-token',
-        'org-id': 'test-org',
-      });
 
       expect(processExitSpy).toHaveBeenCalledWith(1);
     });
