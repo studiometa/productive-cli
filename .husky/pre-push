@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "🔨 Building..."
+npm run build || exit 1
+
+echo "🔍 Type checking..."
+npm run typecheck || exit 1
+
+echo "🧪 Running tests..."
+npm test || exit 1
+
+echo "✅ All checks passed"
