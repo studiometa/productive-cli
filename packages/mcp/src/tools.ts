@@ -1,9 +1,32 @@
 import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 
+import { RESOURCES, ACTIONS, REPORT_TYPES } from './constants.js';
+
+/**
+ * Generate the tool description dynamically from the constants.
+ * Adding a resource or action to constants.ts automatically updates this description.
+ */
+function generateDescription(): string {
+  return (
+    `Productive.io API. Resources: ${RESOURCES.join(', ')}. ` +
+    `Actions: ${ACTIONS.join(', ')} (varies by resource). ` +
+    'Use query for text search on list actions. ' +
+    'Reports: use resource=reports, action=get with report_type. ' +
+    'Filters: project_id, person_id, service_id, company_id, after/before (dates). ' +
+    'Use include to fetch related data. ' +
+    'Use compact=false for full details (default for get, true for list). ' +
+    'Use action=help with a resource for detailed documentation.'
+  );
+}
+
 /**
  * Single consolidated tool for Productive.io MCP server
  *
- * Optimized for minimal token overhead (~170 tokens vs ~1300 for individual tools)
+ * The resource/action/report_type enums and description are derived from
+ * the shared constants in constants.ts — the single source of truth for both
+ * the MCP tool definition and the Zod validation schemas.
+ * Adding a new resource, action, or report type there automatically updates
+ * both the tool exposed to clients and the validation layer.
  *
  * MCP Annotations (for MCP directory compliance):
  * - readOnlyHint: false - Tool can create/update data
@@ -14,8 +37,7 @@ import type { Tool } from '@modelcontextprotocol/sdk/types.js';
 export const TOOLS: Tool[] = [
   {
     name: 'productive',
-    description:
-      'Productive.io API. Resources: projects, time, tasks, services, people, companies, comments, attachments, timers, deals, bookings, budgets, pages, discussions, reports. Actions: list, get, create, update, delete (varies by resource), resolve/reopen (tasks), start/stop (timers), me (people), help (documentation). Use query for text search on list actions. Reports: use resource=reports, action=get with report_type. Filters: project_id, person_id, service_id, company_id, after/before (dates). Use include to fetch related data. Use compact=false for full details (default for get, true for list). Use action=help with a resource for detailed documentation.',
+    description: generateDescription(),
     annotations: {
       title: 'Productive.io',
       readOnlyHint: false,
@@ -28,39 +50,11 @@ export const TOOLS: Tool[] = [
       properties: {
         resource: {
           type: 'string',
-          enum: [
-            'projects',
-            'time',
-            'tasks',
-            'services',
-            'people',
-            'companies',
-            'comments',
-            'attachments',
-            'timers',
-            'deals',
-            'bookings',
-            'budgets',
-            'pages',
-            'discussions',
-            'reports',
-          ],
+          enum: [...RESOURCES],
         },
         action: {
           type: 'string',
-          enum: [
-            'list',
-            'get',
-            'create',
-            'update',
-            'delete',
-            'resolve',
-            'reopen',
-            'me',
-            'start',
-            'stop',
-            'help',
-          ],
+          enum: [...ACTIONS],
           description: 'Action to perform. Use "help" for detailed documentation on a resource.',
         },
         id: { type: 'string' },
@@ -116,19 +110,7 @@ export const TOOLS: Tool[] = [
         // Report fields
         report_type: {
           type: 'string',
-          enum: [
-            'time_reports',
-            'project_reports',
-            'budget_reports',
-            'person_reports',
-            'invoice_reports',
-            'payment_reports',
-            'service_reports',
-            'task_reports',
-            'company_reports',
-            'deal_reports',
-            'timesheet_reports',
-          ],
+          enum: [...REPORT_TYPES],
         },
         group: { type: 'string' },
         from: { type: 'string' },

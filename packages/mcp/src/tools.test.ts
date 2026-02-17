@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
+import { RESOURCES, ACTIONS, REPORT_TYPES } from './constants.js';
 import { TOOLS, STDIO_ONLY_TOOLS } from './tools.js';
 
 describe('tools', () => {
@@ -20,44 +21,22 @@ describe('tools', () => {
       expect(tool.inputSchema).toHaveProperty('type', 'object');
     });
 
-    it('should have resource enum with all resources', () => {
+    it('should derive resource enum from shared RESOURCES constant', () => {
       const tool = TOOLS[0];
       const resourceProp = tool.inputSchema.properties?.resource as { enum?: string[] };
-      expect(resourceProp?.enum).toEqual([
-        'projects',
-        'time',
-        'tasks',
-        'services',
-        'people',
-        'companies',
-        'comments',
-        'attachments',
-        'timers',
-        'deals',
-        'bookings',
-        'budgets',
-        'pages',
-        'discussions',
-        'reports',
-      ]);
+      expect(resourceProp?.enum).toEqual([...RESOURCES]);
     });
 
-    it('should have action enum with all actions', () => {
+    it('should derive action enum from shared ACTIONS constant', () => {
       const tool = TOOLS[0];
       const actionProp = tool.inputSchema.properties?.action as { enum?: string[] };
-      expect(actionProp?.enum).toEqual([
-        'list',
-        'get',
-        'create',
-        'update',
-        'delete',
-        'resolve',
-        'reopen',
-        'me',
-        'start',
-        'stop',
-        'help',
-      ]);
+      expect(actionProp?.enum).toEqual([...ACTIONS]);
+    });
+
+    it('should derive report_type enum from shared REPORT_TYPES constant', () => {
+      const tool = TOOLS[0];
+      const reportTypeProp = tool.inputSchema.properties?.report_type as { enum?: string[] };
+      expect(reportTypeProp?.enum).toEqual([...REPORT_TYPES]);
     });
 
     it('should require resource and action', () => {
@@ -84,6 +63,33 @@ describe('tools', () => {
       expect(props).toHaveProperty('date');
       expect(props).toHaveProperty('note');
     });
+
+    it('should have page parameters', () => {
+      const tool = TOOLS[0];
+      const props = tool.inputSchema.properties;
+      expect(props).toHaveProperty('page_id');
+      expect(props).toHaveProperty('parent_page_id');
+    });
+
+    it('should have attachment parameters', () => {
+      const tool = TOOLS[0];
+      const props = tool.inputSchema.properties;
+      expect(props).toHaveProperty('comment_id');
+    });
+
+    it('should include all resources in description', () => {
+      const tool = TOOLS[0];
+      for (const resource of RESOURCES) {
+        expect(tool.description).toContain(resource);
+      }
+    });
+
+    it('should include all actions in description', () => {
+      const tool = TOOLS[0];
+      for (const action of ACTIONS) {
+        expect(tool.description).toContain(action);
+      }
+    });
   });
 
   describe('STDIO_ONLY_TOOLS', () => {
@@ -109,14 +115,13 @@ describe('tools', () => {
   describe('token optimization', () => {
     it('should have reasonable tool schema size', () => {
       const totalSize = JSON.stringify(TOOLS).length;
-      // Single tool with all resources (including pages, discussions, budgets, attachments) and MCP annotations
+      // Single tool with all resources and MCP annotations should be under 3200 bytes
       expect(totalSize).toBeLessThan(3200);
     });
 
     it('should estimate under 800 tokens', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       const estimatedTokens = Math.ceil(totalSize / 4);
-      // With all resources, actions, and enhanced descriptions
       expect(estimatedTokens).toBeLessThan(800);
     });
   });
