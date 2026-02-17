@@ -20,5 +20,11 @@ export default defineConfig({
       'src/commands/completion.ts',
       'src/commands/completion-helper.ts',
     ],
+    coverageThresholds: {
+      statements: 84,
+      branches: 70,
+      functions: 90,
+      lines: 84,
+    },
   }),
 });
