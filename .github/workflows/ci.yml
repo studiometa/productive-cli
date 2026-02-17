@@ -73,7 +73,7 @@ jobs:
         if: ${{ !cancelled() && matrix.node-version == '24' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./packages/productive-cli/test-results/junit.xml,./packages/productive-mcp/test-results/junit.xml
+          files: ./packages/productive-api/test-results/junit.xml,./packages/productive-core/test-results/junit.xml,./packages/productive-cli/test-results/junit.xml,./packages/productive-mcp/test-results/junit.xml
           report_type: test_results
 
       - name: Generate coverage summary

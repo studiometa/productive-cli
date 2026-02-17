@@ -23,6 +23,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    reporters: process.env.CI ? ['default', 'junit'] : ['default'],
+    outputFile: {
+      junit: './test-results/junit.xml',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'json-summary', 'html', 'lcov'],
