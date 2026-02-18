@@ -107,6 +107,7 @@ export async function executeToolWithCredentials(
       apiToken: credentials.apiToken,
       organizationId: credentials.organizationId,
       userId: credentials.userId,
+      baseUrl: process.env.PRODUCTIVE_BASE_URL,
     },
   });
 
