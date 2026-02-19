@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP**: Migrate services, companies, and pages handlers to `createResourceHandler` factory ([c908a2a], [#70], [#68])
 - **MCP**: Extend `createResourceHandler` with `customActions`, `listFilterFromArgs`, `resolveArgsFromArgs`, and `validateArgs` ([81a632b], [#72], [#71])
 - **MCP**: Migrate deals, tasks, time, attachments, bookings, comments, discussions, and timers handlers to factory ([81a632b], [#72], [#71])
+- **MCP**: Add `PRODUCTIVE_BASE_URL` support in HTTP handler — `executeToolWithCredentials` now injects `baseUrl` from env, enabling mock server redirection in integration tests ([dda72b6], [#78])
 
 ### Fixed
 
@@ -42,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Tests
 
+- **Integration**: Add end-to-end integration tests for CLI and MCP in a sandboxed environment with a mock Productive.io API — no real API calls ([d630808], [3847568], [090b486], [#78], [#73])
 - **CLI**: Add `command.test.ts` routing tests for 12 resources ([a61244c], [#51])
 - **CLI**: Add tests for CSV, table, JSON, and kanban renderers ([453cbe4], [#53])
 - **CLI**: Improve `cache.ts` test coverage with 53 new test cases ([f775d56], [#52])
@@ -193,6 +195,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [81a632b]: https://github.com/studiometa/productive-tools/commit/81a632b
 [#71]: https://github.com/studiometa/productive-tools/issues/71
 [#72]: https://github.com/studiometa/productive-tools/pull/72
+[dda72b6]: https://github.com/studiometa/productive-tools/commit/dda72b6
+[60d0dc1]: https://github.com/studiometa/productive-tools/commit/60d0dc1
+[d630808]: https://github.com/studiometa/productive-tools/commit/d630808
+[3847568]: https://github.com/studiometa/productive-tools/commit/3847568
+[090b486]: https://github.com/studiometa/productive-tools/commit/090b486
+[#73]: https://github.com/studiometa/productive-tools/issues/73
+[#78]: https://github.com/studiometa/productive-tools/pull/78
 [0.9.2]: https://github.com/studiometa/productive-tools/compare/0.9.1...0.9.2
 [5c982a8]: https://github.com/studiometa/productive-tools/commit/5c982a8
 [59afd31]: https://github.com/studiometa/productive-tools/commit/59afd31
