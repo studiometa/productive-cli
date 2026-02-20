@@ -15,6 +15,7 @@ import type { HandlerContext, ToolResult } from './types.js';
 
 import { ErrorMessages, UserInputError, isUserInputError } from '../errors.js';
 import { handleAttachments } from './attachments.js';
+import { handleBatch } from './batch.js';
 import { handleBookings } from './bookings.js';
 import { handleComments } from './comments.js';
 import { handleCompanies } from './companies.js';
@@ -92,6 +93,8 @@ interface ProductiveArgs {
   from?: string;
   to?: string;
   status?: string;
+  // Batch fields
+  operations?: Array<Record<string, unknown>>;
 }
 
 /**
@@ -102,6 +105,18 @@ export async function executeToolWithCredentials(
   args: Record<string, unknown>,
   credentials: ProductiveCredentials,
 ): Promise<ToolResult> {
+  // Handle the single consolidated tool
+  if (name !== 'productive') {
+    return errorResult(`Unknown tool: ${name}`);
+  }
+
+  // Handle batch resource BEFORE initializing API client
+  // Batch delegates back to executeToolWithCredentials for each operation
+  const typedArgs = args as unknown as ProductiveArgs;
+  if (typedArgs.resource === 'batch') {
+    return handleBatch(typedArgs.operations, credentials, executeToolWithCredentials);
+  }
+
   // Initialize API client with provided credentials
   const api = new ProductiveApi({
     config: {
@@ -111,11 +126,6 @@ export async function executeToolWithCredentials(
       baseUrl: process.env.PRODUCTIVE_BASE_URL,
     },
   });
-
-  // Handle the single consolidated tool
-  if (name !== 'productive') {
-    return errorResult(`Unknown tool: ${name}`);
-  }
 
   const {
     resource,
@@ -129,7 +139,7 @@ export async function executeToolWithCredentials(
     no_hints,
     type,
     ...restArgs
-  } = args as unknown as ProductiveArgs & { no_hints?: boolean; type?: ResolvableResourceType };
+  } = typedArgs as ProductiveArgs & { no_hints?: boolean; type?: ResolvableResourceType };
 
   // Default compact to false for 'get' action (single resource), true for 'list'
   const isCompact = compact ?? action !== 'get';

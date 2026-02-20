@@ -3179,4 +3179,138 @@ describe('smart ID resolution', () => {
       expect(result.content[0].text).toContain('Invalid action');
     });
   });
+
+  describe('batch resource', () => {
+    it('should execute multiple operations in parallel', async () => {
+      const mockProjectResponse = {
+        data: { id: '123', type: 'projects', attributes: { name: 'Test Project' } },
+      };
+      const mockTaskResponse = {
+        data: [{ id: '1', type: 'tasks', attributes: { title: 'Task 1' } }],
+        meta: { current_page: 1, total_pages: 1 },
+      };
+      mockApi.getProject.mockResolvedValue(mockProjectResponse);
+      mockApi.getTasks.mockResolvedValue(mockTaskResponse);
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'batch',
+          action: 'run',
+          operations: [
+            { resource: 'projects', action: 'get', id: '123' },
+            { resource: 'tasks', action: 'list', filter: { project_id: '123' } },
+          ],
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._batch).toEqual({ total: 2, succeeded: 2, failed: 0 });
+      expect(content.results).toHaveLength(2);
+      expect(content.results[0].resource).toBe('projects');
+      expect(content.results[0].action).toBe('get');
+      expect(content.results[0].index).toBe(0);
+      expect(content.results[0].data).toBeDefined();
+      expect(content.results[1].resource).toBe('tasks');
+      expect(content.results[1].action).toBe('list');
+      expect(content.results[1].index).toBe(1);
+    });
+
+    it('should return error for empty operations array', async () => {
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'batch', action: 'run', operations: [] },
+        credentials,
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('cannot be empty');
+    });
+
+    it('should return error when operations is not provided', async () => {
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'batch', action: 'run' },
+        credentials,
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('must be an array');
+    });
+
+    it('should return error for operations exceeding max size', async () => {
+      const operations = Array.from({ length: 11 }, (_, i) => ({
+        resource: 'projects',
+        action: 'list',
+        page: i + 1,
+      }));
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'batch', action: 'run', operations },
+        credentials,
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('exceeds maximum size');
+    });
+
+    it('should handle mixed success and error operations', async () => {
+      const mockProjectResponse = {
+        data: { id: '123', type: 'projects', attributes: { name: 'Test Project' } },
+      };
+      mockApi.getProject.mockResolvedValue(mockProjectResponse);
+      mockApi.getTask.mockRejectedValue(new Error('Not found'));
+
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'batch',
+          action: 'run',
+          operations: [
+            { resource: 'projects', action: 'get', id: '123' },
+            { resource: 'tasks', action: 'get', id: '999' },
+          ],
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBeUndefined();
+      const content = JSON.parse(result.content[0].text as string);
+      expect(content._batch).toEqual({ total: 2, succeeded: 1, failed: 1 });
+      expect(content.results[0].data).toBeDefined();
+      expect(content.results[1].error).toBeDefined();
+    });
+
+    it('should validate operation structure', async () => {
+      const result = await executeToolWithCredentials(
+        'productive',
+        {
+          resource: 'batch',
+          action: 'run',
+          operations: [{ resource: 'projects' }], // missing action
+        },
+        credentials,
+      );
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('action');
+    });
+
+    it('should not initialize API client for batch resource', async () => {
+      // This test verifies that batch handling happens before API initialization
+      // by checking that even with invalid credentials, we still get proper batch validation errors
+      const result = await executeToolWithCredentials(
+        'productive',
+        { resource: 'batch', action: 'run', operations: [] },
+        { apiToken: '', organizationId: '', userId: '' },
+      );
+
+      // Should get batch validation error, not API error
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('cannot be empty');
+    });
+  });
 });

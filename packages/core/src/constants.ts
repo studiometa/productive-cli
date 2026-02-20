@@ -29,6 +29,7 @@ export const RESOURCES = [
   'pages',
   'discussions',
   'reports',
+  'batch',
 ] as const;
 
 export type Resource = (typeof RESOURCES)[number];
@@ -51,6 +52,7 @@ export const ACTIONS = [
   'stop',
   'help',
   'schema',
+  'run',
 ] as const;
 
 export type Action = (typeof ACTIONS)[number];

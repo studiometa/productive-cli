@@ -115,14 +115,14 @@ describe('tools', () => {
   describe('token optimization', () => {
     it('should have reasonable tool schema size', () => {
       const totalSize = JSON.stringify(TOOLS).length;
-      // Single tool with all resources and MCP annotations should be under 3200 bytes
-      expect(totalSize).toBeLessThan(3200);
+      // Single tool with all resources, batch operations, and MCP annotations should be under 3500 bytes
+      expect(totalSize).toBeLessThan(3500);
     });
 
-    it('should estimate under 800 tokens', () => {
+    it('should estimate under 900 tokens', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       const estimatedTokens = Math.ceil(totalSize / 4);
-      expect(estimatedTokens).toBeLessThan(800);
+      expect(estimatedTokens).toBeLessThan(900);
     });
   });
 });

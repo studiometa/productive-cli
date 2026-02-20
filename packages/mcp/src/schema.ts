@@ -291,6 +291,22 @@ export const ProductiveToolInputSchema = z.object({
   from: ParamDate.optional().describe('Report start date (YYYY-MM-DD)'),
   to: ParamDate.optional().describe('Report end date (YYYY-MM-DD)'),
   status: z.string().trim().optional().describe('Status filter for reports'),
+
+  // Batch fields
+  operations: z
+    .array(
+      z
+        .object({
+          resource: z.string(),
+          action: z.string(),
+        })
+        .passthrough(),
+    )
+    .max(10)
+    .optional()
+    .describe(
+      'Array of operations for batch execution (max 10). Each operation needs resource, action, and any additional params.',
+    ),
 });
 
 export type ProductiveToolInput = z.infer<typeof ProductiveToolInputSchema>;
