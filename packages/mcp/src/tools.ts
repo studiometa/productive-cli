@@ -16,7 +16,8 @@ function generateDescription(): string {
     'Use include to fetch related data. ' +
     'Use compact=false for full details (default for get, true for list). ' +
     'Use action=help with a resource for detailed documentation. ' +
-    'Use action=schema with a resource for compact machine-readable field/filter spec.'
+    'Use action=schema with a resource for compact machine-readable field/filter spec. ' +
+    'Batch: use resource=batch, action=run with operations array to execute multiple operations in parallel (max 10).'
   );
 }
 
@@ -117,6 +118,21 @@ export const TOOLS: Tool[] = [
         from: { type: 'string' },
         to: { type: 'string' },
         status: { type: 'string' },
+        // Batch fields
+        operations: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              resource: { type: 'string' },
+              action: { type: 'string' },
+            },
+            required: ['resource', 'action'],
+          },
+          maxItems: 10,
+          description:
+            'Array of operations for batch execution (max 10). Each operation needs resource, action, and any additional params.',
+        },
       },
       required: ['resource', 'action'],
     },

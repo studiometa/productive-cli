@@ -16,6 +16,57 @@ interface ResourceHelp {
 }
 
 const RESOURCE_HELP: Record<string, ResourceHelp> = {
+  batch: {
+    description:
+      'Execute multiple operations in a single call. Operations run in parallel via Promise.all, reducing round-trips for AI agents.',
+    actions: {
+      run: 'Execute a batch of operations (max 10)',
+    },
+    fields: {
+      operations:
+        'Array of operation objects. Each must have "resource" and "action", plus any additional params for that resource.',
+    },
+    examples: [
+      {
+        description: 'Batch multiple queries',
+        params: {
+          resource: 'batch',
+          action: 'run',
+          operations: [
+            { resource: 'projects', action: 'get', id: '123' },
+            { resource: 'time', action: 'list', filter: { project_id: '123' } },
+            { resource: 'services', action: 'list', filter: { project_id: '123' } },
+          ],
+        },
+      },
+      {
+        description: 'Batch create time entries',
+        params: {
+          resource: 'batch',
+          action: 'run',
+          operations: [
+            {
+              resource: 'time',
+              action: 'create',
+              service_id: '111',
+              date: '2024-01-15',
+              time: 60,
+              note: 'Morning work',
+            },
+            {
+              resource: 'time',
+              action: 'create',
+              service_id: '111',
+              date: '2024-01-15',
+              time: 120,
+              note: 'Afternoon work',
+            },
+          ],
+        },
+      },
+    ],
+  },
+
   projects: {
     description: 'Manage projects in Productive.io',
     actions: {
