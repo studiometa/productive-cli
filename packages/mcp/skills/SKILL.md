@@ -7,6 +7,10 @@ description: MCP server for Productive.io - use with Claude Desktop or MCP-compa
 
 MCP (Model Context Protocol) server for Productive.io. Provides a single unified tool for all operations.
 
+## Quick Start
+
+Before your first interaction with any resource, call `action=help` with that resource to discover valid filters, required fields, includes, and examples.
+
 ## The `productive` Tool
 
 Single unified tool with this signature:

@@ -631,6 +631,7 @@ export function handleHelp(resource: string): ToolResult {
     return jsonResult({
       error: `Unknown resource: ${resource}`,
       available_resources: Object.keys(RESOURCE_HELP),
+      _tip: "Call { action: 'help' } without a resource to see all available resources.",
     });
   }
 
@@ -653,5 +654,6 @@ export function handleHelpOverview(): ToolResult {
   return jsonResult({
     message: 'Use action="help" with a specific resource for detailed documentation',
     resources: overview,
+    _tip: "Always call { action: 'help', resource: '<name>' } before your first interaction with any resource to learn valid filters, required fields, and examples.",
   });
 }
