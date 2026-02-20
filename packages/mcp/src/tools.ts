@@ -15,7 +15,8 @@ function generateDescription(): string {
     'Filters: project_id, person_id, service_id, company_id, after/before (dates). ' +
     'Use include to fetch related data. ' +
     'Use compact=false for full details (default for get, true for list). ' +
-    'Use action=help with a resource for detailed documentation.'
+    'Use action=help with a resource for detailed documentation. ' +
+    'Use action=schema with a resource for compact machine-readable field/filter spec.'
   );
 }
 

@@ -27,6 +27,7 @@ import { handlePeople } from './people.js';
 import { handleProjects } from './projects.js';
 import { handleReports } from './reports.js';
 import { type ResolvableResourceType } from './resolve.js';
+import { handleSchema, handleSchemaOverview } from './schema.js';
 import { handleServices } from './services.js';
 import { handleTasks } from './tasks.js';
 import { handleTime } from './time.js';
@@ -162,6 +163,11 @@ export async function executeToolWithCredentials(
     // Handle help action first (doesn't need API)
     if (action === 'help') {
       return resource ? handleHelp(resource) : handleHelpOverview();
+    }
+
+    // Handle schema action (doesn't need API)
+    if (action === 'schema') {
+      return resource ? handleSchema(resource) : handleSchemaOverview();
     }
 
     // Route to appropriate resource handler

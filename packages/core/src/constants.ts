@@ -50,6 +50,7 @@ export const ACTIONS = [
   'start',
   'stop',
   'help',
+  'schema',
 ] as const;
 
 export type Action = (typeof ACTIONS)[number];
