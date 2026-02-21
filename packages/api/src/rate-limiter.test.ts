@@ -352,4 +352,163 @@ describe('RateLimiter', () => {
       expect(resolved).toBe(true);
     });
   });
+
+  describe('disabled rate limiter', () => {
+    it('shouldRetry always returns false when disabled', () => {
+      const limiter = new RateLimiter({ enabled: false });
+
+      expect(limiter.shouldRetry(0)).toBe(false);
+      expect(limiter.shouldRetry(1)).toBe(false);
+      expect(limiter.shouldRetry(100)).toBe(false);
+    });
+
+    it('acquire returns immediately for any endpoint when disabled', async () => {
+      const limiter = new RateLimiter({ enabled: false });
+
+      // Make many requests - should all complete immediately
+      const start = Date.now();
+      for (let i = 0; i < 200; i++) {
+        await limiter.acquire('/projects');
+      }
+      expect(Date.now() - start).toBe(0);
+
+      // Reports too
+      for (let i = 0; i < 50; i++) {
+        await limiter.acquire('/reports/time_reports');
+      }
+      expect(Date.now() - start).toBe(0);
+    });
+
+    it('recordResponse does nothing when disabled', () => {
+      const limiter = new RateLimiter({ enabled: false });
+
+      // Should not throw
+      limiter.recordResponse(200);
+      limiter.recordResponse(429, '5');
+      limiter.recordResponse(500);
+    });
+
+    it('getRetryDelay still calculates delay when disabled', () => {
+      const limiter = new RateLimiter({ enabled: false, initialBackoffMs: 1000 });
+
+      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
+      // getRetryDelay still works (it's used by client for the delay)
+      expect(limiter.getRetryDelay(0)).toBe(750);
+
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe('acquire edge cases', () => {
+    it('handles acquire with undefined endpoint', async () => {
+      const limiter = new RateLimiter({ maxRequestsPer10s: 100 });
+
+      // Should not throw, treated as non-report endpoint
+      await limiter.acquire(undefined);
+      await limiter.acquire();
+    });
+
+    it('handles acquire with empty string endpoint', async () => {
+      const limiter = new RateLimiter({ maxRequestsPer10s: 100 });
+
+      await limiter.acquire('');
+    });
+  });
+
+  describe('shouldRetry boundary conditions', () => {
+    it('returns true when attempt equals maxRetries - 1', () => {
+      const limiter = new RateLimiter({ maxRetries: 3 });
+
+      expect(limiter.shouldRetry(2)).toBe(true); // 2 < 3
+    });
+
+    it('returns false when attempt equals maxRetries', () => {
+      const limiter = new RateLimiter({ maxRetries: 3 });
+
+      expect(limiter.shouldRetry(3)).toBe(false); // 3 === 3, not <
+    });
+
+    it('returns false when attempt is greater than maxRetries', () => {
+      const limiter = new RateLimiter({ maxRetries: 3 });
+
+      expect(limiter.shouldRetry(4)).toBe(false);
+      expect(limiter.shouldRetry(10)).toBe(false);
+    });
+
+    it('handles maxRetries of 0', () => {
+      const limiter = new RateLimiter({ maxRetries: 0 });
+
+      expect(limiter.shouldRetry(0)).toBe(false);
+    });
+
+    it('handles maxRetries of 1', () => {
+      const limiter = new RateLimiter({ maxRetries: 1 });
+
+      expect(limiter.shouldRetry(0)).toBe(true);
+      expect(limiter.shouldRetry(1)).toBe(false);
+    });
+  });
+
+  describe('getRetryDelay edge cases', () => {
+    it('handles negative Retry-After value', () => {
+      const limiter = new RateLimiter({ initialBackoffMs: 1000 });
+
+      // Negative value like '-5' is actually parsed as a Date (year -5 BC)
+      // which is in the past, so Math.max(0, delay) returns 0
+      expect(limiter.getRetryDelay(0, '-5')).toBe(0);
+    });
+
+    it('handles very large Retry-After value', () => {
+      const limiter = new RateLimiter();
+
+      // Should not cap - use the header value
+      expect(limiter.getRetryDelay(0, '3600')).toBe(3600000); // 1 hour in ms
+    });
+
+    it('handles Retry-After with whitespace', () => {
+      const limiter = new RateLimiter({ initialBackoffMs: 1000 });
+
+      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
+      // parseInt handles leading/trailing whitespace for numbers
+      expect(limiter.getRetryDelay(0, '  10  ')).toBe(10000);
+
+      vi.restoreAllMocks();
+    });
+
+    it('handles very high attempt number', () => {
+      const limiter = new RateLimiter({
+        initialBackoffMs: 1000,
+        maxBackoffMs: 30000,
+      });
+
+      vi.spyOn(Math, 'random').mockReturnValue(1);
+
+      // Should be capped at maxBackoffMs
+      expect(limiter.getRetryDelay(100)).toBe(30000);
+
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe('recordResponse edge cases', () => {
+    it('accepts all status codes without error', () => {
+      const limiter = new RateLimiter();
+
+      // Various status codes
+      limiter.recordResponse(200);
+      limiter.recordResponse(201);
+      limiter.recordResponse(204);
+      limiter.recordResponse(400);
+      limiter.recordResponse(401);
+      limiter.recordResponse(403);
+      limiter.recordResponse(404);
+      limiter.recordResponse(429);
+      limiter.recordResponse(429, '10');
+      limiter.recordResponse(500);
+      limiter.recordResponse(502);
+      limiter.recordResponse(503);
+    });
+  });
 });
