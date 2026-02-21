@@ -31,6 +31,7 @@ import { type ResolvableResourceType } from './resolve.js';
 import { handleSchema, handleSchemaOverview } from './schema.js';
 import { handleSearch } from './search.js';
 import { handleServices } from './services.js';
+import { handleSummaries } from './summaries.js';
 import { handleTasks } from './tasks.js';
 import { handleTime } from './time.js';
 import { handleTimers } from './timers.js';
@@ -234,6 +235,9 @@ export async function executeToolWithCredentials(
 
       case 'reports':
         return await handleReports(action, restArgs, ctx);
+
+      case 'summaries':
+        return await handleSummaries(action, restArgs, ctx);
 
       case 'budgets':
         return inputErrorResult(
