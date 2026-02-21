@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **API**: Add `RateLimiter` class with sliding window throttling and exponential backoff with jitter for 429 retries ([9f0d991], [#107], [#104])
+- **API**: Integrate rate limiting into `ProductiveApi.request()` — proactive throttling before requests, automatic retry on 429, separate tracking for report endpoints (10/30s vs 100/10s), configurable via `ApiOptions.rateLimit` ([9f0d991], [#107], [#104])
+- **MCP**: Add `action=context` on tasks, projects, and deals — fetches the resource plus all related data (comments, time entries, subtasks/services) in a single tool call via parallel API calls ([1b5ab62], [#105], [#99])
+- **MCP**: Add `resource=summaries` with `my_day`, `project_health`, and `team_pulse` actions — dashboard-style views that aggregate multiple resources in one call ([9bc253c], [#106], [#100])
+- **Core**: Add `context` executors for tasks, projects, and deals with parallel fetching ([1b5ab62], [#105], [#99])
+- **Core**: Add `summaries` executors: `getMyDaySummary`, `getProjectHealthSummary`, `getTeamPulseSummary` ([9bc253c], [#106], [#100])
+- **Core**: Add `context`, `my_day`, `project_health`, `team_pulse` to `ACTIONS` and `summaries` to `RESOURCES` constants ([1b5ab62], [9bc253c], [#105], [#106])
+
+[9f0d991]: https://github.com/studiometa/productive-tools/commit/9f0d991
+[1b5ab62]: https://github.com/studiometa/productive-tools/commit/1b5ab62
+[9bc253c]: https://github.com/studiometa/productive-tools/commit/9bc253c
+[#99]: https://github.com/studiometa/productive-tools/issues/99
+[#100]: https://github.com/studiometa/productive-tools/issues/100
+[#104]: https://github.com/studiometa/productive-tools/issues/104
+[#105]: https://github.com/studiometa/productive-tools/pull/105
+[#106]: https://github.com/studiometa/productive-tools/pull/106
+[#107]: https://github.com/studiometa/productive-tools/pull/107
+
 ## [0.10.1] - 2026-02-21
 
 ### Added
