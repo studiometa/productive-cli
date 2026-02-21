@@ -39,7 +39,11 @@ describe('ProductiveApi requests', () => {
   });
 
   function createApi() {
-    return new ProductiveApi({ config: validConfig, useCache: false });
+    return new ProductiveApi({
+      config: validConfig,
+      useCache: false,
+      rateLimit: { enabled: false },
+    });
   }
 
   function mockFetchResponse(data: unknown, status = 200) {
@@ -933,6 +937,478 @@ describe('ProductiveApi requests', () => {
       const body = JSON.parse(options!.body as string);
       expect(body.data.attributes.status).toBe(1);
       expect(result.data.attributes.status).toBe(1);
+    });
+  });
+
+  describe('rate limiting', () => {
+    it('retries on 429 with backoff', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 3, initialBackoffMs: 100 },
+      });
+
+      // First call: 429, second call: 429, third call: success
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [{ id: '1' }] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const result = await api.getProjects();
+
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
+      expect(result.data).toHaveLength(1);
+    });
+
+    it('throws after maxRetries exceeded', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 2, initialBackoffMs: 10 },
+      });
+
+      // All calls return 429
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve(
+          new Response('Rate limited', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        ),
+      );
+
+      await expect(api.getProjects()).rejects.toThrow(ProductiveApiError);
+      await expect(
+        new ProductiveApi({
+          config: validConfig,
+          useCache: false,
+          rateLimit: { maxRetries: 2, initialBackoffMs: 10 },
+        })
+          .getProjects()
+          .catch((e) => {
+            expect(e.message).toContain('Rate limit exceeded');
+            expect(e.statusCode).toBe(429);
+            throw e;
+          }),
+      ).rejects.toThrow();
+
+      // 1 initial + 2 retries = 3 attempts
+      expect(fetchSpy).toHaveBeenCalledTimes(6); // 3 + 3 from second call
+    });
+
+    it('respects Retry-After header', async () => {
+      vi.useFakeTimers();
+
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 1 },
+      });
+
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': '2' }, // 2 seconds
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const promise = api.getProjects();
+
+      // Should not complete until after retry delay
+      await vi.advanceTimersByTimeAsync(1999);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      // Advance past the 2 second delay
+      await vi.advanceTimersByTimeAsync(2);
+      await promise;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
+    });
+
+    it('skips rate limiting when disabled', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { enabled: false },
+      });
+
+      // Single 429 should throw immediately (no retries)
+      fetchSpy.mockResolvedValueOnce(
+        new Response('Rate limited', {
+          status: 429,
+        }),
+      );
+
+      await expect(api.getProjects()).rejects.toThrow(ProductiveApiError);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('uses default rate limiting when not configured', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+      });
+
+      // First 429, then success
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const result = await api.getProjects();
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(result.data).toEqual([]);
+    });
+
+    it('handles 429 without Retry-After header', async () => {
+      vi.useFakeTimers();
+      vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 1, initialBackoffMs: 1000 },
+      });
+
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            // No Retry-After header
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const promise = api.getProjects();
+
+      // Should use exponential backoff: 1000 * 2^0 * 0.75 = 750ms
+      await vi.advanceTimersByTimeAsync(749);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2);
+      await promise;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    });
+
+    it('preserves non-429 errors', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 3 },
+      });
+
+      fetchSpy.mockResolvedValueOnce(
+        new Response('{"errors":[{"detail":"Unauthorized"}]}', {
+          status: 401,
+          statusText: 'Unauthorized',
+        }),
+      );
+
+      await expect(api.getProjects()).rejects.toThrow('Unauthorized');
+      expect(fetchSpy).toHaveBeenCalledTimes(1); // No retries for non-429
+    });
+
+    it('does not retry 500 server errors', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 3 },
+      });
+
+      fetchSpy.mockResolvedValueOnce(
+        new Response('Internal Server Error', {
+          status: 500,
+          statusText: 'Internal Server Error',
+        }),
+      );
+
+      await expect(api.getProjects()).rejects.toThrow(ProductiveApiError);
+      expect(fetchSpy).toHaveBeenCalledTimes(1); // No retries for 500
+    });
+
+    it('does not retry 403 forbidden errors', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 3 },
+      });
+
+      fetchSpy.mockResolvedValueOnce(
+        new Response('{"errors":[{"detail":"Forbidden"}]}', {
+          status: 403,
+          statusText: 'Forbidden',
+        }),
+      );
+
+      await expect(api.getProjects()).rejects.toThrow('Forbidden');
+      expect(fetchSpy).toHaveBeenCalledTimes(1); // No retries for 403
+    });
+
+    it('includes rate limit message in error when retries exhausted', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 1, initialBackoffMs: 0 },
+      });
+
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve(
+          new Response('Too Many Requests', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        ),
+      );
+
+      try {
+        await api.getProjects();
+        expect.unreachable('should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ProductiveApiError);
+        expect((error as ProductiveApiError).message).toBe(
+          'Rate limit exceeded: maximum retry attempts reached',
+        );
+        expect((error as ProductiveApiError).statusCode).toBe(429);
+      }
+    });
+
+    it('handles Retry-After with HTTP-date format', async () => {
+      vi.useFakeTimers();
+
+      // Set a known time
+      const now = new Date('2026-01-15T10:00:00Z').getTime();
+      vi.setSystemTime(now);
+
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 1 },
+      });
+
+      // Retry-After date is 3 seconds in the future
+      const futureDate = new Date('2026-01-15T10:00:03Z').toUTCString();
+
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': futureDate },
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const promise = api.getProjects();
+
+      // Should wait for the Retry-After date
+      await vi.advanceTimersByTimeAsync(2999);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(2);
+      await promise;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
+    });
+
+    it('uses proactive rate limiting via acquire', async () => {
+      vi.useFakeTimers();
+
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRequestsPer10s: 2 },
+      });
+
+      // Mock successful responses
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
+      );
+
+      // First 2 requests should be immediate
+      await api.getProjects();
+      await api.getProjects();
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      // 3rd request should be delayed (window is full)
+      const thirdRequest = api.getProjects();
+
+      // Advance time just a bit - should still be waiting
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      // Advance past the 10s window
+      await vi.advanceTimersByTimeAsync(5002);
+      await thirdRequest;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
+
+      vi.useRealTimers();
+    });
+
+    it('uses separate rate limiting for report endpoints', async () => {
+      vi.useFakeTimers();
+
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRequestsPer10s: 100, reportsMaxPer30s: 1 },
+      });
+
+      // Mock successful responses
+      fetchSpy.mockImplementation(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ data: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        ),
+      );
+
+      // First report request
+      await api.getReports('time_reports');
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      // Second report should wait (report window is full)
+      const secondReport = api.getReports('budget_reports');
+
+      // Advance time by 15s - should still be waiting (need 30s)
+      await vi.advanceTimersByTimeAsync(15000);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      // Advance past the 30s window
+      await vi.advanceTimersByTimeAsync(15002);
+      await secondReport;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+      vi.useRealTimers();
+    });
+
+    it('records successful responses', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { enabled: true },
+      });
+
+      fetchSpy.mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: [] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+
+      // Should complete without error
+      const result = await api.getProjects();
+      expect(result.data).toEqual([]);
+    });
+
+    it('handles first request being 429 then succeeds', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 1, initialBackoffMs: 0 },
+      });
+
+      fetchSpy
+        .mockResolvedValueOnce(
+          new Response('', {
+            status: 429,
+            headers: { 'Retry-After': '0' },
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(JSON.stringify({ data: [{ id: 'success' }] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+
+      const result = await api.getProjects();
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(result.data[0].id).toBe('success');
+    });
+
+    it('handles 429 response body in error', async () => {
+      const api = new ProductiveApi({
+        config: validConfig,
+        useCache: false,
+        rateLimit: { maxRetries: 0 }, // No retries
+      });
+
+      fetchSpy.mockResolvedValueOnce(
+        new Response('Custom rate limit message from server', {
+          status: 429,
+          headers: { 'Retry-After': '60' },
+        }),
+      );
+
+      try {
+        await api.getProjects();
+        expect.unreachable('should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ProductiveApiError);
+        expect((error as ProductiveApiError).statusCode).toBe(429);
+        // The error stores the raw response body in .response
+        expect((error as ProductiveApiError).response).toBe(
+          'Custom rate limit message from server',
+        );
+      }
     });
   });
 });
