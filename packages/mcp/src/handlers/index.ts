@@ -168,7 +168,7 @@ export async function executeToolWithCredentials(
 
   // Build handler context — api is not exposed directly.
   // Handlers access executors via ctx.executor() which creates an ExecutorContext.
-  const execCtx = fromHandlerContext({ api });
+  const execCtx = fromHandlerContext({ api }, { userId: credentials.userId });
   const ctx: HandlerContext = {
     formatOptions,
     filter: stringFilter,
@@ -181,7 +181,8 @@ export async function executeToolWithCredentials(
 
   try {
     // Handle help action first (doesn't need API)
-    if (action === 'help') {
+    // Exception: summaries has its own help handler
+    if (action === 'help' && resource !== 'summaries') {
       return resource ? handleHelp(resource) : handleHelpOverview();
     }
 

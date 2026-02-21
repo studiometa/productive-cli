@@ -188,4 +188,96 @@ describe('toSummaryTimer', () => {
 
     expect(result.service_name).toBeUndefined();
   });
+
+  it('resolves service name through time_entry relationship', () => {
+    const timer: ProductiveTimer = {
+      id: '20',
+      type: 'timers',
+      attributes: {
+        started_at: '2026-02-21T09:00:00Z',
+        total_time: 60,
+        person_id: 1,
+      },
+      relationships: {
+        time_entry: { data: { type: 'time_entries', id: '100' } },
+      },
+    };
+
+    // Included resources with time_entry that has service relationship
+    const included = [
+      {
+        id: '100',
+        type: 'time_entries',
+        attributes: { time: 60, date: '2026-02-21' },
+        relationships: {
+          service: { data: { type: 'services', id: '300' } },
+        },
+      } as unknown as { id: string; type: string; attributes: Record<string, unknown> },
+      { id: '300', type: 'services', attributes: { name: 'Development' } },
+    ];
+
+    const result = toSummaryTimer(timer, included);
+
+    expect(result.service_name).toBe('Development');
+  });
+
+  it('handles timer with time_entry but missing service in included', () => {
+    const timer: ProductiveTimer = {
+      id: '20',
+      type: 'timers',
+      attributes: {
+        started_at: '2026-02-21T09:00:00Z',
+        total_time: 45,
+        person_id: 1,
+      },
+      relationships: {
+        time_entry: { data: { type: 'time_entries', id: '100' } },
+      },
+    };
+
+    // Time entry without service relationship
+    const included = [
+      {
+        id: '100',
+        type: 'time_entries',
+        attributes: { time: 45, date: '2026-02-21' },
+        relationships: {},
+      } as unknown as { id: string; type: string; attributes: Record<string, unknown> },
+    ];
+
+    const result = toSummaryTimer(timer, included);
+
+    expect(result.service_name).toBeUndefined();
+  });
+
+  it('handles timer with time_entry that has service relationship but service not in included', () => {
+    const timer: ProductiveTimer = {
+      id: '20',
+      type: 'timers',
+      attributes: {
+        started_at: '2026-02-21T09:00:00Z',
+        total_time: 45,
+        person_id: 1,
+      },
+      relationships: {
+        time_entry: { data: { type: 'time_entries', id: '100' } },
+      },
+    };
+
+    // Time entry with service relationship, but service not included
+    const included = [
+      {
+        id: '100',
+        type: 'time_entries',
+        attributes: { time: 45, date: '2026-02-21' },
+        relationships: {
+          service: { data: { type: 'services', id: '999' } },
+        },
+      } as unknown as { id: string; type: string; attributes: Record<string, unknown> },
+    ];
+
+    const result = toSummaryTimer(timer, included);
+
+    expect(result.service_name).toBeUndefined();
+  });
 });
