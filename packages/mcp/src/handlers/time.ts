@@ -15,9 +15,11 @@ import {
 
 import type { TimeArgs } from './types.js';
 
+import { ErrorMessages, UserInputError } from '../errors.js';
 import { formatTimeEntry } from '../formatters.js';
 import { getTimeEntryHints } from '../hints.js';
 import { createResourceHandler } from './factory.js';
+import { inputErrorResult, jsonResult } from './utils.js';
 
 export const handleTime = createResourceHandler<TimeArgs>({
   resource: 'time',
@@ -30,17 +32,44 @@ export const handleTime = createResourceHandler<TimeArgs>({
   },
   supportsResolve: true,
   resolveArgsFromArgs: (args) => ({ project_id: args.project_id }),
-  create: {
-    required: ['person_id', 'service_id', 'time', 'date'],
-    mapOptions: (args) => ({
-      personId: args.person_id,
-      serviceId: args.service_id,
-      time: args.time,
-      date: args.date,
-      note: args.note ?? undefined,
-      taskId: args.task_id,
-      projectId: args.project_id,
-    }),
+  customActions: {
+    create: async (args, ctx, execCtx) => {
+      // Validate required fields (person_id is optional — defaults to current user)
+      const missingFields = (['service_id', 'time', 'date'] as (keyof TimeArgs)[]).filter(
+        (field) => !args[field],
+      );
+      if (missingFields.length > 0) {
+        return inputErrorResult(
+          ErrorMessages.missingRequiredFields('time entry', missingFields as string[]),
+        );
+      }
+
+      // Default person_id to the current user when not provided
+      const personId = args.person_id ?? execCtx.config.userId;
+      if (!personId) {
+        return inputErrorResult(
+          new UserInputError(
+            'person_id is required (could not auto-resolve: userId not configured)',
+            ['Provide person_id explicitly', 'Or configure userId in your credentials'],
+          ),
+        );
+      }
+
+      const result = await createTimeEntry(
+        {
+          personId,
+          serviceId: args.service_id as string,
+          time: args.time as number,
+          date: args.date as string,
+          note: args.note ?? undefined,
+          taskId: args.task_id,
+          projectId: args.project_id,
+        },
+        execCtx,
+      );
+
+      return jsonResult({ success: true, ...formatTimeEntry(result.data, ctx.formatOptions) });
+    },
   },
   update: {
     mapOptions: (args) => ({
