@@ -283,6 +283,55 @@ describe('handlers', () => {
         expect(result.content[0].text).toContain('are required for creating time entry');
       });
 
+      it('should auto-resolve person_id to current user when omitted', async () => {
+        const mockResponse = {
+          data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 480 } },
+        };
+        mockApi.createTimeEntry.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          {
+            resource: 'time',
+            action: 'create',
+            service_id: '456',
+            time: 480,
+            date: '2024-01-15',
+          },
+          credentials, // credentials.userId = '500521'
+        );
+
+        expect(result.isError).toBeUndefined();
+        const content = JSON.parse(result.content[0].text as string);
+        expect(content.success).toBe(true);
+        // Should have been called with the userId from credentials
+        expect(mockApi.createTimeEntry).toHaveBeenCalledWith(
+          expect.objectContaining({ person_id: '500521' }),
+        );
+      });
+
+      it('should return error for create without person_id when userId not configured', async () => {
+        const credentialsWithoutUser: ProductiveCredentials = {
+          apiToken: 'test-token',
+          organizationId: 'test-org',
+        };
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          {
+            resource: 'time',
+            action: 'create',
+            service_id: '456',
+            time: 480,
+            date: '2024-01-15',
+          },
+          credentialsWithoutUser,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('person_id is required');
+      });
+
       it('should handle update action', async () => {
         const mockResponse = {
           data: { id: '789', type: 'time_entries', attributes: { date: '2024-01-15', time: 240 } },
