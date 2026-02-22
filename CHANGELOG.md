@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.10.3] - 2026-02-22
 
 ### Added
 
@@ -238,7 +238,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `vi.mock()` and dynamic `import()` paths after test file relocation ([#26])
 - Silence `console.error` in unknown subcommand tests to clean up test output ([#26])
 
-[Unreleased]: https://github.com/studiometa/productive-tools/compare/0.10.1...HEAD
+[0.10.3]: https://github.com/studiometa/productive-tools/compare/0.10.2...0.10.3
 [0.10.1]: https://github.com/studiometa/productive-tools/compare/0.10.0...0.10.1
 [dfee2b4]: https://github.com/studiometa/productive-tools/commit/dfee2b4
 [ac43fd6]: https://github.com/studiometa/productive-tools/commit/ac43fd6
