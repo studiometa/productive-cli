@@ -218,6 +218,37 @@ export async function executeToolWithCredentials(
   };
 
   try {
+    // Intercept common wrong action patterns and return helpful guidance
+
+    // action="search" on a specific resource — agents should use action="list" with query, or resource="search"
+    if (action === 'search' && resource !== 'search') {
+      return inputErrorResult(
+        new UserInputError(
+          `action="search" is not supported on resource="${resource}". Use action="list" with a query parameter for text filtering, or use resource="search" for cross-resource search.`,
+          [
+            `Use resource="${resource}" action="list" with query="<your search terms>" to filter ${resource}`,
+            'Use resource="search" action="run" with query="<your search terms>" to search across all resources',
+            `Use action="help" resource="${resource}" to see all supported actions and filters`,
+          ],
+        ),
+      );
+    }
+
+    // action starts with "get_" — agents using snake_case function-style naming
+    if (action.startsWith('get_')) {
+      const suggestedResource = action.replace(/^get_/, '').replace(/_/g, ' ');
+      return inputErrorResult(
+        new UserInputError(
+          `action="${action}" is not valid. Actions use simple verbs like "list", "get", "create", not function-style names.`,
+          [
+            `To retrieve a single item, use action="get" with an id parameter`,
+            `To retrieve multiple items, use action="list" (e.g. resource="${resource || suggestedResource}" action="list")`,
+            `Use action="help" resource="${resource || 'tasks'}" to see all supported actions for a resource`,
+          ],
+        ),
+      );
+    }
+
     // Handle help action first (doesn't need API)
     // Exception: summaries has its own help handler
     if (action === 'help' && resource !== 'summaries') {
@@ -288,6 +319,15 @@ export async function executeToolWithCredentials(
               'Use action="help" resource="deals" for full documentation',
             ],
           ),
+        );
+
+      case 'docs':
+        return inputErrorResult(
+          new UserInputError('Unknown resource "docs". Did you mean "pages"?', [
+            'Use resource="pages" to access Productive pages/documents',
+            'Use action="list" to list all pages',
+            'Use action="help" resource="pages" for full documentation',
+          ]),
         );
 
       default:

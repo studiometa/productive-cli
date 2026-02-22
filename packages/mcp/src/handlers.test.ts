@@ -1760,6 +1760,116 @@ describe('handlers', () => {
         expect(text).not.toContain('Unknown field "params"');
       });
     });
+
+    describe('docs resource (wrong name — redirects to pages)', () => {
+      it('should return helpful error suggesting pages resource', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'docs', action: 'list' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('docs');
+        expect(text).toContain('pages');
+      });
+
+      it('should include pages-related hints', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'docs', action: 'get' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('resource="pages"');
+      });
+    });
+
+    describe('action="search" on specific resource (should redirect)', () => {
+      it('should return helpful error when action=search is used on tasks', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'tasks', action: 'search', query: 'fix bug' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('action="search" is not supported');
+        expect(text).toContain('resource="tasks"');
+        expect(text).toContain('action="list"');
+        expect(text).toContain('resource="search"');
+      });
+
+      it('should return helpful error when action=search is used on projects', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'projects', action: 'search', query: 'acme' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('resource="projects"');
+        expect(text).toContain('query=');
+      });
+
+      it('should NOT intercept resource="search" action="run"', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'tasks', action: 'search' },
+          credentials,
+        );
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('action="search" is not supported');
+      });
+    });
+
+    describe('action starting with "get_" (function-style naming)', () => {
+      it('should return helpful error for get_task_activities action', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'tasks', action: 'get_task_activities' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('get_task_activities');
+        expect(text).toContain('action="get"');
+        expect(text).toContain('action="list"');
+      });
+
+      it('should return helpful error for get_time_entries action', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'time', action: 'get_time_entries' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('get_time_entries');
+        expect(text).toContain('not valid');
+      });
+
+      it('should return helpful error for get_projects action', async () => {
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'projects', action: 'get_projects' },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        const text = result.content[0].text as string;
+        expect(text).toContain('get_projects');
+        expect(text).toContain('action="help"');
+      });
+    });
   });
 });
 
