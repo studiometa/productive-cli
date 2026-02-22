@@ -9,6 +9,10 @@ MCP (Model Context Protocol) server for [Productive.io](https://productive.io). 
 
 - Single unified `productive` tool — minimal token overhead (~170 tokens)
 - Smart ID resolution — use emails and project numbers instead of numeric IDs
+- Rich context — `action=context` fetches a resource with all related data in one call
+- Proactive suggestions — data-aware warnings (overdue tasks, long-running timers, etc.)
+- Compound workflows — multi-step operations (complete task, log day, weekly standup)
+- Input validation — helpful redirects for wrong actions/resources, include validation
 - Two modes: **local (stdio)** for personal use, **remote (HTTP)** for teams
 - OAuth 2.0 support for Claude Desktop custom connectors
 - Built-in `help` action for self-documentation
@@ -101,19 +105,27 @@ productive(resource, action, ...)
 
 ### Resources & Actions
 
-| Resource    | Actions                                     |
-| ----------- | ------------------------------------------- |
-| `projects`  | `list`, `get`                               |
-| `time`      | `list`, `get`, `create`, `update`, `delete` |
-| `tasks`     | `list`, `get`, `create`, `update`           |
-| `services`  | `list`                                      |
-| `people`    | `list`, `get`, `me`                         |
-| `companies` | `list`, `get`, `create`, `update`           |
-| `comments`  | `list`, `get`, `create`, `update`           |
-| `timers`    | `list`, `get`, `start`, `stop`              |
-| `deals`     | `list`, `get`, `create`, `update`           |
-| `bookings`  | `list`, `get`, `create`, `update`           |
-| `reports`   | `get` (11 report types)                     |
+| Resource      | Actions                                                                  | Description                                              |
+| ------------- | ------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `projects`    | `list`, `get`, `resolve`, `context`, `help`                              | Project management                                       |
+| `time`        | `list`, `get`, `create`, `update`, `resolve`, `help`                     | Time tracking                                            |
+| `tasks`       | `list`, `get`, `create`, `update`, `resolve`, `context`, `help`          | Task management                                          |
+| `services`    | `list`, `get`, `resolve`, `help`                                         | Budget line items                                        |
+| `people`      | `list`, `get`, `me`, `resolve`, `help`                                   | Team members                                             |
+| `companies`   | `list`, `get`, `create`, `update`, `resolve`, `help`                     | Client companies                                         |
+| `comments`    | `list`, `get`, `create`, `update`, `help`                                | Comments on tasks/deals                                  |
+| `attachments` | `list`, `get`, `delete`, `help`                                          | File attachments                                         |
+| `timers`      | `list`, `get`, `start`, `stop`, `help`                                   | Active timers                                            |
+| `deals`       | `list`, `get`, `create`, `update`, `resolve`, `context`, `help`          | Sales deals & budgets (`filter[type]=2` for budgets)     |
+| `bookings`    | `list`, `get`, `create`, `update`, `help`                                | Resource scheduling                                      |
+| `pages`       | `list`, `get`, `create`, `update`, `delete`, `help`                      | Wiki/docs pages                                          |
+| `discussions` | `list`, `get`, `create`, `update`, `delete`, `resolve`, `reopen`, `help` | Discussions on pages                                     |
+| `activities`  | `list`, `help`                                                           | Activity feed (audit log of create/update/delete events) |
+| `reports`     | `get`, `help`                                                            | Generate reports (11 report types)                       |
+| `workflows`   | `complete_task`, `log_day`, `weekly_standup`, `help`                     | Compound workflows chaining multiple operations          |
+| `summaries`   | `my_day`, `project_health`, `team_pulse`                                 | Dashboard summaries with proactive suggestions           |
+| `batch`       | `run`                                                                    | Execute up to 10 operations in parallel                  |
+| `search`      | `run`                                                                    | Cross-resource text search                               |
 
 Use `action="help"` with any resource for detailed documentation on available parameters and filters.
 

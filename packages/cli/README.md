@@ -39,24 +39,27 @@ API tokens are stored in the system keychain when available (macOS Keychain, Lin
 productive <command> [subcommand] [options]
 ```
 
-| Command      | Alias | Description                                                  |
-| ------------ | ----- | ------------------------------------------------------------ |
-| `config`     |       | Manage CLI configuration (`set`, `get`, `validate`, `clear`) |
-| `projects`   | `p`   | List and get projects                                        |
-| `time`       | `t`   | List, get, create, update, delete time entries               |
-| `tasks`      |       | List, get, create, update tasks                              |
-| `people`     |       | List and get people                                          |
-| `services`   | `svc` | List services                                                |
-| `companies`  |       | List, get, create, update companies                          |
-| `comments`   |       | List, get, create, update comments                           |
-| `timers`     |       | List, get, start, stop timers                                |
-| `deals`      |       | List, get, create, update deals and budgets (`--budget`)     |
-| `bookings`   |       | List, get, create, update bookings                           |
-| `reports`    |       | Generate reports (time, project, budget, person)             |
-| `resolve`    |       | Resolve human-friendly IDs (email, project number)           |
-| `api`        |       | Make custom authenticated API requests                       |
-| `cache`      |       | Manage CLI cache (`status`, `clear`)                         |
-| `completion` |       | Generate shell completions (`bash`, `zsh`, `fish`)           |
+| Command       | Alias | Description                                                   |
+| ------------- | ----- | ------------------------------------------------------------- |
+| `config`      |       | Manage CLI configuration (`set`, `get`, `validate`, `clear`)  |
+| `projects`    | `p`   | List and get projects                                         |
+| `time`        | `t`   | List, get, create, update, delete time entries                |
+| `tasks`       |       | List, get, create, update tasks                               |
+| `people`      |       | List and get people                                           |
+| `services`    | `svc` | List services                                                 |
+| `companies`   |       | List, get, create, update companies                           |
+| `comments`    |       | List, get, create, update comments                            |
+| `timers`      |       | List, get, start, stop timers                                 |
+| `deals`       |       | List, get, create, update deals and budgets (`--budget`)      |
+| `bookings`    |       | List, get, create, update bookings                            |
+| `pages`       |       | List, get, create, update, delete wiki/docs pages             |
+| `discussions` |       | List, get, create, update, delete, resolve, reopen            |
+| `activities`  |       | List activity feed (audit log of create/update/delete events) |
+| `reports`     |       | Generate reports (time, project, budget, person)              |
+| `resolve`     |       | Resolve human-friendly IDs (email, project number)            |
+| `api`         |       | Make custom authenticated API requests                        |
+| `cache`       |       | Manage CLI cache (`status`, `clear`)                          |
+| `completion`  |       | Generate shell completions (`bash`, `zsh`, `fish`)            |
 
 Run `productive <command> --help` for detailed usage of each command.
 

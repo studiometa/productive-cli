@@ -58,13 +58,13 @@ setConfig('apiToken', 'your-token');
 
 ## Exports
 
-| Export                    | Description                                                        |
-| ------------------------- | ------------------------------------------------------------------ |
-| `ProductiveApi`           | API client class with methods for all resources                    |
-| `ProductiveApiError`      | Typed error class for API failures                                 |
-| `getConfig` / `setConfig` | Configuration helpers (env vars + JSON file)                       |
-| `format*`                 | Response formatters for each resource type                         |
-| Type definitions          | `ProductiveProject`, `ProductiveTimeEntry`, `ProductiveTask`, etc. |
+| Export                    | Description                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------- |
+| `ProductiveApi`           | API client class with methods for all resources                                          |
+| `ProductiveApiError`      | Typed error class for API failures                                                       |
+| `getConfig` / `setConfig` | Configuration helpers (env vars + JSON file)                                             |
+| `format*`                 | Response formatters for each resource type                                               |
+| Type definitions          | `ProductiveProject`, `ProductiveTimeEntry`, `ProductiveTask`, `ProductiveActivity`, etc. |
 
 ## API Methods
 
@@ -81,6 +81,7 @@ The `ProductiveApi` class provides methods for:
 - **Deals** — `getDeals`, `getDeal`, `createDeal`, `updateDeal`
 - **Bookings** — `getBookings`, `getBooking`, `createBooking`, `updateBooking`
 - **Reports** — `getReport` (time, project, budget, person, invoice, payment, service, task, company, deal, timesheet)
+- **Activities** — `getActivities`
 
 ## License
 

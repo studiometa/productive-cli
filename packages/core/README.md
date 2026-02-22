@@ -26,19 +26,25 @@ const result = await listTasks({ projectId: '123' }, ctx);
 
 ### Available Executors
 
-| Resource    | Operations                        |
-| ----------- | --------------------------------- |
-| `time`      | list, get, create, update, delete |
-| `projects`  | list, get                         |
-| `people`    | list, get                         |
-| `services`  | list                              |
-| `companies` | list, get, create, update         |
-| `tasks`     | list, get, create, update         |
-| `deals`     | list, get, create, update         |
-| `bookings`  | list, get, create, update         |
-| `comments`  | list, get, create, update         |
-| `timers`    | list, get, start, stop            |
-| `reports`   | get (11 report types)             |
+| Resource      | Operations                                         |
+| ------------- | -------------------------------------------------- |
+| `time`        | list, get, create, update, delete                  |
+| `projects`    | list, get, context                                 |
+| `people`      | list, get                                          |
+| `services`    | list, get                                          |
+| `companies`   | list, get, create, update                          |
+| `tasks`       | list, get, create, update, context                 |
+| `deals`       | list, get, create, update, context                 |
+| `bookings`    | list, get, create, update                          |
+| `comments`    | list, get, create, update                          |
+| `timers`      | list, get, start, stop                             |
+| `pages`       | list, get, create, update, delete                  |
+| `discussions` | list, get, create, update, delete, resolve, reopen |
+| `attachments` | list, get, delete                                  |
+| `activities`  | list                                               |
+| `reports`     | get (11 report types)                              |
+| `summaries`   | my_day, project_health, team_pulse                 |
+| `workflows`   | complete_task, log_day, weekly_standup             |
 
 ### Context Bridges
 
