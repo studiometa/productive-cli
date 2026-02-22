@@ -213,12 +213,14 @@ export function createResourceHandler<TArgs extends CommonArgs = CommonArgs>(
 
       const getResponseData: Record<string, unknown> = { ...formatted };
 
-      if (ctx.includeHints !== false) {
+      if (ctx.includeHints) {
         if (hints) {
           getResponseData._hints = hints(result.data, id);
         }
+      }
 
-        // Add resource-specific suggestions
+      // Add resource-specific suggestions (controlled separately from hints)
+      if (ctx.includeSuggestions !== false) {
         let getSuggestions: string[] = [];
         if (resource === 'tasks') {
           getSuggestions = getTaskGetSuggestions(result.data, result.included);
@@ -310,8 +312,8 @@ export function createResourceHandler<TArgs extends CommonArgs = CommonArgs>(
         listResponseData._resolved = result.resolved;
       }
 
-      // Add resource-specific suggestions (only when hints/suggestions are enabled)
-      if (ctx.includeHints !== false) {
+      // Add resource-specific suggestions
+      if (ctx.includeSuggestions !== false) {
         let listSuggestions: string[] = [];
         if (resource === 'tasks') {
           listSuggestions = getTaskListSuggestions(result.data);

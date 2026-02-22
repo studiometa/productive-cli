@@ -42,7 +42,7 @@ export async function handleSummaries(
   switch (action) {
     case 'my_day': {
       const result = await getMyDaySummary({}, execCtx);
-      if (ctx.includeHints !== false) {
+      if (ctx.includeSuggestions !== false) {
         const suggestions = getMyDaySuggestions(result.data);
         if (suggestions.length > 0) {
           return jsonResult({ ...result.data, _suggestions: suggestions });
