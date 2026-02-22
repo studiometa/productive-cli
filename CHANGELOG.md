@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **MCP**: Add compound workflows resource — `complete_task`, `log_day`, `weekly_standup` chain multiple API calls into single tool invocations ([fd7d2fb], [#114], [#98])
+- **MCP**: Add proactive `_suggestions` in responses — data-aware warnings like overdue tasks, unassigned tasks, time totals, long-running timers ([325521e], [#115], [#101])
+- **MCP+CLI**: Add `activities` resource — read-only audit log of create/update/delete events across the organization, full stack from API to CLI ([184db5c], [#116], [#102])
 - **MCP**: Auto-resolve `person_id` to current user on `time.create` when omitted — eliminates the 2-step `people.me` then `time.create` pattern ([ec467b5], [#109], [#80])
 - **MCP**: Detect `params` wrapper and return helpful error suggesting `filter` instead ([f366a97], [#110], [#81])
 - **MCP**: Validate `include` values per resource and return helpful suggestions for invalid ones ([b13e4c8], [#113], [#82])
@@ -18,7 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **CLI**: Move `--field` vs URL params warning to top of `api` section in SKILL.md for better discoverability, add note promoting named commands over raw `api` calls ([f02ef76], [#108], [#84])
+- **MCP**: Extract `routeToHandler` from main handler function to keep cyclomatic complexity under limit ([fd7d2fb], [#114])
 
+[184db5c]: https://github.com/studiometa/productive-tools/commit/184db5c
+[fd7d2fb]: https://github.com/studiometa/productive-tools/commit/fd7d2fb
+[325521e]: https://github.com/studiometa/productive-tools/commit/325521e
 [ec467b5]: https://github.com/studiometa/productive-tools/commit/ec467b5
 [f366a97]: https://github.com/studiometa/productive-tools/commit/f366a97
 [b13e4c8]: https://github.com/studiometa/productive-tools/commit/b13e4c8
@@ -31,12 +38,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#83]: https://github.com/studiometa/productive-tools/issues/83
 [#84]: https://github.com/studiometa/productive-tools/issues/84
 [#85]: https://github.com/studiometa/productive-tools/issues/85
+[#98]: https://github.com/studiometa/productive-tools/issues/98
+[#101]: https://github.com/studiometa/productive-tools/issues/101
+[#102]: https://github.com/studiometa/productive-tools/issues/102
 [#108]: https://github.com/studiometa/productive-tools/pull/108
 [#109]: https://github.com/studiometa/productive-tools/pull/109
 [#110]: https://github.com/studiometa/productive-tools/pull/110
 [#111]: https://github.com/studiometa/productive-tools/pull/111
 [#112]: https://github.com/studiometa/productive-tools/pull/112
 [#113]: https://github.com/studiometa/productive-tools/pull/113
+[#114]: https://github.com/studiometa/productive-tools/pull/114
+[#115]: https://github.com/studiometa/productive-tools/pull/115
+[#116]: https://github.com/studiometa/productive-tools/pull/116
 
 ## [0.10.2] - 2026-02-21
 
