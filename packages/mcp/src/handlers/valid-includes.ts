@@ -6,6 +6,7 @@
  */
 
 export const VALID_INCLUDES: Record<string, string[]> = {
+  activities: ['creator'],
   tasks: [
     'project',
     'project.company',

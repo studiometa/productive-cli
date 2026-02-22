@@ -22,6 +22,7 @@ import {
   formatAttachment as cliFormatAttachment,
   formatPage as cliFormatPage,
   formatDiscussion as cliFormatDiscussion,
+  formatActivity as cliFormatActivity,
   formatListResponse as cliFormatListResponse,
   type JsonApiResource,
   type JsonApiMeta,
@@ -245,6 +246,16 @@ export function formatDiscussion(
     return compactify(result, ['body']);
   }
   return result;
+}
+
+export function formatActivity(
+  activity: JsonApiResource,
+  options?: McpFormatOptions,
+): Record<string, unknown> {
+  return cliFormatActivity(activity, {
+    ...MCP_FORMAT_OPTIONS,
+    included: options?.included,
+  });
 }
 
 /**

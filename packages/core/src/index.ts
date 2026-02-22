@@ -242,6 +242,10 @@ export type {
   UpdateDiscussionOptions,
 } from './executors/discussions/index.js';
 
+// Activities executors
+export { listActivities } from './executors/activities/index.js';
+export type { ListActivitiesOptions } from './executors/activities/index.js';
+
 // Reports executors
 export {
   buildReportFilters,

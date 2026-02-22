@@ -40,6 +40,8 @@ export type {
   ProductiveTask,
   ProductiveTimeEntry,
   ProductiveTimer,
+  ProductiveActivity,
+  ActivityChangesetEntry,
   RelationshipData,
 } from './types.js';
 
@@ -59,6 +61,8 @@ export {
   formatBooking,
   formatPage,
   formatDiscussion,
+  formatActivity,
+  formatChangeset,
   // List/single/auto formatting
   formatListResponse,
   formatSingleResponse,
@@ -94,6 +98,7 @@ export type { FormattedBooking } from './formatters/booking.js';
 export type { FormattedAttachment } from './formatters/attachment.js';
 export type { FormattedPage } from './formatters/page.js';
 export type { FormattedDiscussion } from './formatters/discussion.js';
+export type { FormattedActivity } from './formatters/activity.js';
 
 // Config (env vars + JSON file, no keychain)
 export { getConfig, setConfig, deleteConfig, clearConfig } from './config.js';

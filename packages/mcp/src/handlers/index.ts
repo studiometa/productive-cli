@@ -14,6 +14,7 @@ import type { McpFormatOptions } from '../formatters.js';
 import type { HandlerContext, ToolResult } from './types.js';
 
 import { ErrorMessages, UserInputError, isUserInputError } from '../errors.js';
+import { handleActivities } from './activities.js';
 import { handleAttachments } from './attachments.js';
 import { handleBatch } from './batch.js';
 import { handleBookings } from './bookings.js';
@@ -158,6 +159,9 @@ async function routeToHandler(
 
     case 'discussions':
       return await handleDiscussions(action, restArgs, ctx);
+
+    case 'activities':
+      return await handleActivities(action, restArgs, ctx);
 
     case 'reports':
       return await handleReports(action, restArgs, ctx);

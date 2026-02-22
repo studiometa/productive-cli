@@ -36,6 +36,7 @@ productive(resource, action, [parameters...])
 | `bookings`    | `list`, `get`, `create`, `update`, `help`                                | Resource scheduling                                      |
 | `pages`       | `list`, `get`, `create`, `update`, `delete`, `help`                      | Wiki/docs pages                                          |
 | `discussions` | `list`, `get`, `create`, `update`, `delete`, `resolve`, `reopen`, `help` | Discussions on pages                                     |
+| `activities`  | `list`, `help`                                                           | Activity feed (audit log of create/update/delete events) |
 | `reports`     | `get`, `help`                                                            | Generate reports                                         |
 | `workflows`   | `complete_task`, `log_day`, `weekly_standup`, `help`                     | Compound workflows chaining multiple operations          |
 
