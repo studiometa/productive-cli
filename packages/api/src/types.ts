@@ -323,3 +323,26 @@ export interface ProductiveReport {
   attributes: Record<string, unknown>;
   relationships?: Record<string, RelationshipData>;
 }
+
+/**
+ * A single changeset entry: { [field_name]: [old_value, new_value] }
+ */
+export type ActivityChangesetEntry = Record<string, [unknown, unknown]>;
+
+export interface ProductiveActivity {
+  id: string;
+  type: 'activities';
+  attributes: {
+    event: 'create' | 'update' | 'delete';
+    changeset: ActivityChangesetEntry[];
+    created_at: string;
+  };
+  relationships?: {
+    organization?: RelationshipData;
+    creator?: RelationshipData;
+    comment?: RelationshipData;
+    email?: RelationshipData;
+    attachment?: RelationshipData;
+    role?: RelationshipData;
+  };
+}

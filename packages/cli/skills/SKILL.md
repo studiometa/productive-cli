@@ -249,6 +249,16 @@ productive bookings list
 productive bookings list --filter person_id=<id>
 ```
 
+### Activities (Audit Feed)
+
+```bash
+productive activities list
+productive activities list --event create
+productive activities list --after 2026-02-01T00:00:00Z
+productive activities list --person <id>
+productive activities list --project <id>
+```
+
 ### Reports
 
 ```bash

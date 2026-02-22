@@ -29,6 +29,7 @@ export const RESOURCES = [
   'pages',
   'discussions',
   'reports',
+  'activities',
   'batch',
   'search',
   'summaries',

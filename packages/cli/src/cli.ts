@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { handleActivitiesCommand, showActivitiesHelp } from './commands/activities/index.js';
 import { handleApiCommand, showApiHelp } from './commands/api.js';
 import { handleAttachmentsCommand, showAttachmentsHelp } from './commands/attachments/index.js';
 import { handleBookingsCommand, showBookingsHelp } from './commands/bookings/index.js';
@@ -115,6 +116,9 @@ ${colors.bold('COMMANDS:')}
     delete <id>         Delete discussion
     resolve <id>        Resolve discussion
     reopen <id>         Reopen discussion
+
+  activities          View activity feed (read-only audit log)
+    list, ls            List recent activities
 
   reports             Generate reports
     time                Time reports
@@ -361,6 +365,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         await handleDiscussionsCommand(subcommand || 'list', positional, options);
+        break;
+
+      case 'activities':
+        if (wantsHelp) {
+          showActivitiesHelp(subcommand);
+          process.exit(0);
+        }
+        await handleActivitiesCommand(subcommand || 'list', positional, options);
         break;
 
       case 'reports':

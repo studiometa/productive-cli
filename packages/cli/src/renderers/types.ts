@@ -83,4 +83,5 @@ export type ResourceType =
   | 'booking'
   | 'attachment'
   | 'page'
-  | 'discussion';
+  | 'discussion'
+  | 'activity';

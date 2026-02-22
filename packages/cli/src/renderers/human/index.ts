@@ -107,3 +107,6 @@ export {
   humanDiscussionListRenderer,
   humanDiscussionDetailRenderer,
 } from './discussion.js';
+
+// Activities
+export { HumanActivityListRenderer, humanActivityListRenderer } from './activity.js';

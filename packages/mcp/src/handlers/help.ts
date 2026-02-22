@@ -719,6 +719,54 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     ],
   },
 
+  activities: {
+    description:
+      'Read-only activity feed — audit log of create/update/delete events across the organization',
+    actions: {
+      list: 'List recent activities with optional filters',
+    },
+    filters: {
+      event: 'Filter by event type: create, update, delete',
+      after: 'Filter to activities after this ISO 8601 timestamp (e.g. 2026-01-01T00:00:00Z)',
+      person_id: 'Filter by creator person ID',
+      project_id: 'Filter by project ID',
+    },
+    includes: ['creator'],
+    fields: {
+      id: 'Unique activity identifier',
+      event: 'Event type: create, update, or delete',
+      changeset: 'Human-readable summary of field changes (e.g. "name: null → My Project")',
+      created_at: 'When the activity occurred (ISO 8601)',
+      creator_name: 'Full name of the person who triggered the activity (when creator included)',
+    },
+    examples: [
+      {
+        description: 'List recent activities',
+        params: { resource: 'activities', action: 'list' },
+      },
+      {
+        description: 'List only create events',
+        params: { resource: 'activities', action: 'list', filter: { event: 'create' } },
+      },
+      {
+        description: 'List activities after a date',
+        params: {
+          resource: 'activities',
+          action: 'list',
+          filter: { after: '2026-02-01T00:00:00Z' },
+        },
+      },
+      {
+        description: 'List activities by a specific person',
+        params: {
+          resource: 'activities',
+          action: 'list',
+          filter: { person_id: '12345' },
+        },
+      },
+    ],
+  },
+
   reports: {
     description: 'Generate various reports (time, budget, project, etc.)',
     actions: {
