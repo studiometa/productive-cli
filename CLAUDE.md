@@ -36,7 +36,7 @@ Instructions for AI agents contributing to this codebase.
 4-package monorepo with clean dependency layering:
 
 ```
-productive-api   → (nothing)          # types, API client, formatters
+productive-api   → (nothing)          # types, API client, formatters, rate limiter
 productive-core  → productive-api     # executors with dependency injection
 productive-cli   → productive-core    # CLI commands, renderers, config+cache
 productive-mcp   → productive-core    # MCP server handlers, OAuth
@@ -45,10 +45,10 @@ productive-mcp   → productive-core    # MCP server handlers, OAuth
 
 ### Package Responsibilities
 
-- **productive-api** (`packages/api`): `ProductiveApi` class (explicit config injection), resource types (`ProductiveProject`, `ProductiveTimeEntry`, etc.), response formatters, `ProductiveApiError`, `ApiCache` interface. Zero dependencies.
-- **productive-core** (`packages/core`): Pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, `createResourceResolver()` factory, bridge functions (`fromCommandContext`, `fromHandlerContext`).
-- **productive-cli** (`packages/cli`): CLI commands (one directory per resource under `src/commands/`), human/table/CSV/JSON renderers, keychain config, SQLite cache, `CommandContext` for DI.
-- **productive-mcp** (`packages/mcp`): Single unified `productive` MCP tool, resource handlers, OAuth (stateless), HTTP server, MCP-specific formatters.
+- **productive-api** (`packages/api`): `ProductiveApi` class (explicit config injection), resource types (`ProductiveProject`, `ProductiveTimeEntry`, etc.), response formatters, `ProductiveApiError`, `ApiCache` interface, `RateLimiter` (sliding window + exponential backoff). Zero dependencies.
+- **productive-core** (`packages/core`): Pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, `createResourceResolver()` factory, bridge functions (`fromCommandContext`, `fromHandlerContext`), context executors (task/project/deal), summary executors (my_day, project_health, team_pulse).
+- **productive-cli** (`packages/cli`): CLI commands (one directory per resource under `src/commands/`), `createCommandRouter()` factory, human/table/CSV/JSON renderers, keychain config, SQLite cache, `CommandContext` for DI.
+- **productive-mcp** (`packages/mcp`): Single unified `productive` MCP tool, `createResourceHandler()` factory, resource handlers, contextual hints (`hints.ts`), agent instructions (`instructions.ts` loads from `skills/SKILL.md`), batch/search/schema/context/summaries handlers, OAuth (stateless), HTTP server, MCP-specific formatters.
 
 ### Centralized Constants
 
@@ -67,6 +67,116 @@ productive-mcp   → productive-core    # MCP server handlers, OAuth
 - **Resource resolution** (email → person ID, project number → project ID) is handled by `createResourceResolver()` in core. Bridge functions create a resolver automatically — CLI/MCP handlers just call `fromCommandContext(ctx)` or `fromHandlerContext(ctx)`.
 - **Build order matters**: `productive-api` → `productive-core` → `productive-cli` / `productive-mcp`. The root `npm run build` handles this automatically.
 
+## Factory Patterns
+
+Both CLI and MCP use factory patterns to eliminate boilerplate. **Always use these factories** when adding new resources or handlers.
+
+### MCP: `createResourceHandler()` (`packages/mcp/src/handlers/factory.ts`)
+
+Encapsulates the standard list/get/create/update/delete/resolve cycle. All CRUD-style MCP handlers use this factory.
+
+```typescript
+// Example: packages/mcp/src/handlers/tasks.ts
+export const handleTasks = createResourceHandler<TaskArgs>({
+  resource: 'tasks',
+  displayName: 'task',
+  actions: ['list', 'get', 'create', 'update', 'resolve', 'context'],
+  formatter: formatTask,
+  hints: (data, id) => getTaskHints(id, data.relationships?.service?.data?.id),
+  supportsResolve: true,
+  resolveArgsFromArgs: (args) => ({ project_id: args.project_id }),
+  defaultInclude: { list: ['project', 'project.company'], get: ['project', 'project.company'] },
+  create: {
+    required: ['title', 'project_id', 'task_list_id'],
+    mapOptions: (args) => ({ title: args.title, projectId: args.project_id, ... }),
+  },
+  update: {
+    mapOptions: (args) => ({ title: args.title, description: args.description, ... }),
+  },
+  customActions: {
+    context: async (args, ctx, execCtx) => { /* custom context logic */ },
+  },
+  executors: { list: listTasks, get: getTask, create: createTask, update: updateTask },
+});
+```
+
+Key factory options:
+
+- **`customActions`** — handler functions for non-CRUD actions (e.g., `context`, `start`/`stop`, `reopen`)
+- **`listFilterFromArgs`** — extract extra filters from args (e.g., `person_id`, `task_id` from tool args)
+- **`resolveArgsFromArgs`** — extra args for `handleResolve` (e.g., `project_id` for scoped resolution)
+- **`create.validateArgs`** — custom validation returning `ToolResult` on error
+- **`defaultInclude`** — default `include` arrays merged with user-provided includes
+
+**Non-factory handlers**: `batch.ts`, `search.ts`, `summaries.ts`, `reports.ts` have custom logic that doesn't fit the factory pattern. These are standalone handler functions.
+
+### CLI: `createCommandRouter()` (`packages/cli/src/utils/command-router.ts`)
+
+Routes subcommands to handler functions, eliminating switch/case boilerplate:
+
+```typescript
+// Example: packages/cli/src/commands/tasks/command.ts
+export const handleTasksCommand = createCommandRouter({
+  resource: 'tasks',
+  handlers: {
+    list: tasksList,
+    ls: tasksList, // alias
+    get: [tasksGet, 'args'], // handler receives args[]
+    add: tasksAdd,
+    create: tasksAdd, // alias
+    update: [tasksUpdate, 'args'],
+  },
+});
+```
+
+Handler types:
+
+- **`ListHandler`** — `(ctx: CommandContext) => Promise<void>` — for list-style commands
+- **`ArgsHandler`** — `(args: string[], ctx: CommandContext) => Promise<void>` — marked with `[handler, 'args']`
+
+## MCP Capabilities
+
+The MCP server exposes a **single `productive` tool** with resource/action routing. Beyond basic CRUD, several advanced features exist:
+
+### Agent Discovery
+
+- **`action=help`** — returns detailed documentation for any resource (filters, fields, includes, examples). `handleHelpOverview()` provides a global overview with `_tip` hints.
+- **`action=schema`** — returns compact, machine-readable resource specs optimized for LLM consumption (no prose, just actions/filters/fields/includes).
+
+### Rich Context (single-call fetching)
+
+- **`action=context`** on `tasks`, `projects`, `deals` — fetches the resource plus all related data (comments, time entries, subtasks/services) via parallel API calls. Implemented as `customActions` on the factory handler, backed by context executors in core (`packages/core/src/executors/{tasks,projects,deals}/context.ts`).
+
+### Dashboard Summaries
+
+- **`resource=summaries`** — standalone handler (not factory-based) with 3 actions:
+  - `my_day` — personal dashboard (tasks, time logged today, active timers)
+  - `project_health` — project status with budget burn and task stats (requires `project_id`)
+  - `team_pulse` — team-wide time tracking activity for today
+- Backed by executors in `packages/core/src/executors/summaries/`.
+
+### Batch & Search
+
+- **`resource=batch action=run`** — executes up to 10 operations in parallel with per-operation error isolation. Returns `{ _batch: { total, succeeded, failed }, results: [...] }`.
+- **`resource=search action=run`** — cross-resource text search (projects, companies, people, tasks simultaneously).
+
+### Contextual Hints (`hints.ts`)
+
+After `get` actions, the response includes a `_hints` object suggesting related resources and common next actions. Example: getting a task suggests fetching its comments, time entries, and attachments.
+
+### Server Instructions (`instructions.ts`)
+
+MCP server instructions are loaded from `packages/mcp/skills/SKILL.md` (stripping YAML frontmatter) and sent to the client during initialization. The CLI also has its own `packages/cli/skills/SKILL.md`.
+
+### Rate Limiting (`packages/api/src/rate-limiter.ts`)
+
+`RateLimiter` class integrated into `ProductiveApi.request()`:
+
+- Sliding window throttling (100 req/10s for regular, 10 req/30s for reports)
+- Automatic retry on 429 with exponential backoff + jitter
+- `Retry-After` header parsing
+- Configurable via `ApiOptions.rateLimit`
+
 ## Testing Rules
 
 These rules are **mandatory** for all code in this monorepo:
@@ -84,8 +194,124 @@ These rules are **mandatory** for all code in this monorepo:
 
 5. **No real API calls in tests.** All HTTP requests must be mocked via DI (injected `fetch`) or mock API objects.
 
+6. **Vitest configuration:** Root `vitest.config.ts` uses `projects: ['packages/*']` for single-process test runs across all packages. Each package has its own `vitest.config.ts`.
+
 After changing `productive-core` source, rebuild before running CLI/MCP tests:
 
 ```bash
 npm run build -w @studiometa/productive-core
 ```
+
+### Integration Tests
+
+Sandboxed integration tests live in `tests/integration/` with their own Vitest config:
+
+- **`tests/integration/helpers/`** — `sandbox.ts` (temp dirs), `mock-server.ts` (JSON:API mock), `cli-runner.ts`, `mcp-client.ts`
+- **`tests/integration/fixtures/`** — JSON:API response fixtures
+- **`PRODUCTIVE_BASE_URL`** env var — redirects API calls to the mock server
+- Run: `npm run test:integration` or `npm run test:all` (unit + integration)
+- Integration tests use `pool: 'forks'` and `fileParallelism: false` (no port conflicts)
+
+## Common Scripts
+
+```bash
+npm run build              # Build all packages (respects dependency order)
+npm run test               # Unit tests (all packages via Vitest projects)
+npm run test:integration   # Integration tests (sandboxed, mock server)
+npm run test:all           # Unit + integration
+npm run lint               # oxlint
+npm run lint:fix           # oxlint --fix
+npm run format             # oxfmt --write
+npm run typecheck          # TypeScript check (all workspaces)
+npm run semgrep            # Security/quality scan
+npm run version:patch      # Bump patch version across all packages
+npm run version:minor      # Bump minor version
+npm run version:major      # Bump major version
+```
+
+## Adding a New Resource (step-by-step)
+
+When adding a new Productive.io resource (e.g., `invoices`):
+
+### 1. Constants (`productive-core`)
+
+Add to `packages/core/src/constants.ts`:
+
+- Add `'invoices'` to `RESOURCES` array
+- Add any new actions to `ACTIONS` array if needed
+
+### 2. API Types & Client (`productive-api`)
+
+- Add `ProductiveInvoice` type in `packages/api/src/types.ts`
+- Add client methods (`getInvoices`, `getInvoice`, etc.) in `packages/api/src/client.ts`
+- Add formatter (`formatInvoice`) in `packages/api/src/formatters/`
+- Add tests for all new code
+
+### 3. Executors (`productive-core`)
+
+Create `packages/core/src/executors/invoices/`:
+
+- `list.ts`, `get.ts`, `create.ts`, etc. — pure functions `(options, ctx: ExecutorContext) => Promise<ExecutorResult<T>>`
+- `types.ts` — options and result types
+- `index.ts` — re-exports
+- Tests for each executor using `createTestExecutorContext()`
+- Export from `packages/core/src/index.ts`
+
+### 4. MCP Handler (`productive-mcp`)
+
+Create `packages/mcp/src/handlers/invoices.ts` using the factory:
+
+```typescript
+export const handleInvoices = createResourceHandler<InvoiceArgs>({
+  resource: 'invoices',
+  actions: ['list', 'get', 'resolve'],
+  formatter: formatInvoice,
+  executors: { list: listInvoices, get: getInvoice },
+  // ... create, update, hints, customActions as needed
+});
+```
+
+Wire it in `packages/mcp/src/handlers/index.ts`:
+
+- Import `handleInvoices`
+- Add `case 'invoices': return handleInvoices(action, args, handlerCtx);`
+
+Add help documentation in `packages/mcp/src/handlers/help.ts`.
+
+### 5. CLI Command (`productive-cli`)
+
+Create `packages/cli/src/commands/invoices/`:
+
+- `handlers.ts` — individual handler functions
+- `command.ts` — `createCommandRouter({ resource: 'invoices', handlers: { ... } })`
+- `help.ts` — help text
+- `index.ts` — re-exports
+- Tests for handlers
+
+Wire in `packages/cli/src/cli.ts`.
+
+### 6. Update SKILL.md Files
+
+Update the resource/action tables in:
+
+- `packages/mcp/skills/SKILL.md`
+- `packages/cli/skills/SKILL.md`
+
+### 7. Build & Test
+
+```bash
+npm run build
+npm run test
+npm run test:integration    # if you added integration fixtures
+```
+
+## Adding a New MCP Action to an Existing Resource
+
+For adding a custom action (e.g., `context` on a new resource):
+
+1. **Core**: Create executor in `packages/core/src/executors/<resource>/context.ts`, export it
+2. **Core**: Add the action name to `ACTIONS` in `constants.ts` (if new)
+3. **MCP**: Add to the handler's `customActions` in the `createResourceHandler()` config
+4. **MCP**: Update the resource's `actions` array in the handler config
+5. **MCP**: Update help docs for that resource
+6. **Build core** before testing MCP: `npm run build -w @studiometa/productive-core`
