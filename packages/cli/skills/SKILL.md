@@ -258,31 +258,13 @@ productive reports budget --project <id>
 
 ### Custom API Requests
 
+> **Prefer named commands** (`tasks list`, `time list`, etc.) over raw `api` calls — they handle filtering, formatting, and pagination automatically.
+
 For endpoints not covered by built-in commands:
 
 ```bash
 # GET request
 productive api /companies
-
-# GET with query parameters (put them in the URL)
-productive api '/comments?filter[task_id]=12345'
-productive api '/tasks?filter[project_id]=12345&filter[status]=1'
-
-# POST (auto-detected when --field is used)
-productive api /comments \
-  --field task_id=12345 \
-  --raw-field body="Comment text"
-
-# PATCH
-productive api /tasks/12345 \
-  --method PATCH \
-  --raw-field title="Updated title"
-
-# DELETE
-productive api /time_entries/12345 --method DELETE
-
-# Fetch all pages
-productive api /time_entries --paginate
 ```
 
 #### Important: Query Parameters vs Request Body
@@ -304,6 +286,28 @@ productive api /time_entries --paginate
     --field task_id=12345 \
     --raw-field body="My comment"
   ```
+
+```bash
+# GET with query parameters (put them in the URL)
+productive api '/comments?filter[task_id]=12345'
+productive api '/tasks?filter[project_id]=12345&filter[status]=1'
+
+# POST (auto-detected when --field is used)
+productive api /comments \
+  --field task_id=12345 \
+  --raw-field body="Comment text"
+
+# PATCH
+productive api /tasks/12345 \
+  --method PATCH \
+  --raw-field title="Updated title"
+
+# DELETE
+productive api /time_entries/12345 --method DELETE
+
+# Fetch all pages
+productive api /time_entries --paginate
+```
 
 ### Cache
 
