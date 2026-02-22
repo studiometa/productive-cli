@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.4] - 2026-02-22
+
+### Fixed
+
+- **Core**: Fix `person_id: "me"` resolution — resolver now substitutes `"me"` with current userId for person-type filters instead of searching API for people named "me" ([7f4014b], [#120], [#118])
+- **Core**: Fix `weekly_standup` showing "Unknown Project" for time entries — add `include: ["project"]` to time entries fetch and merge included resources ([7f4014b], [#120], [#119])
+- **API**: Add `include` parameter support to `getTimeEntries()` client method ([7f4014b], [#120])
+
+[0.10.4]: https://github.com/studiometa/productive-tools/compare/0.10.3...0.10.4
+[7f4014b]: https://github.com/studiometa/productive-tools/commit/7f4014b
+[#118]: https://github.com/studiometa/productive-tools/issues/118
+[#119]: https://github.com/studiometa/productive-tools/issues/119
+[#120]: https://github.com/studiometa/productive-tools/pull/120
+
 ## [0.10.3] - 2026-02-22
 
 ### Added
