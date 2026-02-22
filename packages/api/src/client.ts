@@ -205,6 +205,7 @@ export class ProductiveApi {
     perPage?: number;
     filter?: Record<string, string>;
     sort?: string;
+    include?: string[];
   }): Promise<ProductiveApiResponse<ProductiveTimeEntry[]>> {
     const query: Record<string, string> = {};
 
@@ -215,6 +216,9 @@ export class ProductiveApi {
       Object.entries(params.filter).forEach(([key, value]) => {
         query[`filter[${key}]`] = value;
       });
+    }
+    if (params?.include?.length) {
+      query['include'] = params.include.join(',');
     }
 
     return this.request<ProductiveApiResponse<ProductiveTimeEntry[]>>('/time_entries', { query });

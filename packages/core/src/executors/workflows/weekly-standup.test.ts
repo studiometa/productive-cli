@@ -69,7 +69,10 @@ describe('weeklyStandup', () => {
       },
     ],
     meta: { total_count: 3 },
-    included: [],
+    included: [
+      { id: 'proj-1', type: 'projects', attributes: { name: 'Project Alpha' } },
+      { id: 'proj-2', type: 'projects', attributes: { name: 'Project Beta' } },
+    ],
   };
 
   const mockUpcomingTasksResponse = {
@@ -158,12 +161,14 @@ describe('weeklyStandup', () => {
     const { by_project, total_minutes } = result.data.time_logged;
     expect(total_minutes).toBe(270); // 120 + 60 + 90
 
-    // Sorted by total_minutes descending
+    // Sorted by total_minutes descending, project names resolved from time entry includes
     expect(by_project[0].project_id).toBe('proj-1');
+    expect(by_project[0].project_name).toBe('Project Alpha');
     expect(by_project[0].total_minutes).toBe(180); // 120 + 60
     expect(by_project[0].entry_count).toBe(2);
 
     expect(by_project[1].project_id).toBe('proj-2');
+    expect(by_project[1].project_name).toBe('Project Beta');
     expect(by_project[1].total_minutes).toBe(90);
     expect(by_project[1].entry_count).toBe(1);
   });
@@ -260,7 +265,7 @@ describe('weeklyStandup', () => {
       }),
     );
 
-    // Time entries call
+    // Time entries call (includes project for name resolution)
     expect(getTimeEntries).toHaveBeenCalledWith(
       expect.objectContaining({
         filter: expect.objectContaining({
@@ -268,6 +273,7 @@ describe('weeklyStandup', () => {
           after: '2026-02-16',
           before: '2026-02-22',
         }),
+        include: ['project'],
       }),
     );
   });

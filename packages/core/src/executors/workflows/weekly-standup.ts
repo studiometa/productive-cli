@@ -118,6 +118,7 @@ export async function weeklyStandup(
         after: weekStart,
         before: weekEnd,
       },
+      include: ['project'],
     }),
 
     // 3. Upcoming tasks with deadlines in the next 7 days (open tasks)
@@ -138,6 +139,7 @@ export async function weeklyStandup(
   // Combine included resources for name resolution
   const allIncluded: IncludedResource[] = [
     ...(closedTasksRes.included ?? []),
+    ...(timeEntriesRes.included ?? []),
     ...(upcomingTasksRes.included ?? []),
   ];
 

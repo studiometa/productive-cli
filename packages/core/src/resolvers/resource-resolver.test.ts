@@ -631,6 +631,90 @@ describe('ResolveError', () => {
 // createResourceResolver — resolveFilters edge cases
 // ============================================================================
 
+describe('createResourceResolver "me" resolution', () => {
+  it('resolveValue: resolves "me" to userId for person type', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const result = await resolver.resolveValue('me', 'person');
+    expect(result).toBe('user-42');
+  });
+
+  it('resolveValue: returns "me" unchanged when no userId configured', async () => {
+    const api = mockApi({
+      getPeople: vi.fn().mockResolvedValue({ data: [], meta: {} }),
+    });
+    const resolver = createResourceResolver(api);
+    // Without userId, "me" is returned as-is (no resolution possible)
+    const result = await resolver.resolveValue('me', 'person');
+    expect(result).toBe('me');
+  });
+
+  it('resolveValue: does not resolve "me" for non-person types', async () => {
+    const api = mockApi({
+      getProjects: vi.fn().mockResolvedValue({ data: [], meta: {} }),
+    });
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    // "me" on project type should NOT resolve to userId — it's not a person filter
+    // It will fail with ResolveError since "me" doesn't match project patterns
+    await expect(resolver.resolveValue('me', 'project')).rejects.toThrow();
+  });
+
+  it('resolveFilters: resolves "me" in person_id filter', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const { resolved, metadata } = await resolver.resolveFilters({ person_id: 'me' });
+
+    expect(resolved.person_id).toBe('user-42');
+    expect(metadata.person_id).toEqual({
+      query: 'me',
+      id: 'user-42',
+      label: 'Current user',
+      type: 'person',
+    });
+    // Should NOT call the API
+    expect(api.getPeople).not.toHaveBeenCalled();
+  });
+
+  it('resolveFilters: resolves "me" in assignee_id filter', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const { resolved } = await resolver.resolveFilters({ assignee_id: 'me' });
+    expect(resolved.assignee_id).toBe('user-42');
+  });
+
+  it('resolveFilters: resolves "me" in creator_id filter', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const { resolved } = await resolver.resolveFilters({ creator_id: 'me' });
+    expect(resolved.creator_id).toBe('user-42');
+  });
+
+  it('resolveFilters: resolves "me" in responsible_id filter', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const { resolved } = await resolver.resolveFilters({ responsible_id: 'me' });
+    expect(resolved.responsible_id).toBe('user-42');
+  });
+
+  it('resolveFilters: keeps "me" as-is when no userId configured', async () => {
+    const api = mockApi({
+      getPeople: vi.fn().mockResolvedValue({ data: [], meta: {} }),
+    });
+    const resolver = createResourceResolver(api);
+    const { resolved } = await resolver.resolveFilters({ person_id: 'me' });
+    // Without userId, "me" passes through to the resolver which will fail to match
+    expect(resolved.person_id).toBe('me');
+  });
+
+  it('resolveFilters: does not resolve "me" in non-person filters', async () => {
+    const api = mockApi();
+    const resolver = createResourceResolver(api, { userId: 'user-42' });
+    const { resolved } = await resolver.resolveFilters({ project_id: 'me' });
+    // "me" in project_id should NOT resolve to userId
+    expect(resolved.project_id).toBe('me');
+  });
+});
+
 describe('createResourceResolver resolveFilters', () => {
   it('caches resolved results when cache is provided', async () => {
     const cache = {

@@ -56,6 +56,7 @@ export function fromCommandContext(
     resolver: createResourceResolver(ctx.api, {
       cache: options.cache,
       orgId,
+      userId: ctx.config.userId,
     }),
     config: {
       userId: ctx.config.userId,

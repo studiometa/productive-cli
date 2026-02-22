@@ -57,6 +57,7 @@ export function fromHandlerContext(
     resolver: createResourceResolver(ctx.api, {
       cache: options.cache,
       orgId: options.orgId,
+      userId: options.userId,
     }),
     config: {
       organizationId: options.orgId ?? '',

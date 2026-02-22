@@ -314,6 +314,15 @@ describe('ProductiveApi requests', () => {
       expect(url).toContain('filter%5Bperson_id%5D=1');
     });
 
+    it('getTimeEntries with include', async () => {
+      const api = createApi();
+      mockFetchResponse({ data: [] });
+      await api.getTimeEntries({ include: ['project', 'person'] });
+      const url = fetchSpy.mock.calls[0][0] as string;
+      expect(url).toContain('/time_entries');
+      expect(url).toContain('include=project%2Cperson');
+    });
+
     it('getTimeEntry', async () => {
       const api = createApi();
       mockFetchResponse({ data: { id: '99' } });

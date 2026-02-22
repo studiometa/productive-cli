@@ -54,6 +54,8 @@ export interface ResolverCache {
 export interface CreateResolverOptions {
   cache?: ResolverCache;
   orgId?: string;
+  /** Current user ID — used to resolve "me" in person-type filters */
+  userId?: string;
 }
 
 /**
@@ -537,11 +539,16 @@ export async function resolveFilterIds(
  * @param api - ProductiveApi instance
  * @param options - Cache and org ID for caching
  */
+/**
+ * Person-type filter keys where "me" should resolve to current userId.
+ */
+const PERSON_FILTER_KEYS = new Set(['person_id', 'assignee_id', 'creator_id', 'responsible_id']);
+
 export function createResourceResolver(
   api: ProductiveApi,
   options: CreateResolverOptions = {},
 ): ResourceResolver {
-  const { cache, orgId } = options;
+  const { cache, orgId, userId } = options;
 
   const CACHE_TTL_EXACT = 24 * 60 * 60 * 1000; // 24h
   const CACHE_TTL_FUZZY = 60 * 60 * 1000; // 1h
@@ -556,6 +563,11 @@ export function createResourceResolver(
       type: ResolvableResourceType,
       opts?: { projectId?: string },
     ): Promise<string> {
+      // Resolve "me" to current user for person-type values
+      if (value === 'me' && type === 'person') {
+        return userId ?? value;
+      }
+
       if (isNumericId(value)) return value;
 
       // Try cache
@@ -594,6 +606,18 @@ export function createResourceResolver(
 
       for (const [key, value] of Object.entries(filters)) {
         const filterType = mapping[key];
+
+        // Resolve "me" to current userId for person-type filters
+        if (value === 'me' && PERSON_FILTER_KEYS.has(key) && userId) {
+          resolved[key] = userId;
+          metadata[key] = {
+            query: 'me',
+            id: userId,
+            label: 'Current user',
+            type: 'person',
+          };
+          continue;
+        }
 
         if (!filterType || isNumericId(value)) {
           resolved[key] = value;
