@@ -258,6 +258,36 @@ export function getPersonHints(personId: string): ContextualHints {
 }
 
 /**
+ * Generate hints for a services list response.
+ *
+ * When the query doesn't already filter by deal_id, suggests filtering
+ * by deal_id to scope services to a specific budget/deal.
+ *
+ * @param currentFilter - The filter object currently applied to the list query
+ */
+export function getServiceListHints(
+  currentFilter?: Record<string, string>,
+): ContextualHints | null {
+  // No hint needed if already filtering by deal_id
+  if (currentFilter?.deal_id) {
+    return null;
+  }
+
+  return {
+    common_actions: [
+      {
+        action: 'Filter services by deal to see budget line items for a specific deal',
+        example: {
+          resource: 'services',
+          action: 'list',
+          filter: { deal_id: '<deal_id>' },
+        },
+      },
+    ],
+  };
+}
+
+/**
  * Generate hints for a service
  */
 export function getServiceHints(serviceId: string): ContextualHints {

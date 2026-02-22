@@ -10,6 +10,7 @@ import {
   getDealHints,
   getPersonHints,
   getServiceHints,
+  getServiceListHints,
   getCompanyHints,
   getTimeEntryHints,
   getCommentHints,
@@ -138,6 +139,37 @@ describe('hints', () => {
       const timerAction = hints.common_actions?.find((a) => a.action === 'Start a timer');
       expect(timerAction).toBeDefined();
       expect(timerAction?.example.service_id).toBe('12345');
+    });
+  });
+
+  describe('getServiceListHints', () => {
+    it('returns a deal_id filter hint when no filter is provided', () => {
+      const hints = getServiceListHints();
+
+      expect(hints).not.toBeNull();
+      expect(hints?.common_actions).toBeDefined();
+      expect(hints?.common_actions).toHaveLength(1);
+
+      const dealHint = hints?.common_actions?.[0];
+      expect(dealHint?.action).toContain('deal');
+      expect(dealHint?.example).toEqual({
+        resource: 'services',
+        action: 'list',
+        filter: { deal_id: '<deal_id>' },
+      });
+    });
+
+    it('returns a deal_id filter hint when filter does not include deal_id', () => {
+      const hints = getServiceListHints({ project_id: '12345' });
+
+      expect(hints).not.toBeNull();
+      expect(hints?.common_actions).toHaveLength(1);
+    });
+
+    it('returns null when filter already includes deal_id', () => {
+      const hints = getServiceListHints({ deal_id: '12345' });
+
+      expect(hints).toBeNull();
     });
   });
 
