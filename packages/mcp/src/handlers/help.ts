@@ -275,6 +275,10 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     },
     examples: [
       {
+        description: 'List services for a deal (budget line items)',
+        params: { resource: 'services', action: 'list', filter: { deal_id: '12345' } },
+      },
+      {
         description: 'List services for a project',
         params: { resource: 'services', action: 'list', filter: { project_id: '12345' } },
       },

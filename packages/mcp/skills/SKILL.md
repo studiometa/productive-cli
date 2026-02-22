@@ -252,6 +252,13 @@ Response:
 ### Services
 
 ```json
+// List services for a deal (budget line items) — prefer this over project_id when you have a deal
+{
+  "resource": "services",
+  "action": "list",
+  "filter": { "deal_id": "12345" }
+}
+
 // List services for a project
 {
   "resource": "services",

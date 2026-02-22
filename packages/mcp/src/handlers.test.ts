@@ -449,6 +449,43 @@ describe('handlers', () => {
         );
       });
 
+      it('should include deal_id hint when listing without deal_id filter', async () => {
+        const mockResponse = {
+          data: [{ id: '1', type: 'services', attributes: { name: 'Development' } }],
+          meta: { current_page: 1, total_pages: 1 },
+        };
+        mockApi.getServices.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'services', action: 'list' },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        const content = JSON.parse(result.content[0].text as string);
+        expect(content._hints).toBeDefined();
+        expect(content._hints.common_actions[0].example.filter).toHaveProperty('deal_id');
+      });
+
+      it('should not include deal_id hint when already filtering by deal_id', async () => {
+        const mockResponse = {
+          data: [{ id: '1', type: 'services', attributes: { name: 'Development' } }],
+          meta: { current_page: 1, total_pages: 1 },
+        };
+        mockApi.getServices.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'services', action: 'list', filter: { deal_id: '123' } },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        const content = JSON.parse(result.content[0].text as string);
+        expect(content._hints).toBeUndefined();
+      });
+
       it('should return error for invalid action', async () => {
         const result = await executeToolWithCredentials(
           'productive',
