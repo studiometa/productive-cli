@@ -46,9 +46,9 @@ productive-mcp   → productive-core    # MCP server handlers, OAuth
 ### Package Responsibilities
 
 - **productive-api** (`packages/api`): `ProductiveApi` class (explicit config injection), resource types (`ProductiveProject`, `ProductiveTimeEntry`, etc.), response formatters, `ProductiveApiError`, `ApiCache` interface, `RateLimiter` (sliding window + exponential backoff). Zero dependencies.
-- **productive-core** (`packages/core`): Pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, `createResourceResolver()` factory, bridge functions (`fromCommandContext`, `fromHandlerContext`), context executors (task/project/deal), summary executors (my_day, project_health, team_pulse).
-- **productive-cli** (`packages/cli`): CLI commands (one directory per resource under `src/commands/`), `createCommandRouter()` factory, human/table/CSV/JSON renderers, keychain config, SQLite cache, `CommandContext` for DI.
-- **productive-mcp** (`packages/mcp`): Single unified `productive` MCP tool, `createResourceHandler()` factory, resource handlers, contextual hints (`hints.ts`), agent instructions (`instructions.ts` loads from `skills/SKILL.md`), batch/search/schema/context/summaries handlers, OAuth (stateless), HTTP server, MCP-specific formatters.
+- **productive-core** (`packages/core`): Pure executor functions `(options, context) → ExecutorResult<T>`, `ExecutorContext` with DI, `createResourceResolver()` factory, bridge functions (`fromCommandContext`, `fromHandlerContext`), context executors (task/project/deal), summary executors (my_day, project_health, team_pulse), workflow executors (complete_task, log_day, weekly_standup), activity executor.
+- **productive-cli** (`packages/cli`): CLI commands (one directory per resource under `src/commands/`), `createCommandRouter()` factory, human/table/CSV/JSON renderers, keychain config, SQLite cache, `CommandContext` for DI. Includes `activities` command for audit log.
+- **productive-mcp** (`packages/mcp`): Single unified `productive` MCP tool, `createResourceHandler()` factory, resource handlers, contextual hints (`hints.ts`), proactive suggestions (`suggestions.ts`), agent instructions (`instructions.ts` loads from `skills/SKILL.md`), batch/search/schema/context/summaries/workflows handlers, input validation (params detection, include validation, wrong-action redirects), OAuth (stateless), HTTP server, MCP-specific formatters.
 
 ### Centralized Constants
 
@@ -108,7 +108,7 @@ Key factory options:
 - **`create.validateArgs`** — custom validation returning `ToolResult` on error
 - **`defaultInclude`** — default `include` arrays merged with user-provided includes
 
-**Non-factory handlers**: `batch.ts`, `search.ts`, `summaries.ts`, `reports.ts` have custom logic that doesn't fit the factory pattern. These are standalone handler functions.
+**Non-factory handlers**: `batch.ts`, `search.ts`, `summaries.ts`, `reports.ts`, `workflows.ts` have custom logic that doesn't fit the factory pattern. These are standalone handler functions.
 
 ### CLI: `createCommandRouter()` (`packages/cli/src/utils/command-router.ts`)
 
@@ -160,9 +160,47 @@ The MCP server exposes a **single `productive` tool** with resource/action routi
 - **`resource=batch action=run`** — executes up to 10 operations in parallel with per-operation error isolation. Returns `{ _batch: { total, succeeded, failed }, results: [...] }`.
 - **`resource=search action=run`** — cross-resource text search (projects, companies, people, tasks simultaneously).
 
+### Compound Workflows
+
+- **`resource=workflows`** — standalone handler (not factory-based) with 3 compound actions:
+  - `complete_task` — marks task closed, posts optional comment, stops running timers. Partial failures reported in `errors` array.
+  - `log_day` — creates multiple time entries in parallel from a structured `entries` array.
+  - `weekly_standup` — fetches completed tasks, time logged (grouped by project), and upcoming deadlines for a week.
+- Backed by executors in `packages/core/src/executors/workflows/`.
+
+### Activities (Audit Feed)
+
+- **`resource=activities action=list`** — read-only activity feed from the Productive.io `/activities` endpoint.
+- Supports filters: `event` (create/update/delete), `after` (ISO timestamp), `person_id`, `project_id`.
+- Default include: `creator`. Note: `subject` include is NOT supported by the API (returns 400).
+- Full stack: API type + client method → core executor → MCP factory handler + CLI command.
+- Changeset formatter converts `[{field: [old, new]}, ...]` to readable `"field: old → new"` strings.
+
 ### Contextual Hints (`hints.ts`)
 
 After `get` actions, the response includes a `_hints` object suggesting related resources and common next actions. Example: getting a task suggests fetching its comments, time entries, and attachments.
+
+### Proactive Suggestions (`suggestions.ts`)
+
+Certain responses include `_suggestions: string[]` — data-aware warnings and recommendations computed from response data (no extra API calls). Different from `_hints` (which show related resources).
+
+- `tasks.list` — overdue count, unassigned count
+- `tasks.get` — overdue by N days, no time entries (when included)
+- `time.list` — total hours logged (or X/8h if filtered by today)
+- `summaries.my_day` — no time logged today, timer running too long (>2h)
+
+Controlled by `ctx.includeSuggestions` (separate from `ctx.includeHints`). Both suppressed by `no_hints: true`.
+
+### Input Validation & Helpful Errors
+
+The main handler (`handlers/index.ts`) includes several early-exit validations before routing:
+
+- **`params` wrapper detection** — returns error suggesting `filter` when `params` field is used
+- **`include` validation** (`valid-includes.ts`) — checks include values against per-resource whitelist, suggests valid alternatives
+- **Wrong resource redirects** — `docs` → `pages`, `budgets` → `deals` with `type=2`
+- **Wrong action redirects** — `action=search` on specific resources → suggests `list` with `query` or `resource=search`; `get_*` function-style → suggests proper verbs
+
+The resource routing switch is extracted into `routeToHandler()` to keep cyclomatic complexity manageable.
 
 ### Server Instructions (`instructions.ts`)
 
