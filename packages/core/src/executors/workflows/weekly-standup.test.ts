@@ -88,9 +88,7 @@ describe('weeklyStandup', () => {
       },
     ],
     meta: { total_count: 1 },
-    included: [
-      { id: 'proj-1', type: 'projects', attributes: { name: 'Project Alpha' } },
-    ],
+    included: [{ id: 'proj-1', type: 'projects', attributes: { name: 'Project Alpha' } }],
   };
 
   it('throws ExecutorValidationError when no userId and no personId', async () => {
@@ -193,9 +191,7 @@ describe('weeklyStandup', () => {
   });
 
   it('uses personId option when provided', async () => {
-    const getTasks = vi
-      .fn()
-      .mockResolvedValue({ data: [], meta: {}, included: [] });
+    const getTasks = vi.fn().mockResolvedValue({ data: [], meta: {}, included: [] });
     const getTimeEntries = vi.fn().mockResolvedValue({ data: [], meta: {}, included: [] });
 
     const ctx = createTestExecutorContext({

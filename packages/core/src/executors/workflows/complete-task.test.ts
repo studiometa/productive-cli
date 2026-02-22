@@ -95,7 +95,9 @@ describe('completeTask', () => {
     const createComment = vi.fn().mockResolvedValue(mockComment);
     const getTimers = vi.fn().mockResolvedValue({ data: [], meta: {} });
 
-    const ctx = createTestExecutorContext({ api: { getTask, updateTask, createComment, getTimers } });
+    const ctx = createTestExecutorContext({
+      api: { getTask, updateTask, createComment, getTimers },
+    });
 
     const result = await completeTask({ taskId: '42', comment: 'Done!' }, ctx);
 
@@ -110,7 +112,9 @@ describe('completeTask', () => {
     const createComment = vi.fn();
     const getTimers = vi.fn().mockResolvedValue({ data: [], meta: {} });
 
-    const ctx = createTestExecutorContext({ api: { getTask, updateTask, createComment, getTimers } });
+    const ctx = createTestExecutorContext({
+      api: { getTask, updateTask, createComment, getTimers },
+    });
 
     await completeTask({ taskId: '42' }, ctx);
 

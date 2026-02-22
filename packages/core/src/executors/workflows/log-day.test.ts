@@ -92,9 +92,7 @@ describe('logDay', () => {
     const defaultDate = '2026-02-22';
     await logDay({ entries: [baseEntries[0]], date: defaultDate }, ctx);
 
-    expect(createTimeEntry).toHaveBeenCalledWith(
-      expect.objectContaining({ date: defaultDate }),
-    );
+    expect(createTimeEntry).toHaveBeenCalledWith(expect.objectContaining({ date: defaultDate }));
   });
 
   it('per-entry date overrides default date', async () => {
@@ -104,9 +102,7 @@ describe('logDay', () => {
     const entryWithDate = { ...baseEntries[0], date: '2026-02-20' };
     await logDay({ entries: [entryWithDate], date: '2026-02-22' }, ctx);
 
-    expect(createTimeEntry).toHaveBeenCalledWith(
-      expect.objectContaining({ date: '2026-02-20' }),
-    );
+    expect(createTimeEntry).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-02-20' }));
   });
 
   it('isolates individual entry failures as partial results', async () => {

@@ -4,9 +4,8 @@
  * Tests handleWorkflows() directly using mock HandlerContext and ExecutorContext.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-
 import { createTestExecutorContext } from '@studiometa/productive-core';
+import { describe, it, expect, vi } from 'vitest';
 
 import type { HandlerContext } from './types.js';
 

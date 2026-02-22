@@ -87,11 +87,14 @@ export async function handleWorkflows(
     case 'log_day': {
       if (!args.entries || !Array.isArray(args.entries) || args.entries.length === 0) {
         return inputErrorResult(
-          new UserInputError('entries is required and must be a non-empty array for log_day workflow', [
-            'Provide entries as an array of { project_id, service_id, duration_minutes, note?, date? }',
-            'Example: { "entries": [{ "project_id": "123", "service_id": "456", "duration_minutes": 120, "note": "Development" }] }',
-            'You can find service IDs using resource="services" action="list" with filter.project_id',
-          ]),
+          new UserInputError(
+            'entries is required and must be a non-empty array for log_day workflow',
+            [
+              'Provide entries as an array of { project_id, service_id, duration_minutes, note?, date? }',
+              'Example: { "entries": [{ "project_id": "123", "service_id": "456", "duration_minutes": 120, "note": "Development" }] }',
+              'You can find service IDs using resource="services" action="list" with filter.project_id',
+            ],
+          ),
         );
       }
 
@@ -135,7 +138,8 @@ export async function handleWorkflows(
           'Compound workflows that chain multiple resource operations into a single tool call',
         actions: {
           complete_task: {
-            description: 'Mark a task as complete, optionally post a comment and stop running timers',
+            description:
+              'Mark a task as complete, optionally post a comment and stop running timers',
             parameters: {
               task_id: 'Required. The task ID to complete',
               comment: 'Optional. A completion comment to post on the task',
@@ -152,7 +156,8 @@ export async function handleWorkflows(
           log_day: {
             description: 'Create multiple time entries in parallel from a structured list',
             parameters: {
-              entries: 'Required. Array of { project_id, service_id, duration_minutes, note?, date? }',
+              entries:
+                'Required. Array of { project_id, service_id, duration_minutes, note?, date? }',
               date: 'Optional. Default date for all entries (YYYY-MM-DD, defaults to today)',
               person_id: 'Optional. Person to log for (defaults to current user)',
             },
