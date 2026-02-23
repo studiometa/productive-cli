@@ -148,6 +148,19 @@ function weeklyReport(args?: Record<string, string>): PromptResult {
         ? 'Format as a professional email with subject line, greeting, bulleted highlights per project, and a closing.'
         : 'Format as a clean plain-text weekly report with clear section headers.';
 
+  const standupCall = person
+    ? `First resolve the person ID, then fetch weekly standup data:
+\`\`\`json
+{ "resource": "people", "action": "resolve", "query": "${person}" }
+\`\`\`
+\`\`\`json
+{ "resource": "workflows", "action": "weekly_standup", "person_id": "<resolved_person_id>" }
+\`\`\``
+    : `Fetch weekly standup data:
+\`\`\`json
+{ "resource": "workflows", "action": "weekly_standup" }
+\`\`\``;
+
   return {
     messages: [
       {
@@ -158,10 +171,7 @@ function weeklyReport(args?: Record<string, string>): PromptResult {
 
 ${personInstruction}
 
-Fetch weekly standup data:
-\`\`\`json
-{ "resource": "workflows", "action": "weekly_standup" }
-\`\`\`
+${standupCall}
 
 Then compose a polished weekly report with:
 1. **This week's accomplishments**: Completed tasks grouped by project

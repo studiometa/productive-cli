@@ -125,6 +125,20 @@ describe('getPromptMessages', () => {
       expect(text).toContain('user@example.com');
     });
 
+    it('should instruct to resolve person and pass person_id to weekly_standup', () => {
+      const result = getPromptMessages('weekly-report', { person: 'john@test.com' });
+      const text = result.messages[0].content.text;
+      expect(text).toContain('people');
+      expect(text).toContain('resolve');
+      expect(text).toContain('person_id');
+    });
+
+    it('should not include resolve step when no person provided', () => {
+      const result = getPromptMessages('weekly-report');
+      const text = result.messages[0].content.text;
+      expect(text).not.toContain('resolve');
+    });
+
     it('should use plain format by default', () => {
       const result = getPromptMessages('weekly-report');
       const text = result.messages[0].content.text;
