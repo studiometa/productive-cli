@@ -538,6 +538,16 @@ describe('api command', () => {
       expect(url).toContain('filter%5Bproject_id%5D=123');
     });
 
+    it('should error when --filter used with --field (implicit POST)', async () => {
+      // --field triggers implicit POST, --filter is GET-only
+      await expect(
+        handleApiCommand(['/tasks'], {
+          field: ['name=test'],
+          filter: ['project_id=123'],
+        }),
+      ).rejects.toThrow('process.exit(3)');
+    });
+
     it('should handle filter values containing equals signs', async () => {
       mockFetch.mockResolvedValue({
         ok: true,
