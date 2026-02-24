@@ -138,6 +138,9 @@ describe('CompaniesCollection', () => {
       expect((err as ValidationError).fieldErrors).toEqual([
         { field: 'name', message: 'is required' },
       ]);
+    });
+  });
+
   describe('where()', () => {
     it('returns a QueryBuilder', () => {
       const col = new CompaniesCollection(createApi());

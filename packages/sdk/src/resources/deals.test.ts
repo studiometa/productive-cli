@@ -157,6 +157,9 @@ describe('DealsCollection', () => {
 
       const col = new DealsCollection(createApi());
       await expect(col.list()).rejects.toBeInstanceOf(RateLimitError);
+    });
+  });
+
   describe('where()', () => {
     it('returns a QueryBuilder', () => {
       const col = new DealsCollection(createApi());

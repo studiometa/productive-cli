@@ -157,6 +157,9 @@ describe('TasksCollection', () => {
 
       const col = new TasksCollection(createApi());
       await expect(col.get('999')).rejects.toBeInstanceOf(ResourceNotFoundError);
+    });
+  });
+
   describe('where()', () => {
     it('returns a QueryBuilder', () => {
       const col = new TasksCollection(createApi());

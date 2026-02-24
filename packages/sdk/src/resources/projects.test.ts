@@ -135,6 +135,9 @@ describe('ProjectsCollection', () => {
 
       const col = new ProjectsCollection(createApi());
       await expect(col.get('9999')).rejects.toBeInstanceOf(ResourceNotFoundError);
+    });
+  });
+
   describe('where()', () => {
     it('returns a QueryBuilder', () => {
       const col = new ProjectsCollection(createApi());

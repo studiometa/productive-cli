@@ -128,6 +128,9 @@ describe('PeopleCollection', () => {
 
       const col = new PeopleCollection(createApi());
       await expect(col.get('me')).rejects.toBeInstanceOf(AuthenticationError);
+    });
+  });
+
   describe('where()', () => {
     it('returns a QueryBuilder', () => {
       const col = new PeopleCollection(createApi());
