@@ -12,16 +12,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **MCP**: Add 5 prompt templates for guided workflows — `end-of-day`, `project-review`, `plan-sprint`, `weekly-report`, `invoice-prep` ([373fbff], [#123], [#121])
 - **SDK**: Add `@studiometa/productive-sdk` — fluent TypeScript SDK with JSON:API include resolution, async pagination, and resource collections for projects, tasks, time, people, companies, deals ([b1b4658], [#124], [#122])
 - **SDK**: Add typed resource interfaces (`Task`, `Project`, `TimeEntry`, `Person`, `Company`, `Deal`) derived from API types via `FlattenResource` mapped type — replaces generic `ResolvedResource` for full autocomplete and compile-time safety ([e44deca], [#129], [#126])
+- **SDK**: Add typed error hierarchy — `ProductiveError`, `ResourceNotFoundError`, `RateLimitError`, `ValidationError`, `AuthenticationError`, `NetworkError` with `wrapError()` utility and `isProductiveError()` type guard ([04b3fbe], [#130], [#128])
+- **SDK**: Add fluent query builder — `where()` method on all 6 collections for chainable `filter()`, `orderBy()`, `include()`, `page()`, `perPage()` with `list()` and `all()` execution ([0c23003], [#131], [#127])
+- **API+Core+CLI+MCP**: Support `hidden` boolean on comments — create and update comments as "hidden from client" matching the Productive.io web UI feature ([f89c28f], [#133], [#132])
 
 [373fbff]: https://github.com/studiometa/productive-tools/commit/373fbff
 [b1b4658]: https://github.com/studiometa/productive-tools/commit/b1b4658
 [e44deca]: https://github.com/studiometa/productive-tools/commit/e44deca
+[04b3fbe]: https://github.com/studiometa/productive-tools/commit/04b3fbe
+[0c23003]: https://github.com/studiometa/productive-tools/commit/0c23003
+[f89c28f]: https://github.com/studiometa/productive-tools/commit/f89c28f
 [#121]: https://github.com/studiometa/productive-tools/issues/121
 [#122]: https://github.com/studiometa/productive-tools/issues/122
 [#123]: https://github.com/studiometa/productive-tools/pull/123
 [#124]: https://github.com/studiometa/productive-tools/pull/124
 [#126]: https://github.com/studiometa/productive-tools/issues/126
+[#127]: https://github.com/studiometa/productive-tools/issues/127
+[#128]: https://github.com/studiometa/productive-tools/issues/128
 [#129]: https://github.com/studiometa/productive-tools/pull/129
+[#130]: https://github.com/studiometa/productive-tools/pull/130
+[#131]: https://github.com/studiometa/productive-tools/pull/131
+[#132]: https://github.com/studiometa/productive-tools/issues/132
+[#133]: https://github.com/studiometa/productive-tools/pull/133
 
 ## [0.10.4] - 2026-02-22
 
