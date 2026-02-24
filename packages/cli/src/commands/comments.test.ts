@@ -298,7 +298,7 @@ describe('comments command', () => {
 
       const ctx = createTestContext({
         api: { updateComment } as unknown as ProductiveApi,
-        options: { hidden: false, format: 'json' },
+        options: { 'no-hidden': true, format: 'json' },
       });
 
       await commentsUpdate(['1'], ctx);

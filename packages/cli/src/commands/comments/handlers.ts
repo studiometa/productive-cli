@@ -191,8 +191,9 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
 
   const hasBody = ctx.options.body !== undefined;
   const hasHidden = ctx.options.hidden !== undefined;
+  const hasNoHidden = ctx.options['no-hidden'] !== undefined;
 
-  if (!hasBody && !hasHidden) {
+  if (!hasBody && !hasHidden && !hasNoHidden) {
     spinner.fail();
     handleError(
       ValidationError.invalid(
@@ -205,13 +206,18 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
     return;
   }
 
+  // --hidden sets hidden=true, --no-hidden sets hidden=false
+  let hidden: boolean | undefined;
+  if (hasHidden) hidden = true;
+  if (hasNoHidden) hidden = false;
+
   await runCommand(async () => {
     const execCtx = fromCommandContext(ctx);
     const result = await updateComment(
       {
         id,
         body: hasBody ? String(ctx.options.body) : undefined,
-        hidden: hasHidden ? ctx.options.hidden === true : undefined,
+        hidden,
       },
       execCtx,
     );
