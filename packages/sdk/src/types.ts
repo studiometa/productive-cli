@@ -1,3 +1,13 @@
+import type {
+  ProductiveTask,
+  ProductiveProject,
+  ProductiveTimeEntry,
+  ProductivePerson,
+  ProductiveCompany,
+  ProductiveDeal,
+  RelationshipData,
+} from '@studiometa/productive-api';
+
 /**
  * A reference to a related resource, resolved from JSON:API included data.
  * Returns `null` when the relationship exists but the resource wasn't found in includes.
@@ -10,146 +20,28 @@ export interface ResourceRef {
 }
 
 // ---------------------------------------------------------------------------
-// Task
+// Utility: Flatten a JSON:API resource into a flat object
 // ---------------------------------------------------------------------------
 
-export interface Task {
-  id: string;
-  type: 'tasks';
-  title: string;
-  description?: string;
-  number?: number;
-  task_number?: number;
-  private?: boolean;
-  due_date?: string;
-  due_time?: string;
-  start_date?: string;
-  closed_at?: string;
-  created_at: string;
-  updated_at: string;
-  initial_estimate?: number;
-  remaining_time?: number;
-  billable_time?: number;
-  worked_time?: number;
-  type_id?: number;
-  closed?: boolean;
-  tag_list?: string[];
-  todo_count?: number;
-  open_todo_count?: number;
-  subtask_count?: number;
-  open_subtask_count?: number;
-  completed?: boolean;
-  // Relationships (present when included)
-  project?: ResourceRef | null;
-  assignee?: ResourceRef | null;
-  workflow_status?: ResourceRef | null;
-  task_list?: ResourceRef | null;
-  service?: ResourceRef | null;
-  creator?: ResourceRef | null;
-  parent_task?: ResourceRef | null;
-}
+/**
+ * Picks `id` and `type` from T, spreads T['attributes'], and converts
+ * each key in T['relationships'] to `ResourceRef | null` (optional).
+ */
+type FlattenResource<T extends { id: string; type: string; attributes: object }> = {
+  id: T['id'];
+  type: T['type'];
+} & T['attributes'] &
+  (T extends { relationships?: infer R }
+    ? { [K in keyof R]?: R[K] extends RelationshipData | undefined ? ResourceRef | null : never }
+    : unknown);
 
 // ---------------------------------------------------------------------------
-// Project
+// Flattened SDK types — derived from productive-api types
 // ---------------------------------------------------------------------------
 
-export interface Project {
-  id: string;
-  type: 'projects';
-  name: string;
-  project_number?: string;
-  archived: boolean;
-  budget?: number;
-  created_at: string;
-  updated_at: string;
-  // Generic relationships (Record-based in API types)
-  [key: string]: unknown;
-}
-
-// ---------------------------------------------------------------------------
-// TimeEntry
-// ---------------------------------------------------------------------------
-
-export interface TimeEntry {
-  id: string;
-  type: 'time_entries';
-  date: string;
-  time: number;
-  note?: string;
-  billable_time?: number;
-  approved?: boolean;
-  created_at: string;
-  updated_at: string;
-  // Relationships (present when included)
-  person?: ResourceRef | null;
-  service?: ResourceRef | null;
-  project?: ResourceRef | null;
-}
-
-// ---------------------------------------------------------------------------
-// Person
-// ---------------------------------------------------------------------------
-
-export interface Person {
-  id: string;
-  type: 'people';
-  first_name: string;
-  last_name: string;
-  email: string;
-  active: boolean;
-  title?: string;
-  created_at: string;
-  updated_at: string;
-  // Generic relationships
-  [key: string]: unknown;
-}
-
-// ---------------------------------------------------------------------------
-// Company
-// ---------------------------------------------------------------------------
-
-export interface Company {
-  id: string;
-  type: 'companies';
-  name: string;
-  billing_name?: string;
-  vat?: string;
-  default_currency?: string;
-  company_code?: string;
-  domain?: string;
-  buyer_reference?: string;
-  due_days?: number;
-  tag_list?: string[];
-  archived_at?: string;
-  created_at: string;
-  updated_at: string;
-  // Generic relationships
-  [key: string]: unknown;
-}
-
-// ---------------------------------------------------------------------------
-// Deal
-// ---------------------------------------------------------------------------
-
-export interface Deal {
-  id: string;
-  type: 'deals';
-  name: string;
-  date?: string;
-  end_date?: string;
-  number?: string;
-  deal_number?: string;
-  budget: boolean;
-  tag_list?: string[];
-  profit_margin?: number;
-  closed_at?: string;
-  won_at?: string;
-  lost_at?: string;
-  created_at: string;
-  updated_at: string;
-  // Relationships (present when included)
-  company?: ResourceRef | null;
-  deal_status?: ResourceRef | null;
-  project?: ResourceRef | null;
-  responsible?: ResourceRef | null;
-}
+export type Task = FlattenResource<ProductiveTask>;
+export type Project = FlattenResource<ProductiveProject>;
+export type TimeEntry = FlattenResource<ProductiveTimeEntry>;
+export type Person = FlattenResource<ProductivePerson>;
+export type Company = FlattenResource<ProductiveCompany>;
+export type Deal = FlattenResource<ProductiveDeal>;
