@@ -234,6 +234,7 @@ export interface ProductiveComment {
   attributes: {
     body: string;
     commentable_type: string;
+    hidden?: boolean;
     draft?: boolean;
     pinned_at?: string;
     created_at: string;

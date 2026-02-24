@@ -23,12 +23,35 @@ describe('updateComment', () => {
     expect(result.data).toEqual(mockComment);
   });
 
+  it('updates comment hidden flag', async () => {
+    const updateCommentApi = vi.fn().mockResolvedValue({ data: mockComment });
+    const ctx = createTestExecutorContext({
+      api: { updateComment: updateCommentApi },
+    });
+
+    const result = await updateComment({ id: '1', hidden: true }, ctx);
+
+    expect(updateCommentApi).toHaveBeenCalledWith('1', { hidden: true });
+    expect(result.data).toEqual(mockComment);
+  });
+
+  it('updates both body and hidden', async () => {
+    const updateCommentApi = vi.fn().mockResolvedValue({ data: mockComment });
+    const ctx = createTestExecutorContext({
+      api: { updateComment: updateCommentApi },
+    });
+
+    await updateComment({ id: '1', body: 'New body', hidden: false }, ctx);
+
+    expect(updateCommentApi).toHaveBeenCalledWith('1', { body: 'New body', hidden: false });
+  });
+
   it('should throw ExecutorValidationError when no updates provided', async () => {
     const ctx = createTestExecutorContext();
 
     await expect(updateComment({ id: '1' }, ctx)).rejects.toThrow(ExecutorValidationError);
     await expect(updateComment({ id: '1' }, ctx)).rejects.toThrow(
-      'No updates specified. Provide at least one of: body',
+      'No updates specified. Provide at least one of: body, hidden',
     );
   });
 });

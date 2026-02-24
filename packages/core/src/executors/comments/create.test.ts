@@ -36,4 +36,33 @@ describe('createComment', () => {
       deal_id: '200',
     });
   });
+
+  it('creates a hidden comment', async () => {
+    const createCommentApi = vi.fn().mockResolvedValue({ data: mockComment });
+    const ctx = createTestExecutorContext({ api: { createComment: createCommentApi } });
+
+    await createComment({ body: 'Secret note', taskId: '100', hidden: true }, ctx);
+
+    expect(createCommentApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: 'Secret note',
+        hidden: true,
+        task_id: '100',
+      }),
+    );
+  });
+
+  it('omits hidden when not specified', async () => {
+    const createCommentApi = vi.fn().mockResolvedValue({ data: mockComment });
+    const ctx = createTestExecutorContext({ api: { createComment: createCommentApi } });
+
+    await createComment({ body: 'Public note', taskId: '100' }, ctx);
+
+    expect(createCommentApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: 'Public note',
+        hidden: undefined,
+      }),
+    );
+  });
 });

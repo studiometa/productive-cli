@@ -182,6 +182,7 @@ describe('comments command', () => {
 
       expect(createComment).toHaveBeenCalledWith({
         body: 'New comment',
+        hidden: undefined,
         task_id: '123',
         deal_id: undefined,
         company_id: undefined,
@@ -190,6 +191,36 @@ describe('comments command', () => {
         discussion_id: undefined,
       });
       expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should create a hidden comment on a task', async () => {
+      const createComment = vi.fn().mockResolvedValue({
+        data: {
+          id: '2',
+          type: 'comments',
+          attributes: {
+            body: 'Hidden note',
+            commentable_type: 'Task',
+            hidden: true,
+            created_at: '2024-01-15T10:00:00Z',
+          },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { createComment } as unknown as ProductiveApi,
+        options: { body: 'Hidden note', task: '123', hidden: true, format: 'json' },
+      });
+
+      await commentsAdd(ctx);
+
+      expect(createComment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: 'Hidden note',
+          hidden: true,
+          task_id: '123',
+        }),
+      );
     });
 
     it('should exit with error when body is missing', async () => {
@@ -243,6 +274,36 @@ describe('comments command', () => {
       await commentsUpdate(['1'], ctx);
 
       expect(updateComment).toHaveBeenCalledWith('1', { body: 'Updated comment' });
+    });
+
+    it('should update comment hidden flag', async () => {
+      const updateComment = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'comments', attributes: { hidden: true } },
+      });
+
+      const ctx = createTestContext({
+        api: { updateComment } as unknown as ProductiveApi,
+        options: { hidden: true, format: 'json' },
+      });
+
+      await commentsUpdate(['1'], ctx);
+
+      expect(updateComment).toHaveBeenCalledWith('1', { hidden: true });
+    });
+
+    it('should unhide comment with --no-hidden', async () => {
+      const updateComment = vi.fn().mockResolvedValue({
+        data: { id: '1', type: 'comments', attributes: { hidden: false } },
+      });
+
+      const ctx = createTestContext({
+        api: { updateComment } as unknown as ProductiveApi,
+        options: { 'no-hidden': true, format: 'json' },
+      });
+
+      await commentsUpdate(['1'], ctx);
+
+      expect(updateComment).toHaveBeenCalledWith('1', { hidden: false });
     });
 
     it('should exit with error when id is missing', async () => {

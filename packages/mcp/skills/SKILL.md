@@ -286,6 +286,23 @@ Response:
   "task_id": "12345",
   "body": "Looking good!"
 }
+
+// Add hidden comment (hidden from client)
+{
+  "resource": "comments",
+  "action": "create",
+  "task_id": "12345",
+  "body": "Internal note",
+  "hidden": true
+}
+
+// Toggle comment visibility
+{
+  "resource": "comments",
+  "action": "update",
+  "id": "67890",
+  "hidden": false
+}
 ```
 
 ### Timers

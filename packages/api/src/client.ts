@@ -609,6 +609,7 @@ export class ProductiveApi {
 
   async createComment(data: {
     body: string;
+    hidden?: boolean;
     task_id?: string;
     deal_id?: string;
     company_id?: string;
@@ -637,14 +638,15 @@ export class ProductiveApi {
       relationships.discussion = { data: { type: 'discussions', id: data.discussion_id } };
     }
 
+    const attributes: Record<string, string | boolean> = { body: data.body };
+    if (data.hidden !== undefined) attributes.hidden = data.hidden;
+
     return this.request<ProductiveApiResponse<ProductiveComment>>('/comments', {
       method: 'POST',
       body: {
         data: {
           type: 'comments',
-          attributes: {
-            body: data.body,
-          },
+          attributes,
           relationships,
         },
       },
@@ -655,6 +657,7 @@ export class ProductiveApi {
     id: string,
     data: {
       body?: string;
+      hidden?: boolean;
     },
   ): Promise<ProductiveApiResponse<ProductiveComment>> {
     return this.request<ProductiveApiResponse<ProductiveComment>>(`/comments/${id}`, {

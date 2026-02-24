@@ -129,9 +129,11 @@ const RESOURCE_SCHEMAS: Record<string, ResourceSchemaData> = {
     },
     create: {
       body: { required: true, type: 'string' },
+      hidden: { required: false, type: 'boolean — true to hide from client' },
       task_id: { required: false, type: 'string — one of task_id, deal_id required' },
       deal_id: { required: false, type: 'string — one of task_id, deal_id required' },
     },
+    update: ['body', 'hidden'],
     includes: ['creator'],
   },
 

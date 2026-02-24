@@ -156,6 +156,7 @@ export async function commentsAdd(ctx: CommandContext): Promise<void> {
     const result = await createComment(
       {
         body: String(ctx.options.body),
+        hidden: ctx.options.hidden === true ? true : undefined,
         taskId: ctx.options.task ? String(ctx.options.task) : undefined,
         dealId: ctx.options.deal ? String(ctx.options.deal) : undefined,
         companyId: ctx.options.company ? String(ctx.options.company) : undefined,
@@ -188,15 +189,38 @@ export async function commentsUpdate(args: string[], ctx: CommandContext): Promi
   const spinner = ctx.createSpinner('Updating comment...');
   spinner.start();
 
-  if (!ctx.options.body) {
+  const hasBody = ctx.options.body !== undefined;
+  const hasHidden = ctx.options.hidden !== undefined;
+  const hasNoHidden = ctx.options['no-hidden'] !== undefined;
+
+  if (!hasBody && !hasHidden && !hasNoHidden) {
     spinner.fail();
-    handleError(ValidationError.required('body'), ctx.formatter);
+    handleError(
+      ValidationError.invalid(
+        'options',
+        undefined,
+        'No updates specified. Provide at least one of: --body, --hidden/--no-hidden',
+      ),
+      ctx.formatter,
+    );
     return;
   }
 
+  // --hidden sets hidden=true, --no-hidden sets hidden=false
+  let hidden: boolean | undefined;
+  if (hasHidden) hidden = true;
+  if (hasNoHidden) hidden = false;
+
   await runCommand(async () => {
     const execCtx = fromCommandContext(ctx);
-    const result = await updateComment({ id, body: String(ctx.options.body) }, execCtx);
+    const result = await updateComment(
+      {
+        id,
+        body: hasBody ? String(ctx.options.body) : undefined,
+        hidden,
+      },
+      execCtx,
+    );
 
     spinner.succeed();
 

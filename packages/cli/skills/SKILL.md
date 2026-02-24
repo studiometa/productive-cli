@@ -204,6 +204,12 @@ productive api '/comments?filter[deal_id]=12345' --format json
 
 # Get a single comment
 productive comments get <id>
+
+# Add a comment hidden from client
+productive comments add --task 12345 --body "Internal note" --hidden
+
+# Make a hidden comment visible again
+productive comments update 67890 --no-hidden
 ```
 
 ### Getting Task Context (Comments, Attachments)

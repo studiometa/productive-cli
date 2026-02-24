@@ -52,6 +52,7 @@ ${colors.bold('USAGE:')}
 
 ${colors.bold('OPTIONS:')}
   --body <text>       Comment text (required)
+  --hidden            Hide comment from client
   --task <id>         Add comment to task
   --deal <id>         Add comment to deal
   --company <id>      Add comment to company
@@ -80,10 +81,14 @@ ${colors.bold('ARGUMENTS:')}
 
 ${colors.bold('OPTIONS:')}
   --body <text>       New comment text
+  --hidden            Hide comment from client
+  --no-hidden         Make comment visible to client
   -f, --format <fmt>  Output format: json, human
 
 ${colors.bold('EXAMPLES:')}
   productive comments update 12345 --body "Updated comment text"
+  productive comments update 12345 --hidden
+  productive comments update 12345 --no-hidden
 `);
   } else {
     console.log(`

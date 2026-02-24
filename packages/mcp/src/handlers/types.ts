@@ -75,6 +75,7 @@ export interface TimeArgs extends CommonArgs {
  */
 export interface CommentArgs extends CommonArgs {
   body?: string;
+  hidden?: boolean;
   deal_id?: string;
 }
 

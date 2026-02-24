@@ -10,6 +10,7 @@ export async function createComment(
 ): Promise<ExecutorResult<ProductiveComment>> {
   const response = await ctx.api.createComment({
     body: options.body,
+    hidden: options.hidden,
     task_id: options.taskId,
     deal_id: options.dealId,
     company_id: options.companyId,
