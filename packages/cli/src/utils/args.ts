@@ -15,23 +15,21 @@ export interface ParsedArgs {
 // Note: -F/-f short aliases are NOT included to avoid conflicts with --format etc.
 const REPEATABLE_OPTIONS = new Set(['field', 'raw-field', 'header', 'filter']);
 
-function setOption(
-  options: Record<string, string | boolean | string[]>,
+function resolveOptionValue(
+  existing: OptionValue | undefined,
   key: string,
   value: string,
-): void {
-  if (REPEATABLE_OPTIONS.has(key)) {
-    const existing = options[key];
-    if (Array.isArray(existing)) {
-      existing.push(value);
-    } else if (typeof existing === 'string') {
-      options[key] = [existing, value];
-    } else {
-      options[key] = [value];
-    }
-  } else {
-    options[key] = value;
+): OptionValue {
+  if (!REPEATABLE_OPTIONS.has(key)) {
+    return value;
   }
+  if (Array.isArray(existing)) {
+    return [...existing, value];
+  }
+  if (typeof existing === 'string') {
+    return [existing, value];
+  }
+  return [value];
 }
 
 export function parseArgs(argv: string[] = process.argv.slice(2)): ParsedArgs {
@@ -48,13 +46,13 @@ export function parseArgs(argv: string[] = process.argv.slice(2)): ParsedArgs {
       if (equalIndex > -1) {
         const key = arg.slice(2, equalIndex);
         const value = arg.slice(equalIndex + 1);
-        setOption(options, key, value);
+        options[key] = resolveOptionValue(options[key], key, value);
       } else {
         const key = arg.slice(2);
         const nextArg = argv[i + 1];
 
         if (nextArg && !nextArg.startsWith('-')) {
-          setOption(options, key, nextArg);
+          options[key] = resolveOptionValue(options[key], key, nextArg);
           i++;
         } else {
           options[key] = true;
@@ -67,7 +65,7 @@ export function parseArgs(argv: string[] = process.argv.slice(2)): ParsedArgs {
         const nextArg = argv[i + 1];
 
         if (nextArg && !nextArg.startsWith('-')) {
-          setOption(options, key, nextArg);
+          options[key] = resolveOptionValue(options[key], key, nextArg);
           i++;
         } else {
           options[key] = true;
