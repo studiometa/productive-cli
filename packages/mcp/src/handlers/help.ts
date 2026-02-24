@@ -413,6 +413,7 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     fields: {
       id: 'Unique comment identifier',
       body: 'Comment text (may contain HTML)',
+      hidden: 'Boolean — true if hidden from client (default: false)',
       creator: 'Person who created the comment',
     },
     examples: [
@@ -423,6 +424,16 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
       {
         description: 'Add a comment',
         params: { resource: 'comments', action: 'create', task_id: '12345', body: 'Looking good!' },
+      },
+      {
+        description: 'Add a hidden comment (hidden from client)',
+        params: {
+          resource: 'comments',
+          action: 'create',
+          task_id: '12345',
+          body: 'Internal note',
+          hidden: true,
+        },
       },
     ],
   },

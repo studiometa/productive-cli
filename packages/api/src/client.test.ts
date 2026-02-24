@@ -546,12 +546,46 @@ describe('ProductiveApi requests', () => {
       expect(body.data.relationships.discussion.data.id).toBe('5');
     });
 
+    it('createComment with hidden: true', async () => {
+      const api = createApi();
+      mockFetchResponse({ data: { id: '1' } });
+      await api.createComment({ body: 'Secret', task_id: '10', hidden: true });
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]!.body as string);
+      expect(body.data.attributes.body).toBe('Secret');
+      expect(body.data.attributes.hidden).toBe(true);
+    });
+
+    it('createComment without hidden omits hidden attribute', async () => {
+      const api = createApi();
+      mockFetchResponse({ data: { id: '1' } });
+      await api.createComment({ body: 'Public', task_id: '10' });
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]!.body as string);
+      expect(body.data.attributes.body).toBe('Public');
+      expect(body.data.attributes).not.toHaveProperty('hidden');
+    });
+
     it('updateComment', async () => {
       const api = createApi();
       mockFetchResponse({ data: { id: '1' } });
       await api.updateComment('1', { body: 'Updated' });
       const body = JSON.parse(fetchSpy.mock.calls[0][1]!.body as string);
       expect(body.data.attributes.body).toBe('Updated');
+    });
+
+    it('updateComment with hidden: true', async () => {
+      const api = createApi();
+      mockFetchResponse({ data: { id: '1' } });
+      await api.updateComment('1', { hidden: true });
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]!.body as string);
+      expect(body.data.attributes.hidden).toBe(true);
+    });
+
+    it('updateComment with hidden: false', async () => {
+      const api = createApi();
+      mockFetchResponse({ data: { id: '1' } });
+      await api.updateComment('1', { hidden: false });
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]!.body as string);
+      expect(body.data.attributes.hidden).toBe(false);
     });
   });
 

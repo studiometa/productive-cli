@@ -1353,7 +1353,7 @@ describe('handlers', () => {
         expect(result.content[0].text).toContain('id is required for update');
       });
 
-      it('should return error for update without body', async () => {
+      it('should return error for update without body or hidden', async () => {
         const result = await executeToolWithCredentials(
           'productive',
           { resource: 'comments', action: 'update', id: '123' },
@@ -1363,6 +1363,7 @@ describe('handlers', () => {
         expect(result.isError).toBe(true);
         expect(result.content[0].text).toContain('No updates specified');
         expect(result.content[0].text).toContain('body');
+        expect(result.content[0].text).toContain('hidden');
       });
 
       it('should handle update action', async () => {
@@ -1379,6 +1380,50 @@ describe('handlers', () => {
 
         expect(result.isError).toBeUndefined();
         expect(mockApi.updateComment).toHaveBeenCalledWith('123', { body: 'Updated comment' });
+      });
+
+      it('should create hidden comment', async () => {
+        const mockResponse = {
+          data: {
+            id: '789',
+            type: 'comments',
+            attributes: { body: 'Secret', hidden: true },
+          },
+        };
+        mockApi.createComment.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          {
+            resource: 'comments',
+            action: 'create',
+            body: 'Secret',
+            hidden: true,
+            task_id: '123',
+          },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        expect(mockApi.createComment).toHaveBeenCalledWith(
+          expect.objectContaining({ body: 'Secret', hidden: true }),
+        );
+      });
+
+      it('should update comment hidden flag', async () => {
+        const mockResponse = {
+          data: { id: '123', type: 'comments', attributes: { hidden: true } },
+        };
+        mockApi.updateComment.mockResolvedValue(mockResponse);
+
+        const result = await executeToolWithCredentials(
+          'productive',
+          { resource: 'comments', action: 'update', id: '123', hidden: true },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        expect(mockApi.updateComment).toHaveBeenCalledWith('123', { hidden: true });
       });
 
       it('should return error for invalid action', async () => {

@@ -101,6 +101,10 @@ export const TOOLS: Tool[] = [
         parent_page_id: { type: 'string', description: 'Parent page ID for sub-pages' },
         // Comment fields
         body: { type: 'string', description: 'Comment/page body content' },
+        hidden: {
+          type: 'boolean',
+          description: 'Set to true to hide comment from client (comments only)',
+        },
         deal_id: { type: 'string' },
         // Attachment fields
         comment_id: { type: 'string', description: 'Comment ID (for attachments)' },

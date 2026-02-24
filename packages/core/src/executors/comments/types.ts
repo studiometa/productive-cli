@@ -15,6 +15,7 @@ export interface GetCommentOptions {
 
 export interface CreateCommentOptions {
   body: string;
+  hidden?: boolean;
   taskId?: string;
   dealId?: string;
   companyId?: string;
@@ -26,4 +27,5 @@ export interface CreateCommentOptions {
 export interface UpdateCommentOptions {
   id: string;
   body?: string;
+  hidden?: boolean;
 }

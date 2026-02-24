@@ -47,14 +47,15 @@ export const handleComments = createResourceHandler<CommentArgs>({
     },
     mapOptions: (args) => ({
       body: args.body,
+      hidden: args.hidden,
       taskId: args.task_id,
       dealId: args.deal_id,
       companyId: args.company_id,
     }),
   },
   update: {
-    allowedFields: ['body'],
-    mapOptions: (args) => ({ body: args.body }),
+    allowedFields: ['body', 'hidden'],
+    mapOptions: (args) => ({ body: args.body, hidden: args.hidden }),
   },
   executors: {
     list: listComments,
