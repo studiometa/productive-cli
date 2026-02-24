@@ -17,3 +17,25 @@ export {
   wrapError,
   isProductiveError,
 } from './errors.js';
+
+// Re-export status/type constants from productive-api
+export { createStatusMap } from '@studiometa/productive-api';
+export type { StatusMap } from '@studiometa/productive-api';
+export {
+  TASK_STATUS,
+  TASK_OVERDUE_STATUS,
+  PROJECT_STATUS,
+  PROJECT_TYPE,
+  DEAL_STATUS,
+  DEAL_TYPE,
+  DEAL_BUDGET_STATUS,
+  TIME_STATUS,
+  TIME_BILLING_TYPE,
+  TIME_INVOICING_STATUS,
+  PERSON_STATUS,
+  PERSON_TYPE,
+  COMPANY_STATUS,
+  DISCUSSION_STATUS,
+  SERVICE_BUDGET_STATUS,
+  SERVICE_BILLING_TYPE,
+} from '@studiometa/productive-api';

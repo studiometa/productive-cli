@@ -5,8 +5,9 @@ import type { ProductiveCredentials } from './auth.js';
 import { UserInputError } from './errors.js';
 import { executeToolWithCredentials } from './handlers.js';
 
-// Mock the ProductiveApi
-vi.mock('@studiometa/productive-api', () => {
+// Mock the ProductiveApi (re-export real constants so core executors work)
+vi.mock('@studiometa/productive-api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@studiometa/productive-api')>();
   const mockApi = {
     getProjects: vi.fn(),
     getProject: vi.fn(),
@@ -83,6 +84,24 @@ vi.mock('@studiometa/productive-api', () => {
       data: data.map((item: Record<string, unknown>) => formatter(item)),
       meta,
     })),
+    // Re-export real constants so core executors work correctly
+    createStatusMap: actual.createStatusMap,
+    TASK_STATUS: actual.TASK_STATUS,
+    TASK_OVERDUE_STATUS: actual.TASK_OVERDUE_STATUS,
+    PROJECT_STATUS: actual.PROJECT_STATUS,
+    PROJECT_TYPE: actual.PROJECT_TYPE,
+    DEAL_STATUS: actual.DEAL_STATUS,
+    DEAL_TYPE: actual.DEAL_TYPE,
+    DEAL_BUDGET_STATUS: actual.DEAL_BUDGET_STATUS,
+    TIME_STATUS: actual.TIME_STATUS,
+    TIME_BILLING_TYPE: actual.TIME_BILLING_TYPE,
+    TIME_INVOICING_STATUS: actual.TIME_INVOICING_STATUS,
+    PERSON_STATUS: actual.PERSON_STATUS,
+    PERSON_TYPE: actual.PERSON_TYPE,
+    COMPANY_STATUS: actual.COMPANY_STATUS,
+    DISCUSSION_STATUS: actual.DISCUSSION_STATUS,
+    SERVICE_BUDGET_STATUS: actual.SERVICE_BUDGET_STATUS,
+    SERVICE_BILLING_TYPE: actual.SERVICE_BILLING_TYPE,
   };
 });
 
