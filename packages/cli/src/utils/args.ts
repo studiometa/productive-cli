@@ -26,9 +26,6 @@ function resolveOptionValue(
   if (Array.isArray(existing)) {
     return [...existing, value];
   }
-  if (typeof existing === 'string') {
-    return [existing, value];
-  }
   return [value];
 }
 
