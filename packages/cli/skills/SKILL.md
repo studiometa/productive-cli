@@ -301,22 +301,11 @@ productive api '/tasks?sort=-created_at' --filter project_id=123 --include proje
 
 `--filter` and `--include` only work with GET requests (the default).
 
-#### Request Body (POST/PATCH)
+#### Request Body (POST/PATCH/DELETE)
 
 Use `--field` or `--raw-field` for request body parameters:
 
 ```bash
-# Create a comment (POST body)
-productive api /comments \
-  --field task_id=12345 \
-  --raw-field body="My comment"
-```
-
-```bash
-# GET with filters (recommended)
-productive api /tasks --filter project_id=12345 --filter status=1 --include project
-productive api /comments --filter task_id=12345
-
 # POST (auto-detected when --field is used)
 productive api /comments \
   --field task_id=12345 \
@@ -331,7 +320,7 @@ productive api /tasks/12345 \
 productive api /time_entries/12345 --method DELETE
 
 # Fetch all pages
-productive api /time_entries --paginate
+productive api /time_entries --paginate --filter person_id=12345
 ```
 
 ### Cache

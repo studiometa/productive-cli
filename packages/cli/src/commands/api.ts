@@ -239,7 +239,7 @@ ${colors.bold('EXAMPLES:')}
 ${colors.bold('RESPONSE FORMAT:')}
   By default, outputs raw JSON from the API.
   Use --format human for human-readable output.
-  Use --include to show response headers.
+  Use --include (without value) to show response headers.
 
 ${colors.bold('AUTHENTICATION:')}
   Authentication is handled automatically using configured credentials.
@@ -330,6 +330,11 @@ export async function handleApiCommand(
       // If we have fields with --input, they become query parameters
       if (Object.keys(allFields).length > 0) {
         queryParams = Object.fromEntries(Object.entries(allFields).map(([k, v]) => [k, String(v)]));
+      }
+      // Merge --filter and --include into query params (GET + --input)
+      Object.assign(queryParams, filterParams);
+      if (includeParam !== undefined) {
+        queryParams.include = includeParam;
       }
     } else if (method === 'GET') {
       // For GET, fields become query parameters

@@ -136,6 +136,12 @@ describe('getOption', () => {
     const result = getOption(options, ['help']);
     expect(result).toBeUndefined();
   });
+
+  it('should return undefined for array values', () => {
+    const options = { filter: ['a=1', 'b=2'] };
+    const result = getOption(options, ['filter']);
+    expect(result).toBeUndefined();
+  });
 });
 
 describe('hasFlag', () => {

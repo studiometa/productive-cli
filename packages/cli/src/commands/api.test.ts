@@ -549,6 +549,60 @@ describe('api command', () => {
       const url = mockFetch.mock.calls[0][0];
       expect(url).toContain('filter%5Bcustom_field%5D=a%3Db');
     });
+
+    it('should throw error for --filter with POST', async () => {
+      await expect(
+        handleApiCommand(['/tasks'], { method: 'POST', filter: ['project_id=123'] }),
+      ).rejects.toThrow('process.exit(3)');
+    });
+
+    it('should include filters when paginating', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '1' }],
+            links: { next: 'https://api.productive.io/api/v2/tasks?page=2' },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '2' }],
+            links: {},
+          }),
+        });
+
+      await handleApiCommand(['/tasks'], {
+        paginate: true,
+        filter: ['project_id=123'],
+      });
+
+      // First request should include filter
+      const firstUrl = mockFetch.mock.calls[0][0];
+      expect(firstUrl).toContain('filter%5Bproject_id%5D=123');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('should merge filters with --input on GET', async () => {
+      vol.fromJSON({
+        '/tmp/body.json': JSON.stringify({ data: {} }),
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: {} }),
+      });
+
+      await handleApiCommand(['/tasks'], {
+        method: 'GET',
+        input: '/tmp/body.json',
+        filter: ['project_id=123'],
+      });
+
+      const url = mockFetch.mock.calls[0][0];
+      expect(url).toContain('filter%5Bproject_id%5D=123');
+    });
   });
 
   describe('--include flag', () => {
@@ -634,6 +688,59 @@ describe('api command', () => {
 
       const url = mockFetch.mock.calls[0][0];
       expect(url).toContain('sort=-due_date');
+      expect(url).toContain('include=project');
+    });
+
+    it('should throw error for --include with PATCH', async () => {
+      await expect(
+        handleApiCommand(['/tasks/1'], { method: 'PATCH', include: 'project' }),
+      ).rejects.toThrow('process.exit(3)');
+    });
+
+    it('should include include param when paginating', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '1' }],
+            links: { next: 'https://api.productive.io/api/v2/tasks?page=2' },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '2' }],
+            links: {},
+          }),
+        });
+
+      await handleApiCommand(['/tasks'], {
+        paginate: true,
+        include: 'project,assignee',
+      });
+
+      const firstUrl = mockFetch.mock.calls[0][0];
+      expect(firstUrl).toContain('include=project%2Cassignee');
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+    });
+
+    it('should merge include with --input on GET', async () => {
+      vol.fromJSON({
+        '/tmp/body.json': JSON.stringify({ data: {} }),
+      });
+
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ data: {} }),
+      });
+
+      await handleApiCommand(['/tasks'], {
+        method: 'GET',
+        input: '/tmp/body.json',
+        include: 'project',
+      });
+
+      const url = mockFetch.mock.calls[0][0];
       expect(url).toContain('include=project');
     });
   });
