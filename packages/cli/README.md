@@ -148,7 +148,7 @@ Key features:
 The CLI can also be used as a Node.js library:
 
 ```typescript
-import { ProductiveApi, getConfig, setConfig } from '@studiometa/productive-cli';
+import { ProductiveApi, setConfig } from '@studiometa/productive-api';
 
 setConfig('apiToken', 'your-token');
 setConfig('organizationId', 'your-org-id');
