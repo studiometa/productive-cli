@@ -368,10 +368,14 @@ export async function handleApiCommand(
     while (hasMore) {
       const url = new URL(currentUrl);
 
-      // Add query parameters
-      Object.entries(queryParams).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
-      });
+      // Add query parameters only on the first page.
+      // Subsequent pages use the server-provided nextLink which already
+      // contains the original filters, includes, and pagination params.
+      if (pageCount === 0) {
+        Object.entries(queryParams).forEach(([key, value]) => {
+          url.searchParams.append(key, value);
+        });
+      }
 
       // Custom headers
       const headers: Record<string, string> = {

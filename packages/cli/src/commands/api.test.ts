@@ -874,6 +874,73 @@ describe('api command', () => {
         handleApiCommand(['/projects'], { method: 'POST', paginate: true }),
       ).rejects.toThrow();
     });
+
+    it('should not duplicate query params on subsequent pages', async () => {
+      const nextUrl =
+        'https://api.productive.io/api/v2/tasks?filter%5Bproject_id%5D=123&page%5Bnumber%5D=2';
+
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '1' }],
+            links: { next: nextUrl },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '2' }],
+            links: {},
+          }),
+        });
+
+      await handleApiCommand(['/tasks'], {
+        paginate: true,
+        filter: ['project_id=123'],
+      });
+
+      // Page 1: query params appended
+      const page1Url = mockFetch.mock.calls[0][0];
+      expect(page1Url).toContain('filter%5Bproject_id%5D=123');
+
+      // Page 2: uses nextLink as-is, no duplicate params
+      const page2Url = mockFetch.mock.calls[1][0];
+      const occurrences = page2Url.split('filter%5Bproject_id%5D=123').length - 1;
+      expect(occurrences).toBe(1);
+    });
+
+    it('should not duplicate query params from --field on subsequent pages', async () => {
+      const nextUrl =
+        'https://api.productive.io/api/v2/tasks?filter%5Barchived%5D=false&page%5Bnumber%5D=2';
+
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '1' }],
+            links: { next: nextUrl },
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: '2' }],
+            links: {},
+          }),
+        });
+
+      await handleApiCommand(['/tasks'], {
+        method: 'GET',
+        paginate: true,
+        field: ['filter[archived]=false'],
+      });
+
+      // Page 2: should not duplicate the field param
+      const page2Url = mockFetch.mock.calls[1][0];
+      const occurrences = page2Url.split('filter%5Barchived%5D=false').length - 1;
+      expect(occurrences).toBe(1);
+    });
   });
 
   describe('authentication', () => {
