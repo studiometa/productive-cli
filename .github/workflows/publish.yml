@@ -86,6 +86,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Publish @studiometa/productive-sdk
+        run: npm publish --provenance --access public --tag ${{ env.NPM_TAG }}
+        working-directory: packages/sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Publish @studiometa/productive-cli
         run: npm publish --provenance --access public --tag ${{ env.NPM_TAG }}
         working-directory: packages/cli
