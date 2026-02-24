@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.6] - 2026-02-24
+
 ### Added
 
 - **API**: Add `createStatusMap()` factory and 16 typed bidirectional lookup constants (`TASK_STATUS`, `PROJECT_STATUS`, `DEAL_STATUS`, `DEAL_TYPE`, `SERVICE_STATUS`, `PERSON_STATUS`, `DISCUSSION_STATUS`, `TIME_ENTRY_TYPE`, etc.) — forward lookup + `fromValue()` reverse lookup with TypeScript literal types ([e95085d], [#136])
@@ -19,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Core**: Replace all magic string `STATUS_MAP` objects and hardcoded `'1'`/`'2'`/`'3'` values across 14 executor files with typed constants from `productive-api` ([3e3ba73], [#136])
 
+[0.10.6]: https://github.com/studiometa/productive-tools/compare/0.10.5...0.10.6
 [e95085d]: https://github.com/studiometa/productive-tools/commit/e95085d
 [3e3ba73]: https://github.com/studiometa/productive-tools/commit/3e3ba73
 [ecd49af]: https://github.com/studiometa/productive-tools/commit/ecd49af
