@@ -175,6 +175,42 @@ productive people list
 productive people get <id>
 ```
 
+### Discovering Filters with `help`
+
+Each resource supports a `help` subcommand that shows all available filters, fields, and examples:
+
+```bash
+# Show all filters for a resource
+productive tasks help
+productive projects help
+productive time help
+productive deals help
+productive bookings help
+```
+
+### Text Search with `--filter query=<text>`
+
+Many resources support a `query` filter for text search. Use `--filter query=<text>` to search by name/title:
+
+```bash
+# Search projects by name
+productive projects list --filter query="website redesign"
+
+# Search tasks by title
+productive tasks list --filter query="bug fix"
+
+# Search people by name or email
+productive people list --filter query="john"
+
+# Search companies by name
+productive companies list --filter query="acme"
+
+# Search deals by name
+productive deals list --filter query="redesign"
+```
+
+Resources that support `query`: **projects**, **tasks**, **people**, **companies**, **deals**
+
 ### Services (Budget Line Items)
 
 ```bash
