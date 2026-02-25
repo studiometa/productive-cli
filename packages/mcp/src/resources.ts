@@ -21,6 +21,8 @@
  *   productive://summaries/team_pulse     — team activity
  */
 
+import type { ReadResourceResult as McpReadResourceResult } from '@modelcontextprotocol/sdk/types.js';
+
 import { ProductiveApi } from '@studiometa/productive-api';
 import { fromHandlerContext } from '@studiometa/productive-core';
 
@@ -49,11 +51,9 @@ export interface ResourceContent {
 }
 
 /**
- * Shape of a resources/read response
+ * Shape of a resources/read response (re-export of SDK type for consumers)
  */
-export interface ReadResourceResult {
-  contents: ResourceContent[];
-}
+export type ReadResourceResult = McpReadResourceResult;
 
 /**
  * Shape of a static resource descriptor (resources/list)
