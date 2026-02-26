@@ -1,5 +1,23 @@
 #!/bin/sh
 
+# --- Reject tags with v prefix ---
+# Read pushed refs from stdin (format: <local ref> <local sha> <remote ref> <remote sha>)
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if echo "$local_ref" | grep -qE "^refs/tags/v"; then
+    tag_name=$(echo "$local_ref" | sed 's|refs/tags/||')
+    echo "❌ Tag rejected: \"$tag_name\" uses a v prefix."
+    echo ""
+    echo "   This project uses bare semver tags (e.g., 0.10.0, not v0.10.0)."
+    echo "   Delete the tag and recreate it without the v prefix:"
+    echo ""
+    echo "   git tag -d $tag_name"
+    echo "   git tag ${tag_name#v}"
+    echo ""
+    exit 1
+  fi
+done
+
+# --- Build and test ---
 echo "🔨 Building (includes type checking)..."
 npm run build || exit 1
 

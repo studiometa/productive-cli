@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sh scripts/check-commit-msg.sh "$1"
