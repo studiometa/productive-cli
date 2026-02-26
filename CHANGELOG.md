@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **MCP**: Add pre-validation guard pipeline that catches common agent mistakes (e.g. `params` instead of `filter`) before Zod strips unknown fields ([7ce0503], [#144], [#141])
+- **MCP**: Expose resources via MCP `resources/` capability — static resources (schema, instructions), resource templates (projects, tasks, people, deals by ID), nested lists (project tasks/services), and dynamic summaries (my_day, team_pulse) ([bf3fd60], [#145], [#138])
+- **SDK**: Add 8 remaining resource collections — services, comments, timers, discussions, bookings, pages, attachments, activities ([79e8bc4], [#146], [#137])
+
+### Changed
+
+- **MCP**: Audit all resource help docs and schema against Productive API docs — add missing `query` filter and 60+ other filters across 14 resources, update SKILL.md files ([0367274], [#147], [#143])
+
+### Fixed
+
+- **API**: Remove config migration script that could delete `~/.config/productive-cli/config.json` when a subprocess ran without `XDG_CONFIG_HOME` ([551f8be], [#150], [#149])
+- **MCP**: Fix 3 lint warnings — duplicate import in activity renderer, function scoping in test files ([bf3fd60], [#145])
+
+### Testing
+
+- Improve test coverage for under-tested files — cache.ts, http.ts, config.ts, CLI command handlers, MCP handler branches ([af17210], [#148], [#139])
+
+[7ce0503]: https://github.com/studiometa/productive-tools/commit/7ce0503
+[0367274]: https://github.com/studiometa/productive-tools/commit/0367274
+[79e8bc4]: https://github.com/studiometa/productive-tools/commit/79e8bc4
+[af17210]: https://github.com/studiometa/productive-tools/commit/af17210
+[bf3fd60]: https://github.com/studiometa/productive-tools/commit/bf3fd60
+[551f8be]: https://github.com/studiometa/productive-tools/commit/551f8be
+[#137]: https://github.com/studiometa/productive-tools/issues/137
+[#138]: https://github.com/studiometa/productive-tools/issues/138
+[#139]: https://github.com/studiometa/productive-tools/issues/139
+[#141]: https://github.com/studiometa/productive-tools/issues/141
+[#143]: https://github.com/studiometa/productive-tools/issues/143
+[#144]: https://github.com/studiometa/productive-tools/pull/144
+[#145]: https://github.com/studiometa/productive-tools/pull/145
+[#146]: https://github.com/studiometa/productive-tools/pull/146
+[#147]: https://github.com/studiometa/productive-tools/pull/147
+[#148]: https://github.com/studiometa/productive-tools/pull/148
+[#149]: https://github.com/studiometa/productive-tools/issues/149
+[#150]: https://github.com/studiometa/productive-tools/pull/150
+
 ## [0.10.6] - 2026-02-24
 
 ### Added
