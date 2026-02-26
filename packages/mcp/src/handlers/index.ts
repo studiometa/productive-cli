@@ -25,6 +25,7 @@ import { handleDiscussions } from './discussions.js';
 import { handleHelp, handleHelpOverview } from './help.js';
 import { handlePages } from './pages.js';
 import { handlePeople } from './people.js';
+import { runPreValidationGuards } from './pre-validation-guards.js';
 // Resource handlers
 import { handleProjects } from './projects.js';
 import { handleReports } from './reports.js';
@@ -172,27 +173,6 @@ async function routeToHandler(
     case 'workflows':
       return await handleWorkflows(action, restArgs, ctx);
 
-    case 'budgets':
-      return inputErrorResult(
-        new UserInputError(
-          'The "budgets" resource has been removed. Budgets are deals with type=2.',
-          [
-            'Use resource="deals" with filter[type]="2" to list only budgets',
-            'To create a budget: resource="deals" action="create" with budget=true',
-            'Use action="help" resource="deals" for full documentation',
-          ],
-        ),
-      );
-
-    case 'docs':
-      return inputErrorResult(
-        new UserInputError('Unknown resource "docs". Did you mean "pages"?', [
-          'Use resource="pages" to access Productive pages/documents',
-          'Use action="list" to list all pages',
-          'Use action="help" resource="pages" for full documentation',
-        ]),
-      );
-
     default:
       return inputErrorResult(ErrorMessages.unknownResource(resource, VALID_RESOURCES));
   }
@@ -218,15 +198,11 @@ export async function executeToolWithCredentials(
     return handleBatch(typedArgs.operations, credentials, executeToolWithCredentials);
   }
 
-  // Detect common mistake: passing "params" instead of "filter"
-  if ((args as Record<string, unknown>).params !== undefined) {
-    return inputErrorResult(
-      new UserInputError('Unknown field "params". Use "filter" instead.', [
-        'Example: { "filter": { "assignee_id": "me" } }',
-        'The MCP tool uses "filter" for query parameters, not "params"',
-      ]),
-    );
-  }
+  // Run pre-validation guards against raw args BEFORE Zod parsing.
+  // This catches common agent mistakes that Zod's .strip() would silently swallow
+  // (e.g. passing "params" instead of "filter").
+  const guardResult = runPreValidationGuards(args);
+  if (guardResult) return guardResult;
 
   const {
     resource,
@@ -317,37 +293,6 @@ export async function executeToolWithCredentials(
   };
 
   try {
-    // Intercept common wrong action patterns and return helpful guidance
-
-    // action="search" on a specific resource — agents should use action="list" with query, or resource="search"
-    if (action === 'search' && resource !== 'search') {
-      return inputErrorResult(
-        new UserInputError(
-          `action="search" is not supported on resource="${resource}". Use action="list" with a query parameter for text filtering, or use resource="search" for cross-resource search.`,
-          [
-            `Use resource="${resource}" action="list" with query="<your search terms>" to filter ${resource}`,
-            'Use resource="search" action="run" with query="<your search terms>" to search across all resources',
-            `Use action="help" resource="${resource}" to see all supported actions and filters`,
-          ],
-        ),
-      );
-    }
-
-    // action starts with "get_" — agents using snake_case function-style naming
-    if (action.startsWith('get_')) {
-      const suggestedResource = action.replace(/^get_/, '').replace(/_/g, ' ');
-      return inputErrorResult(
-        new UserInputError(
-          `action="${action}" is not valid. Actions use simple verbs like "list", "get", "create", not function-style names.`,
-          [
-            `To retrieve a single item, use action="get" with an id parameter`,
-            `To retrieve multiple items, use action="list" (e.g. resource="${resource || suggestedResource}" action="list")`,
-            `Use action="help" resource="${resource || 'tasks'}" to see all supported actions for a resource`,
-          ],
-        ),
-      );
-    }
-
     // Handle help action first (doesn't need API)
     // Exception: summaries has its own help handler
     if (action === 'help' && resource !== 'summaries') {

@@ -1995,12 +1995,12 @@ describe('help handler', () => {
       credentials,
     );
 
-    // Help handler returns unknown resource error since budgets was removed
-    expect(result.isError).toBeUndefined();
-    const content = JSON.parse(result.content[0].text as string);
-    expect(content.error).toContain('Unknown resource');
-    expect(content.available_resources).toBeDefined();
-    expect(content.available_resources).not.toContain('budgets');
+    // Pre-validation guard now catches resource="budgets" before routing,
+    // returning a targeted error that redirects to deals with type filter.
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('"budgets"');
+    expect(result.content[0].text).toContain('deals');
+    expect(result.content[0].text).toContain('filter[type]');
   });
 
   it('should return error for unknown resource in help', async () => {
