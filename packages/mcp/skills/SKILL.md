@@ -472,89 +472,166 @@ Compound workflows that chain multiple operations into a single tool call.
 
 ## Filters Reference
 
+> **Tip:** Use `action: "help"` on any resource to see the full, up-to-date list of filters, fields, and examples. Use `action: "schema"` for a compact machine-readable spec.
+>
+> ```json
+> { "resource": "tasks", "action": "help" }
+> { "resource": "tasks", "action": "schema" }
+> ```
+
+### Text Search with `query`
+
+Many resources support a `query` filter for full-text search. You can pass it either as a top-level shorthand or via the `filter` object (passthrough pattern):
+
+```json
+// Shorthand (top-level)
+{ "resource": "projects", "action": "list", "query": "website" }
+
+// Filter passthrough (explicit)
+{ "resource": "projects", "action": "list", "filter": { "query": "website" } }
+```
+
+Resources that support `query`: **projects**, **tasks**, **people**, **companies**, **deals**
+
 ### Time Entries
 
-- `person_id` - Filter by person (use "me" for current user)
-- `project_id` - Filter by project
-- `service_id` - Filter by service
-- `task_id` - Filter by task
-- `company_id` - Filter by company
-- `deal_id` / `budget_id` - Filter by deal/budget
-- `after` - After date (YYYY-MM-DD)
-- `before` - Before date (YYYY-MM-DD)
+- `person_id` - Filter by person (use "me" for current user) (array)
+- `project_id` - Filter by project (array)
+- `service_id` - Filter by service (array)
+- `task_id` - Filter by task (array)
+- `company_id` - Filter by company (array)
+- `deal_id` / `budget_id` - Filter by deal/budget (array)
+- `after` / `before` - Date range (YYYY-MM-DD)
+- `date` - Exact date (YYYY-MM-DD)
 - `status` - Approval status: `1`=approved, `2`=unapproved, `3`=rejected
 - `billing_type_id` - Billing type: `1`=fixed, `2`=actuals, `3`=non_billable
 - `invoicing_status` - Invoicing: `1`=not_invoiced, `2`=drafted, `3`=finalized
+- `invoiced` - Invoiced status (boolean)
+- `creator_id` / `approver_id` - Filter by creator or approver (array)
+- `booking_id` - Filter by booking (array)
+- `autotracked` - Auto-tracked entries (boolean)
 
 ### Tasks
 
-- `project_id` - Filter by project
-- `company_id` - Filter by company
-- `assignee_id` - Filter by assigned person
-- `creator_id` - Filter by task creator
+- `query` - Text search on task title
+- `project_id` - Filter by project (array)
+- `company_id` - Filter by company (array)
+- `assignee_id` - Filter by assigned person (array)
+- `creator_id` - Filter by task creator (array)
 - `status` - Status: `1`=open, `2`=closed (or "open", "closed", "all")
-- `task_list_id` - Filter by task list
-- `board_id` - Filter by board
-- `workflow_status_id` - Filter by workflow status (kanban column)
-- `parent_task_id` - Filter by parent task (for subtasks)
+- `task_list_id` - Filter by task list (array)
+- `task_list_status` - Task list status: `1`=open, `2`=closed
+- `board_id` - Filter by board (array)
+- `workflow_status_id` - Filter by workflow status/kanban column (array)
+- `workflow_status_category_id` - Workflow category: `1`=not started, `2`=started, `3`=closed
+- `workflow_id` - Filter by workflow (array)
+- `parent_task_id` - Filter by parent task (for subtasks) (array)
+- `task_type` - Task type: `1`=parent task, `2`=subtask
 - `overdue_status` - Overdue: `1`=not overdue, `2`=overdue
 - `due_date_on` / `due_date_before` / `due_date_after` - Due date filters
+- `start_date_before` / `start_date_after` - Start date filters
+- `after` / `before` - Created date range
+- `closed_after` / `closed_before` - Closed date range
+- `project_manager_id` - Filter by project manager (array)
+- `subscriber_id` - Filter by subscriber/watcher (array)
+- `tags` - Filter by tags
 
 ### Projects
 
-- `company_id` - Filter by company
+- `query` - Text search on project name
+- `company_id` - Filter by company (array)
 - `project_type` - Type: `1`=internal, `2`=client
-- `responsible_id` - Filter by project manager
-- `person_id` - Filter by team member
+- `responsible_id` - Filter by project manager (array)
+- `person_id` - Filter by team member (array)
 - `status` - Status: `1`=active, `2`=archived
 
 ### Services
 
-- `project_id` - Filter by project
-- `deal_id` - Filter by deal
-- `task_id` - Filter by task
-- `person_id` - Filter by person (trackable by)
+- `project_id` - Filter by project (array)
+- `deal_id` - Filter by deal (array)
+- `task_id` - Filter by task (array)
+- `person_id` - Filter by person/trackable by (array)
+- `name` - Filter by service name (text match)
 - `budget_status` - Status: `1`=open, `2`=delivered
+- `stage_status_id` - Stage: `1`=open, `2`=won, `3`=lost, `4`=delivered (array)
 - `billing_type` - Type: `1`=fixed, `2`=actuals, `3`=none
-- `time_tracking_enabled` - Boolean
+- `unit` - Unit: `1`=hour, `2`=piece, `3`=day
+- `time_tracking_enabled` / `expense_tracking_enabled` - Boolean
+- `trackable_by_person_id` - Services trackable by a specific person
+- `after` / `before` - Date range
 
 ### People
 
+- `query` - Text search on name or email
+- `email` - Filter by exact email address
 - `status` - Status: `1`=active, `2`=deactivated
 - `person_type` - Type: `1`=user, `2`=contact, `3`=placeholder
-- `company_id` - Filter by company
+- `company_id` - Filter by company (array)
 - `project_id` - Filter by project
-- `role_id` - Filter by role
+- `role_id` - Filter by role (array)
 - `team` - Filter by team name
+- `manager_id` - Filter by manager
+- `custom_role_id` - Filter by custom role
+- `tags` - Filter by tags
+
+### Companies
+
+- `query` - Text search on company name
+- `name` - Exact name match
+- `company_code` / `billing_name` / `vat` - Filter by specific fields
+- `status` - Status (integer)
+- `archived` - Archived status (boolean)
+- `project_id` - Filter by project (array)
+- `subsidiary_id` - Filter by subsidiary (array)
+- `default_currency` - Filter by currency code (e.g. USD, EUR)
 
 ### Deals
 
-- `company_id` - Filter by company
-- `project_id` - Filter by project
-- `responsible_id` - Filter by responsible person
-- `pipeline_id` - Filter by pipeline
-- `stage_status_id` - Stage: `1`=open, `2`=won, `3`=lost
+- `query` - Text search on deal name
+- `number` - Filter by deal number
+- `company_id` - Filter by company (array)
+- `project_id` - Filter by project (array)
+- `responsible_id` - Filter by responsible person (array)
+- `creator_id` - Filter by creator (array)
+- `pipeline_id` - Filter by pipeline (array)
+- `stage_status_id` - Stage: `1`=open, `2`=won, `3`=lost (array)
+- `status_id` - Filter by deal status (array)
 - `type` - Type: `1`=deal, `2`=budget
+- `deal_type_id` - Deal type: `1`=internal, `2`=client
 - `budget_status` - Budget status: `1`=open, `2`=closed
+- `project_type` - Project type: `1`=internal, `2`=client
+- `subsidiary_id` - Filter by subsidiary (array)
+- `tags` - Filter by tags
+- `recurring` - Recurring deals (boolean)
+- `needs_invoicing` / `time_approval` - Boolean filters
 
 > **Note:** Budgets are deals with `budget=true`. There is no separate `/budgets` endpoint. Use `filter[type]=2` to list only budgets.
 
 ### Bookings
 
-- `person_id` - Filter by person
+- `person_id` - Filter by person (array)
 - `service_id` - Filter by service
-- `project_id` - Filter by project
-- `company_id` - Filter by company
-- `event_id` - Filter by event
-- `after` / `before` - Date range
+- `project_id` - Filter by project (array)
+- `company_id` - Filter by company (array)
+- `event_id` - Filter by event/absence (array)
+- `task_id` - Filter by task (array)
+- `approver_id` - Filter by approver (array)
+- `after` / `before` - Date range (YYYY-MM-DD)
+- `started_on` / `ended_on` - Exact start/end date
 - `booking_type` - Type: `event` (absence) or `service` (budget)
-- `draft` - Tentative status: `true`/`false`
+- `draft` - Tentative bookings only: `true`/`false`
+- `with_draft` - Include tentative bookings: `true`/`false`
+- `status` / `approval_status` - Approval status (array)
+- `billing_type_id` - Billing type: `1`=fixed, `2`=actuals, `3`=none (array)
+- `person_type` - Person type: `1`=user, `2`=contact, `3`=placeholder
+- `canceled` - Canceled bookings (boolean)
 
 ### Pages
 
-- `project_id` - Filter by project
+- `project_id` - Filter by project (array)
 - `creator_id` - Filter by creator
 - `parent_page_id` - Filter by parent page (for sub-pages)
+- `edited_at` - Filter by last edited date (ISO 8601)
 
 ### Discussions
 
@@ -564,15 +641,29 @@ Compound workflows that chain multiple operations into a single tool call.
 ### Comments
 
 - `task_id` - Filter by task
-- `deal_id` - Filter by deal
-- `project_id` - Filter by project
-- `page_id` - Filter by page
+- `project_id` - Filter by project (array)
+- `page_id` - Filter by page (array)
 - `discussion_id` - Filter by discussion
+- `draft` - Draft comments: `true`/`false`
+- `workflow_status_category_id` - Filter by workflow status category (array)
+
+### Activities
+
+- `event` - Event type: create, copy, update, delete, etc.
+- `type` - Activity type: `1`=Comment, `2`=Changeset, `3`=Email
+- `after` / `before` - ISO 8601 timestamp range
+- `person_id` - Filter by person (array)
+- `project_id` - Filter by project (array)
+- `company_id` / `task_id` / `deal_id` / `discussion_id` - Filter by resource (array)
+- `item_type` - Resource type (e.g. Task, Page, Deal, Workspace)
+- `parent_type` / `root_type` - Parent/root resource type
+- `has_attachments` / `pinned` - Boolean filters
 
 ### Timers
 
 - `person_id` - Filter by person
 - `time_entry_id` - Filter by time entry
+- `started_at` / `stopped_at` - Filter by start/stop time (ISO 8601)
 
 ## Include (Related Resources)
 
