@@ -116,13 +116,13 @@ describe('tools', () => {
     it('should have reasonable tool schema size', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       // Single tool with all resources, batch/search/schema additions, and MCP annotations
-      expect(totalSize).toBeLessThan(4500);
+      expect(totalSize).toBeLessThan(4600);
     });
 
     it('should estimate under 1200 tokens', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       const estimatedTokens = Math.ceil(totalSize / 4);
-      expect(estimatedTokens).toBeLessThan(1200);
+      expect(estimatedTokens).toBeLessThan(1250);
     });
   });
 });

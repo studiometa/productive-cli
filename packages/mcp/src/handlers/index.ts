@@ -20,6 +20,7 @@ import { handleBatch } from './batch.js';
 import { handleBookings } from './bookings.js';
 import { handleComments } from './comments.js';
 import { handleCompanies } from './companies.js';
+import { handleCustomFields } from './custom-fields.js';
 import { handleDeals } from './deals.js';
 import { handleDiscussions } from './discussions.js';
 import { handleHelp, handleHelpOverview } from './help.js';
@@ -163,6 +164,9 @@ async function routeToHandler(
 
     case 'activities':
       return await handleActivities(action, restArgs, ctx);
+
+    case 'custom_fields':
+      return await handleCustomFields(action, restArgs, ctx);
 
     case 'reports':
       return await handleReports(action, restArgs, ctx);

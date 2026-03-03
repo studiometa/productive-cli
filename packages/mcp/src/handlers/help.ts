@@ -838,6 +838,65 @@ const RESOURCE_HELP: Record<string, ResourceHelp> = {
     ],
   },
 
+  custom_fields: {
+    description:
+      'Custom field definitions — list and inspect custom fields configured in your organization. ' +
+      'Custom fields appear as raw ID hashes on tasks, deals, companies, etc. ' +
+      'Use this resource to discover field names, data types, and option values for resolution.',
+    actions: {
+      list: 'List custom field definitions (filter by customizable_type to scope to a resource)',
+      get: 'Get a single custom field definition with its options (include: options)',
+    },
+    filters: {
+      customizable_type:
+        'Filter by resource type: Task, Deal, Company, Project, Booking, Service, etc.',
+      archived: 'Filter by archived status (boolean)',
+      name: 'Filter by field name',
+      project_id: 'Filter by project ID',
+      global: 'Filter global custom fields (boolean)',
+    },
+    includes: ['options'],
+    fields: {
+      id: 'Unique custom field identifier (used as key in custom_fields hash)',
+      name: 'Human-readable field name',
+      data_type: 'Field type: text, number, select, date, multi-select, person, attachment',
+      data_type_id:
+        'Numeric type: 1=Text, 2=Number, 3=Select, 4=Date, 5=Multi-select, 6=Person, 7=Attachment',
+      customizable_type: 'Resource type this field applies to (e.g. Task, Deal)',
+      archived: 'Whether the field is archived',
+      required: 'Whether the field is required',
+      description: 'Optional description of the field',
+      options: 'For select/multi-select: array of {id, value, archived} (when include=options)',
+    },
+    examples: [
+      {
+        description: 'List custom fields for tasks',
+        params: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Task' },
+        },
+      },
+      {
+        description: 'Get a custom field with its options',
+        params: {
+          resource: 'custom_fields',
+          action: 'get',
+          id: '42236',
+          include: ['options'],
+        },
+      },
+      {
+        description: 'List all non-archived custom fields',
+        params: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { archived: 'false' },
+        },
+      },
+    ],
+  },
+
   activities: {
     description:
       'Read-only activity feed — audit log of create/update/delete events across the organization',

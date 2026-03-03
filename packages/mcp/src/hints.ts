@@ -669,6 +669,36 @@ export function getDiscussionHints(discussionId: string, pageId?: string): Conte
 }
 
 /**
+ * Generate hints for a custom field definition
+ */
+export function getCustomFieldHints(fieldId: string): ContextualHints {
+  return {
+    related_resources: [
+      {
+        resource: 'custom_fields',
+        description: 'List all custom field definitions for a resource type',
+        example: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Task' },
+        },
+      },
+    ],
+    common_actions: [
+      {
+        action: 'Get this custom field with its options',
+        example: {
+          resource: 'custom_fields',
+          action: 'get',
+          id: fieldId,
+          include: ['options'],
+        },
+      },
+    ],
+  };
+}
+
+/**
  * Generate hints for a timer
  */
 export function getTimerHints(timerId: string, serviceId?: string): ContextualHints {
