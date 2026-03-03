@@ -79,6 +79,29 @@ describe('MCP: stdio transport', () => {
     expect(text).toContain('2024-07-15');
   });
 
+  it('should call productive tool to list custom fields', async () => {
+    const result = await mcpClient.client.callTool({
+      name: 'productive',
+      arguments: { resource: 'custom_fields', action: 'list' },
+    });
+
+    expect(result.isError).toBeFalsy();
+    const text = (result.content[0] as { type: 'text'; text: string }).text;
+    expect(text).toContain('Semaine');
+    expect(text).toContain('Points');
+  });
+
+  it('should call productive tool to get a custom field by ID', async () => {
+    const result = await mcpClient.client.callTool({
+      name: 'productive',
+      arguments: { resource: 'custom_fields', action: 'get', id: '42236' },
+    });
+
+    expect(result.isError).toBeFalsy();
+    const text = (result.content[0] as { type: 'text'; text: string }).text;
+    expect(text).toContain('Semaine');
+  });
+
   it('should return error result for unknown resource', async () => {
     const result = await mcpClient.client.callTool({
       name: 'productive',

@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "id": "42236",
+      "type": "custom_fields",
+      "attributes": {
+        "name": "Semaine",
+        "data_type": 3,
+        "customizable_type": "Task",
+        "archived": false,
+        "required": true,
+        "description": "Sprint week number",
+        "created_at": "2024-01-01T00:00:00.000Z",
+        "updated_at": "2024-06-01T00:00:00.000Z"
+      },
+      "relationships": {}
+    },
+    {
+      "id": "41487",
+      "type": "custom_fields",
+      "attributes": {
+        "name": "Points",
+        "data_type": 2,
+        "customizable_type": "Task",
+        "archived": false,
+        "required": false,
+        "description": "Story points",
+        "created_at": "2024-01-01T00:00:00.000Z",
+        "updated_at": "2024-06-01T00:00:00.000Z"
+      },
+      "relationships": {}
+    }
+  ],
+  "meta": {
+    "total_count": 2,
+    "current_page": 1,
+    "total_pages": 1,
+    "page_size": 30
+  }
+}

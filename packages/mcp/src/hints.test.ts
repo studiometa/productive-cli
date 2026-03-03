@@ -27,7 +27,7 @@ describe('hints', () => {
       const hints = getTaskHints('12345');
 
       expect(hints.related_resources).toBeDefined();
-      expect(hints.related_resources).toHaveLength(3);
+      expect(hints.related_resources).toHaveLength(4);
 
       // Check comments hint
       const commentsHint = hints.related_resources?.find((h) => h.resource === 'comments');
@@ -45,6 +45,15 @@ describe('hints', () => {
         resource: 'time',
         action: 'list',
         filter: { task_id: '12345' },
+      });
+
+      // Check custom fields hint
+      const cfHint = hints.related_resources?.find((h) => h.resource === 'custom_fields');
+      expect(cfHint).toBeDefined();
+      expect(cfHint?.example).toEqual({
+        resource: 'custom_fields',
+        action: 'list',
+        filter: { customizable_type: 'Task' },
       });
 
       // Check common actions
@@ -99,6 +108,15 @@ describe('hints', () => {
         resource: 'comments',
         action: 'list',
         filter: { deal_id: '12345' },
+      });
+
+      // Check custom fields hint
+      const cfHint = hints.related_resources?.find((h) => h.resource === 'custom_fields');
+      expect(cfHint).toBeDefined();
+      expect(cfHint?.example).toEqual({
+        resource: 'custom_fields',
+        action: 'list',
+        filter: { customizable_type: 'Deal' },
       });
     });
   });
@@ -186,6 +204,15 @@ describe('hints', () => {
         resource: 'projects',
         action: 'list',
         filter: { company_id: '12345' },
+      });
+
+      // Check custom fields hint
+      const cfHint = hints.related_resources?.find((h) => h.resource === 'custom_fields');
+      expect(cfHint).toBeDefined();
+      expect(cfHint?.example).toEqual({
+        resource: 'custom_fields',
+        action: 'list',
+        filter: { customizable_type: 'Company' },
       });
     });
   });
