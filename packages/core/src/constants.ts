@@ -34,6 +34,7 @@ export const RESOURCES = [
   'search',
   'summaries',
   'workflows',
+  'custom_fields',
 ] as const;
 
 export type Resource = (typeof RESOURCES)[number];

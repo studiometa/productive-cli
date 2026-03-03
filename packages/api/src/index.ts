@@ -30,6 +30,9 @@ export type {
   ProductiveComment,
   ProductiveCompany,
   ProductiveConfig,
+  ProductiveCustomField,
+  ProductiveCustomFieldOption,
+  CustomFieldDataType,
   ProductiveDeal,
   ProductiveDiscussion,
   ProductivePage,
@@ -63,6 +66,8 @@ export {
   formatDiscussion,
   formatActivity,
   formatChangeset,
+  formatCustomField,
+  formatCustomFieldOption,
   // List/single/auto formatting
   formatListResponse,
   formatSingleResponse,
@@ -99,10 +104,14 @@ export type { FormattedAttachment } from './formatters/attachment.js';
 export type { FormattedPage } from './formatters/page.js';
 export type { FormattedDiscussion } from './formatters/discussion.js';
 export type { FormattedActivity } from './formatters/activity.js';
+export type {
+  FormattedCustomField,
+  FormattedCustomFieldOption,
+} from './formatters/custom-field.js';
 
 // Status/type constants (bidirectional lookup maps)
-export { createStatusMap } from './constants.js';
-export type { StatusMap } from './constants.js';
+export { createStatusMap, createNumericStatusMap } from './constants.js';
+export type { StatusMap, NumericStatusMap } from './constants.js';
 export {
   TASK_STATUS,
   TASK_OVERDUE_STATUS,
@@ -120,6 +129,7 @@ export {
   DISCUSSION_STATUS,
   SERVICE_BUDGET_STATUS,
   SERVICE_BILLING_TYPE,
+  CUSTOM_FIELD_DATA_TYPE,
 } from './constants.js';
 
 // Config (env vars + JSON file, no keychain)

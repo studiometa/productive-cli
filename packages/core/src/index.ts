@@ -246,6 +246,18 @@ export type {
 export { listActivities } from './executors/activities/index.js';
 export type { ListActivitiesOptions } from './executors/activities/index.js';
 
+// Custom fields executors
+export {
+  listCustomFields,
+  getCustomField,
+  resolveCustomFieldValues,
+} from './executors/custom-fields/index.js';
+export type {
+  ListCustomFieldsOptions,
+  GetCustomFieldOptions,
+  ResolvedCustomFields,
+} from './executors/custom-fields/index.js';
+
 // Reports executors
 export {
   buildReportFilters,

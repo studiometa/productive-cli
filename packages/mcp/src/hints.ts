@@ -54,6 +54,15 @@ export function getTaskHints(taskId: string, serviceId?: string): ContextualHint
           filter: { parent_task_id: taskId },
         },
       },
+      {
+        resource: 'custom_fields',
+        description: 'List custom field definitions for tasks (to resolve custom_fields values)',
+        example: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Task' },
+        },
+      },
     ],
     common_actions: [
       {
@@ -194,6 +203,15 @@ export function getDealHints(dealId: string): ContextualHints {
           resource: 'bookings',
           action: 'list',
           filter: { deal_id: dealId },
+        },
+      },
+      {
+        resource: 'custom_fields',
+        description: 'List custom field definitions for deals (to resolve custom_fields values)',
+        example: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Deal' },
         },
       },
     ],
@@ -385,6 +403,16 @@ export function getCompanyHints(companyId: string): ContextualHints {
           resource: 'people',
           action: 'list',
           filter: { company_id: companyId },
+        },
+      },
+      {
+        resource: 'custom_fields',
+        description:
+          'List custom field definitions for companies (to resolve custom_fields values)',
+        example: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Company' },
         },
       },
     ],
@@ -666,6 +694,36 @@ export function getDiscussionHints(discussionId: string, pageId?: string): Conte
   }
 
   return hints;
+}
+
+/**
+ * Generate hints for a custom field definition
+ */
+export function getCustomFieldHints(fieldId: string): ContextualHints {
+  return {
+    related_resources: [
+      {
+        resource: 'custom_fields',
+        description: 'List all custom field definitions for a resource type',
+        example: {
+          resource: 'custom_fields',
+          action: 'list',
+          filter: { customizable_type: 'Task' },
+        },
+      },
+    ],
+    common_actions: [
+      {
+        action: 'Get this custom field with its options',
+        example: {
+          resource: 'custom_fields',
+          action: 'get',
+          id: fieldId,
+          include: ['options'],
+        },
+      },
+    ],
+  };
 }
 
 /**

@@ -10,6 +10,7 @@ import { handleCompaniesCommand, showCompaniesHelp } from './commands/companies/
 import { handleCompletionHelper } from './commands/completion-helper.js';
 import { handleCompletionCommand, showCompletionHelp } from './commands/completion.js';
 import { handleConfigCommand, showConfigHelp } from './commands/config.js';
+import { handleCustomFieldsCommand, showCustomFieldsHelp } from './commands/custom-fields/index.js';
 import { handleDealsCommand, showDealsHelp } from './commands/deals/index.js';
 import { handleDiscussionsCommand, showDiscussionsHelp } from './commands/discussions/index.js';
 import { handlePagesCommand, showPagesHelp } from './commands/pages/index.js';
@@ -119,6 +120,10 @@ ${colors.bold('COMMANDS:')}
 
   activities          View activity feed (read-only audit log)
     list, ls            List recent activities
+
+  custom-fields       Manage custom field definitions
+    list, ls            List custom field definitions
+    get <id>            Get a custom field with its options
 
   reports             Generate reports
     time                Time reports
@@ -373,6 +378,14 @@ async function main(): Promise<void> {
           process.exit(0);
         }
         await handleActivitiesCommand(subcommand || 'list', positional, options);
+        break;
+
+      case 'custom-fields':
+        if (wantsHelp) {
+          showCustomFieldsHelp(subcommand);
+          process.exit(0);
+        }
+        await handleCustomFieldsCommand(subcommand || 'list', positional, options);
         break;
 
       case 'reports':

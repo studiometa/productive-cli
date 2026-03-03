@@ -148,5 +148,10 @@ function resolveRoute(method: string, path: string): unknown {
   // People
   if (method === 'GET' && path === '/people') return loadFixture('people-list');
 
+  // Custom fields
+  if (method === 'GET' && path === '/custom_fields') return loadFixture('custom-fields-list');
+  if (method === 'GET' && /^\/custom_fields\/\d+$/.test(path))
+    return loadFixture('custom-fields-get');
+
   return null;
 }

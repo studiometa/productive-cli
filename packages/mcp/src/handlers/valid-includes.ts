@@ -7,6 +7,7 @@
 
 export const VALID_INCLUDES: Record<string, string[]> = {
   activities: ['creator'],
+  custom_fields: ['options'],
   tasks: [
     'project',
     'project.company',

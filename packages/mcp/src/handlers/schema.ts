@@ -304,6 +304,18 @@ const RESOURCE_SCHEMAS: Record<string, ResourceSchemaData> = {
     },
   },
 
+  custom_fields: {
+    actions: ['list', 'get'],
+    filters: {
+      customizable_type: 'string — Task, Deal, Company, Project, Booking, Service, etc.',
+      archived: 'boolean',
+      name: 'string',
+      project_id: 'string',
+      global: 'boolean',
+    },
+    includes: ['options'],
+  },
+
   activities: {
     actions: ['list'],
     filters: {

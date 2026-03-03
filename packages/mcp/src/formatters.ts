@@ -23,6 +23,7 @@ import {
   formatPage as cliFormatPage,
   formatDiscussion as cliFormatDiscussion,
   formatActivity as cliFormatActivity,
+  formatCustomField as cliFormatCustomField,
   formatListResponse as cliFormatListResponse,
   type JsonApiResource,
   type JsonApiMeta,
@@ -253,6 +254,19 @@ export function formatActivity(
   options?: McpFormatOptions,
 ): Record<string, unknown> {
   return cliFormatActivity(activity, {
+    ...MCP_FORMAT_OPTIONS,
+    included: options?.included,
+  });
+}
+
+/**
+ * Format custom field for agent consumption
+ */
+export function formatCustomField(
+  field: JsonApiResource,
+  options?: McpFormatOptions,
+): Record<string, unknown> {
+  return cliFormatCustomField(field, {
     ...MCP_FORMAT_OPTIONS,
     included: options?.included,
   });
