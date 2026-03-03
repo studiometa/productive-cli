@@ -61,6 +61,9 @@ vi.mock('@studiometa/productive-api', async (importOriginal) => {
     resolveDiscussion: vi.fn(),
     reopenDiscussion: vi.fn(),
     getActivities: vi.fn(),
+    getCustomFields: vi.fn(),
+    getCustomField: vi.fn(),
+    getCustomFieldOptions: vi.fn(),
   };
 
   return {
@@ -82,6 +85,7 @@ vi.mock('@studiometa/productive-api', async (importOriginal) => {
     formatCompany: vi.fn((company) => ({ id: company.id, ...company.attributes })),
     formatAttachment: vi.fn((attachment) => ({ id: attachment.id, ...attachment.attributes })),
     formatActivity: vi.fn((activity) => ({ id: activity.id, ...activity.attributes })),
+    formatCustomField: vi.fn((field) => ({ id: field.id, ...field.attributes })),
     formatListResponse: vi.fn((data, formatter, meta) => ({
       data: data.map((item: Record<string, unknown>) => formatter(item)),
       meta,
@@ -4434,6 +4438,74 @@ describe('resource=search routing via executeToolWithCredentials', () => {
 
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('query');
+  });
+});
+
+describe('custom_fields resource routing', () => {
+  const credentials: ProductiveCredentials = {
+    apiToken: 'test-token',
+    organizationId: 'test-org',
+    userId: '500521',
+  };
+
+  let mockApi: ReturnType<typeof ProductiveApi>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockApi = new ProductiveApi({}) as ReturnType<typeof ProductiveApi>;
+  });
+
+  it('should route custom_fields list to handleCustomFields', async () => {
+    mockApi.getCustomFields.mockResolvedValue({
+      data: [
+        {
+          id: '1',
+          type: 'custom_fields',
+          attributes: {
+            name: 'Priority',
+            data_type: 3,
+            customizable_type: 'task',
+          },
+          relationships: {},
+        },
+      ],
+      meta: { current_page: 1, total_pages: 1, total_count: 1 },
+    });
+
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: 'custom_fields', action: 'list' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    expect(mockApi.getCustomFields).toHaveBeenCalled();
+    const content = JSON.parse(result.content[0].text as string);
+    expect(content.data).toHaveLength(1);
+  });
+
+  it('should route custom_fields get to handleCustomFields', async () => {
+    mockApi.getCustomField.mockResolvedValue({
+      data: {
+        id: '42',
+        type: 'custom_fields',
+        attributes: {
+          name: 'Week',
+          data_type: 3,
+          customizable_type: 'task',
+        },
+        relationships: {},
+      },
+    });
+
+    const result = await executeToolWithCredentials(
+      'productive',
+      { resource: 'custom_fields', action: 'get', id: '42' },
+      credentials,
+    );
+
+    expect(result.isError).toBeUndefined();
+    expect(mockApi.getCustomField).toHaveBeenCalled();
   });
 });
 
