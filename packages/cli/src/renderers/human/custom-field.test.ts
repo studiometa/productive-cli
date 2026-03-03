@@ -4,6 +4,17 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 
 import { HumanCustomFieldListRenderer } from './custom-field.js';
 
+const makeField = (overrides?: Partial<FormattedCustomField>): FormattedCustomField => ({
+  id: '42236',
+  name: 'Semaine',
+  data_type: 'select',
+  data_type_id: 3,
+  customizable_type: 'Task',
+  archived: false,
+  required: true,
+  ...overrides,
+});
+
 describe('HumanCustomFieldListRenderer', () => {
   const renderer = new HumanCustomFieldListRenderer();
   const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -11,17 +22,6 @@ describe('HumanCustomFieldListRenderer', () => {
   afterEach(() => spy.mockClear());
 
   const ctx = { noColor: true };
-
-  const makeField = (overrides?: Partial<FormattedCustomField>): FormattedCustomField => ({
-    id: '42236',
-    name: 'Semaine',
-    data_type: 'select',
-    data_type_id: 3,
-    customizable_type: 'Task',
-    archived: false,
-    required: true,
-    ...overrides,
-  });
 
   it('renders a list of custom fields', () => {
     renderer.render(
