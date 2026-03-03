@@ -30,16 +30,14 @@ vi.mock('./resources.js', () => ({
       mimeType: 'application/json',
     },
   ]),
-  listResourceTemplates: vi
-    .fn()
-    .mockReturnValue([
-      {
-        uriTemplate: 'productive://projects/{id}',
-        name: 'Project',
-        description: 'Project details',
-        mimeType: 'application/json',
-      },
-    ]),
+  listResourceTemplates: vi.fn().mockReturnValue([
+    {
+      uriTemplate: 'productive://projects/{id}',
+      name: 'Project',
+      description: 'Project details',
+      mimeType: 'application/json',
+    },
+  ]),
   readResource: vi.fn().mockImplementation((uri: string) => {
     if (uri === 'productive://unknown') {
       throw new Error('Unknown resource URI: productive://unknown');
