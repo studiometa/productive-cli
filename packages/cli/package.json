@@ -38,7 +38,7 @@
   },
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build && tsc --emitDeclarationOnly && node scripts/postbuild.js",
+    "build": "vite build && tsgo --emitDeclarationOnly && node scripts/postbuild.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ci": "vitest run --coverage",
@@ -57,7 +57,6 @@
     "@vitest/coverage-v8": "^4.1.0-beta.4",
     "memfs": "4.56.2",
     "oxlint": "^1.43.0",
-    "typescript": "^5.7.3",
     "vite": "^8.0.0-beta.14",
     "vitest": "^4.1.0-beta.4"
   },
