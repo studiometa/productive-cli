@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.9] - 2026.03.04
+
+### Fixed
+
+- **API**: Fix `data_type_id` attribute name for custom fields (was read as `data_type`, always returning `undefined`) ([a1e85dd], [#153])
+
+### Changed
+
+- **MCP**: Upgrade `h3` to v2, migrating to web-standard APIs (`new H3()`, `event.req/res`, `event.runtime?.node`) ([56a64e7], [#154])
+- Replace `tsc` with `tsgo` for type checking ([1fc8c61])
+- Update dependencies ([ca0a297])
+
+[0.10.9]: https://github.com/studiometa/productive-tools/compare/0.10.8...0.10.9
+[a1e85dd]: https://github.com/studiometa/productive-tools/commit/a1e85dd
+[56a64e7]: https://github.com/studiometa/productive-tools/commit/56a64e7
+[1fc8c61]: https://github.com/studiometa/productive-tools/commit/1fc8c61
+[ca0a297]: https://github.com/studiometa/productive-tools/commit/ca0a297
+[#153]: https://github.com/studiometa/productive-tools/pull/153
+[#154]: https://github.com/studiometa/productive-tools/pull/154
+
 ## [0.10.8] - 2026-02-26
 
 ### Added
