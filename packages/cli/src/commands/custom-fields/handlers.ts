@@ -59,7 +59,7 @@ export async function customFieldsList(ctx: CommandContext): Promise<void> {
       const data = result.data.map((f) => ({
         id: f.id,
         name: f.attributes.name,
-        data_type: f.attributes.data_type,
+        data_type: f.attributes.data_type_id,
         customizable_type: f.attributes.customizable_type,
         archived: f.attributes.archived,
         required: f.attributes.required,

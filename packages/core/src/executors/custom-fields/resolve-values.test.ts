@@ -9,7 +9,7 @@ function makeDefinition(id: string, name: string, dataType: number) {
     type: 'custom_fields' as const,
     attributes: {
       name,
-      data_type: dataType,
+      data_type_id: dataType,
       customizable_type: 'Task',
       archived: false,
       required: false,

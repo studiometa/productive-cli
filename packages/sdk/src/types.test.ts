@@ -284,7 +284,7 @@ describe('Typed resource resolution', () => {
           type: 'custom_fields' as const,
           attributes: {
             name: 'Sprint',
-            data_type: 3 as const,
+            data_type_id: 3 as const,
             customizable_type: 'Task',
             archived: false,
             required: false,
@@ -311,7 +311,7 @@ describe('Typed resource resolution', () => {
       expect(field.id).toBe('42236');
       expect(field.type).toBe('custom_fields');
       expect(field.name).toBe('Sprint');
-      expect(field.data_type).toBe(3);
+      expect(field.data_type_id).toBe(3);
       expect(field.customizable_type).toBe('Task');
       expect(field.archived).toBe(false);
       expect(field.required).toBe(false);
@@ -332,7 +332,7 @@ describe('Typed resource resolution', () => {
             type: 'custom_fields' as const,
             attributes: {
               name: 'Priority',
-              data_type: 1 as const,
+              data_type_id: 1 as const,
               customizable_type: 'Task',
               archived: false,
               required: false,
@@ -346,7 +346,7 @@ describe('Typed resource resolution', () => {
             type: 'custom_fields' as const,
             attributes: {
               name: 'Category',
-              data_type: 3 as const,
+              data_type_id: 3 as const,
               customizable_type: 'Deal',
               archived: false,
               required: true,

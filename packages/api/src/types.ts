@@ -362,7 +362,7 @@ export interface ProductiveCustomField {
   type: 'custom_fields';
   attributes: {
     name: string;
-    data_type: CustomFieldDataType;
+    data_type_id: CustomFieldDataType;
     customizable_type: string;
     archived: boolean;
     required: boolean;

@@ -9,7 +9,7 @@ const makeField = (overrides: Partial<JsonApiResource> = {}): JsonApiResource =>
   type: 'custom_fields',
   attributes: {
     name: 'Semaine',
-    data_type: 3,
+    data_type_id: 3,
     customizable_type: 'Task',
     archived: false,
     required: true,
@@ -65,13 +65,13 @@ describe('formatCustomField', () => {
     ];
 
     for (const [id, name] of types) {
-      const result = formatCustomField(makeField({ attributes: { data_type: id } }));
+      const result = formatCustomField(makeField({ attributes: { data_type_id: id } }));
       expect(result.data_type).toBe(name);
     }
   });
 
   it('handles unknown data type', () => {
-    const result = formatCustomField(makeField({ attributes: { data_type: 99 } }));
+    const result = formatCustomField(makeField({ attributes: { data_type_id: 99 } }));
     expect(result.data_type).toBe('99');
   });
 

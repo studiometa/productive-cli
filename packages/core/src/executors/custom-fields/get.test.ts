@@ -9,7 +9,7 @@ const mockResponse = {
     type: 'custom_fields',
     attributes: {
       name: 'Semaine',
-      data_type: 3,
+      data_type_id: 3,
       customizable_type: 'Task',
       archived: false,
       required: true,
