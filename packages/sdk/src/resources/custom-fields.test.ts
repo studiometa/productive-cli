@@ -19,7 +19,7 @@ function makeCustomField(id: string, name: string, dataType: number = 1) {
     type: 'custom_fields',
     attributes: {
       name,
-      data_type: dataType,
+      data_type_id: dataType,
       customizable_type: 'Task',
       archived: false,
       required: false,
@@ -62,7 +62,7 @@ describe('CustomFieldsCollection', () => {
         id: '1',
         type: 'custom_fields',
         name: 'Priority',
-        data_type: 1,
+        data_type_id: 1,
       });
     });
 
@@ -108,7 +108,7 @@ describe('CustomFieldsCollection', () => {
       expect(result.data).toMatchObject({
         id: '42',
         name: 'Week Number',
-        data_type: 2,
+        data_type_id: 2,
         customizable_type: 'Task',
       });
     });
@@ -219,7 +219,7 @@ describe('CustomFieldsCollection', () => {
       const col = new CustomFieldsCollection(createApi());
       const result = await col.where({ customizable_type: 'Task' }).list();
       expect(result.data).toHaveLength(1);
-      expect(result.data[0]).toMatchObject({ name: 'Sprint', data_type: 3 });
+      expect(result.data[0]).toMatchObject({ name: 'Sprint', data_type_id: 3 });
     });
   });
 });

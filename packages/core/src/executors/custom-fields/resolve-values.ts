@@ -62,7 +62,7 @@ export async function resolveCustomFieldValues(
   const optionIdsToResolve = new Set<string>();
   for (const [fieldId, value] of Object.entries(rawHash)) {
     const def = definitionsMap.get(fieldId);
-    if (def && OPTION_DATA_TYPES.has(def.attributes.data_type)) {
+    if (def && OPTION_DATA_TYPES.has(def.attributes.data_type_id)) {
       if (typeof value === 'string') {
         optionIdsToResolve.add(value);
       } else if (Array.isArray(value)) {
@@ -91,7 +91,7 @@ export async function resolveCustomFieldValues(
     const def = definitionsMap.get(fieldId);
     const fieldName = def?.attributes.name ?? fieldId;
 
-    if (def && OPTION_DATA_TYPES.has(def.attributes.data_type)) {
+    if (def && OPTION_DATA_TYPES.has(def.attributes.data_type_id)) {
       // Select/multi-select: resolve option IDs to values
       if (typeof value === 'string') {
         const opt = optionsMap.get(value);

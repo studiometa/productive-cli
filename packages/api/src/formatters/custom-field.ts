@@ -35,7 +35,7 @@ export function formatCustomField(
   const opts = { ...DEFAULT_FORMAT_OPTIONS, ...options };
   const attrs = field.attributes;
 
-  const dataTypeId = (attrs.data_type as number) ?? 0;
+  const dataTypeId = (attrs.data_type_id as number) ?? 0;
 
   const result: FormattedCustomField = {
     id: field.id,

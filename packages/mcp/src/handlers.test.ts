@@ -4463,7 +4463,7 @@ describe('custom_fields resource routing', () => {
           type: 'custom_fields',
           attributes: {
             name: 'Priority',
-            data_type: 3,
+            data_type_id: 3,
             customizable_type: 'task',
           },
           relationships: {},
@@ -4491,7 +4491,7 @@ describe('custom_fields resource routing', () => {
         type: 'custom_fields',
         attributes: {
           name: 'Week',
-          data_type: 3,
+          data_type_id: 3,
           customizable_type: 'task',
         },
         relationships: {},
