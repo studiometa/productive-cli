@@ -1,6 +1,7 @@
 # @studiometa/productive-core
 
 [![npm version](https://img.shields.io/npm/v/@studiometa/productive-core?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-core)
+[![Downloads](https://img.shields.io/npm/dm/@studiometa/productive-core?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&colorB=3e63dd&colorA=414853)](https://opensource.org/licenses/MIT)
 
 Shared business logic for Productive.io tools. Provides pure executor functions with injectable dependencies for testability.

@@ -1,5 +1,9 @@
 # @studiometa/productive-sdk
 
+[![npm version](https://img.shields.io/npm/v/@studiometa/productive-sdk?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-sdk)
+[![Downloads](https://img.shields.io/npm/dm/@studiometa/productive-sdk?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-sdk)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&colorB=3e63dd&colorA=414853)](https://opensource.org/licenses/MIT)
+
 Fluent TypeScript SDK for the [Productive.io](https://productive.io) API.
 
 Built on top of `@studiometa/productive-api`, the SDK adds:

@@ -1,6 +1,7 @@
 # @studiometa/productive-api
 
 [![npm version](https://img.shields.io/npm/v/@studiometa/productive-api?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-api)
+[![Downloads](https://img.shields.io/npm/dm/@studiometa/productive-api?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&colorB=3e63dd&colorA=414853)](https://opensource.org/licenses/MIT)
 
 Productive.io API client, TypeScript types, and response formatters. Zero internal dependencies — this is the foundation package for all `@studiometa/productive-*` packages.

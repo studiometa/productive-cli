@@ -1,6 +1,7 @@
 # @studiometa/productive-mcp
 
 [![npm version](https://img.shields.io/npm/v/@studiometa/productive-mcp?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-mcp)
+[![Downloads](https://img.shields.io/npm/dm/@studiometa/productive-mcp?style=flat&colorB=3e63dd&colorA=414853)](https://www.npmjs.com/package/@studiometa/productive-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&colorB=3e63dd&colorA=414853)](https://opensource.org/licenses/MIT)
 
 MCP (Model Context Protocol) server for [Productive.io](https://productive.io). Enables Claude Desktop and other MCP clients to interact with Productive.io for project management, time tracking, task management, and reporting.
