@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ProductiveApi } from '../api.js';
 
 import { createTestContext } from '../context.js';
-import { servicesList } from './services/handlers.js';
+import { servicesGet, servicesList } from './services/handlers.js';
 import { handleServicesCommand } from './services/index.js';
 
 describe('services command', () => {
@@ -197,6 +197,51 @@ describe('services command', () => {
       await servicesList(ctx);
 
       expect(processExitSpy).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('servicesGet', () => {
+    it('should get a service by ID in json format', async () => {
+      const getService = vi.fn().mockResolvedValue({
+        data: {
+          id: '42',
+          type: 'services',
+          attributes: {
+            name: 'Development',
+            budgeted_time: 4800,
+            worked_time: 2400,
+            billing_type_id: 2,
+            created_at: '2026-01-01T00:00:00Z',
+            updated_at: '2026-01-15T00:00:00Z',
+          },
+        },
+      });
+
+      const ctx = createTestContext({
+        api: { getService } as unknown as ProductiveApi,
+        options: { format: 'json' },
+      });
+
+      await servicesGet(['42'], ctx);
+
+      expect(getService).toHaveBeenCalledWith('42', { include: undefined });
+      expect(consoleLogSpy).toHaveBeenCalled();
+    });
+
+    it('should require service ID', async () => {
+      const processExitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+      const ctx = createTestContext({
+        api: {} as unknown as ProductiveApi,
+      });
+
+      try {
+        await servicesGet([], ctx);
+      } catch {
+        // exitWithValidationError throws
+      }
+
+      expect(processExitSpy).toHaveBeenCalledWith(3);
     });
   });
 

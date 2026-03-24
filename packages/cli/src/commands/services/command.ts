@@ -3,7 +3,7 @@
  */
 
 import { createCommandRouter } from '../../utils/command-router.js';
-import { servicesList } from './handlers.js';
+import { servicesGet, servicesList } from './handlers.js';
 
 /**
  * Handle services command
@@ -13,5 +13,6 @@ export const handleServicesCommand = createCommandRouter({
   handlers: {
     list: servicesList,
     ls: servicesList,
+    get: [servicesGet, 'args'],
   },
 });

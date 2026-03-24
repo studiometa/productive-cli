@@ -4,4 +4,4 @@
 
 export { handleServicesCommand } from './command.js';
 export { showServicesHelp } from './help.js';
-export { servicesList } from './handlers.js';
+export { servicesGet, servicesList } from './handlers.js';

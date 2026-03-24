@@ -5,6 +5,7 @@ import { handleServicesCommand } from './command.js';
 // Mock the handlers to avoid needing real API
 vi.mock('./handlers.js', () => ({
   servicesList: vi.fn().mockResolvedValue(undefined),
+  servicesGet: vi.fn().mockResolvedValue(undefined),
 }));
 
 // Mock config to avoid file system access

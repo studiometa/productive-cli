@@ -5,6 +5,7 @@
 import { formatService, formatListResponse } from '@studiometa/productive-api';
 import {
   fromCommandContext,
+  getService,
   listServices,
   type ListServicesOptions,
 } from '@studiometa/productive-core';
@@ -12,7 +13,7 @@ import {
 import type { CommandContext } from '../../context.js';
 import type { OutputFormat } from '../../types.js';
 
-import { runCommand } from '../../error-handler.js';
+import { runCommand, exitWithValidationError } from '../../error-handler.js';
 import { render, createRenderContext } from '../../renderers/index.js';
 import { parseFilters } from '../../utils/parse-filters.js';
 
@@ -59,6 +60,31 @@ export async function servicesList(ctx: CommandContext): Promise<void> {
         name: s.attributes.name,
       }));
       ctx.formatter.output(data);
+    } else {
+      const renderCtx = createRenderContext({ noColor: ctx.options['no-color'] === true });
+      render('service', format, formattedData, renderCtx);
+    }
+  }, ctx.formatter);
+}
+
+export async function servicesGet(args: string[], ctx: CommandContext): Promise<void> {
+  const [id] = args;
+  if (!id) exitWithValidationError('id', 'productive services get <id>', ctx.formatter);
+
+  const spinner = ctx.createSpinner('Fetching service...');
+  spinner.start();
+
+  await runCommand(async () => {
+    const execCtx = fromCommandContext(ctx);
+    const result = await getService({ id }, execCtx);
+
+    spinner.succeed();
+
+    const format = (ctx.options.format || ctx.options.f || 'human') as OutputFormat;
+    const formattedData = formatService(result.data);
+
+    if (format === 'json') {
+      ctx.formatter.output(formattedData);
     } else {
       const renderCtx = createRenderContext({ noColor: ctx.options['no-color'] === true });
       render('service', format, formattedData, renderCtx);
