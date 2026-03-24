@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **API**: Add `overhead` and `started_at` attributes to `ProductiveTimeEntry` type ([baddee1], [#156])
+- **API**: Add `custom_fields` attribute to `ProductivePerson` type ([baddee1], [#156])
+- **API**: Add `billing_type_id` attribute to `ProductiveService` type ([baddee1], [#156])
+- **API**: Add `billable_time` support to `updateTimeEntry()` ([baddee1], [#156])
+- **API**: Add `include` parameter to `getTimeEntry()` ([baddee1], [#156])
+- **API**: Add `getService()` method for fetching a single service by ID ([baddee1], [#156])
+- **SDK**: Add `ServicesCollection.get(id)` method ([baddee1], [#156])
+- **Core**: Add `getService` executor with `include` support ([a9c0245], [#156])
+- **Core**: Forward `include` parameter in `getTimeEntry` executor ([a9c0245], [#156])
+- **Core**: Forward `billable_time` in `updateTimeEntry` executor ([a9c0245], [#156])
+- **MCP**: Wire `services` `get` action (was list-only) ([a9c0245], [#156])
+- **MCP**: Add `billable_time` to time entry update mapping ([a9c0245], [#156])
+- **MCP**: Document new fields in help and schema (`overhead`, `started_at`, `custom_fields`, `billing_type_id`) ([a9c0245], [#156])
+
+[baddee1]: https://github.com/studiometa/productive-tools/commit/baddee1
+[a9c0245]: https://github.com/studiometa/productive-tools/commit/a9c0245
+[#156]: https://github.com/studiometa/productive-tools/pull/156
+
 ## [0.10.9] - 2026.03.04
 
 ### Fixed
