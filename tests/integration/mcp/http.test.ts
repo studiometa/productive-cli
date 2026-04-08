@@ -24,7 +24,7 @@ const VALID_BEARER = Buffer.from('test-org-456:test-token-123:test-user-789').to
 
 /** Find a free TCP port */
 async function getFreePort(): Promise<number> {
-  return new Promise((resolve, reject) => {
+  return new Promise((finish, reject) => {
     const srv = createServer();
     srv.listen(0, '127.0.0.1', () => {
       const addr = srv.address();
@@ -32,7 +32,7 @@ async function getFreePort(): Promise<number> {
         if (!addr || typeof addr === 'string') {
           reject(new Error('Could not get port'));
         } else {
-          resolve(addr.port);
+          finish(addr.port);
         }
       });
     });
