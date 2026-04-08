@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.10] - 2026.04.08
+
 ### Added
 
 - **API**: Add `overhead` and `started_at` attributes to `ProductiveTimeEntry` type ([baddee1], [#156])
@@ -34,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix lint issues in OAuth and integration helpers after the HTTP transport migration ([cb72e55], [#171])
 - **MCP**: Format SDK-aligned HTTP transport docs and tests after the transport migration ([1bfd081], [#171])
 
+[0.10.10]: https://github.com/studiometa/productive-tools/compare/0.10.9...0.10.10
 [baddee1]: https://github.com/studiometa/productive-tools/commit/baddee1
 [a9c0245]: https://github.com/studiometa/productive-tools/commit/a9c0245
 [288f841]: https://github.com/studiometa/productive-tools/commit/288f841
