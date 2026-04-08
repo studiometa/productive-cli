@@ -38,7 +38,7 @@ export async function createCliRunner(mockApiUrl: string): Promise<CliRunner> {
   const sandbox = await createSandbox({ mockApiUrl });
 
   async function run(...args: string[]): Promise<CliResult> {
-    return new Promise((resolve) => {
+    return new Promise((finish) => {
       execFile(
         NODE_BIN,
         [CLI_BIN, ...args],
@@ -47,7 +47,7 @@ export async function createCliRunner(mockApiUrl: string): Promise<CliRunner> {
           timeout: 15_000,
         },
         (error, stdout, stderr) => {
-          resolve({
+          finish({
             stdout: stdout.toString(),
             stderr: stderr.toString(),
             exitCode: (error as NodeJS.ErrnoException)?.code

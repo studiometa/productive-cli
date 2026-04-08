@@ -57,12 +57,12 @@ export function formatCustomField(
 
   // Resolve options from included resources (when include=options was used)
   if (opts.included) {
-    const options = opts.included.filter(
+    const includedOptions = opts.included.filter(
       (r) =>
         r.type === 'custom_field_options' && r.relationships?.custom_field?.data?.id === field.id,
     );
-    if (options.length > 0) {
-      result.options = options.map((opt) => formatCustomFieldOption(opt));
+    if (includedOptions.length > 0) {
+      result.options = includedOptions.map((opt) => formatCustomFieldOption(opt));
     }
   }
 
