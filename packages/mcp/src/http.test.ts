@@ -182,7 +182,9 @@ describe('HTTP Server Integration', () => {
       expect(response.status).toBe(200);
       expect(data.result.tools).toBeDefined();
       expect(Array.isArray(data.result.tools)).toBe(true);
-      expect(data.result.tools.find((tool: { name: string }) => tool.name === 'productive')).toBeDefined();
+      expect(
+        data.result.tools.find((tool: { name: string }) => tool.name === 'productive'),
+      ).toBeDefined();
     });
 
     it('should call tools/call with stateless credentials', async () => {

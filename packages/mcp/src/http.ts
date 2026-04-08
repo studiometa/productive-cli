@@ -5,8 +5,11 @@
  * The actual server startup is in server.ts.
  */
 
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
+import type { IncomingMessage } from 'node:http';
+
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import {
   CallToolRequestSchema,
   ErrorCode,
@@ -19,12 +22,11 @@ import {
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { H3, defineHandler, type H3Event } from 'h3';
-import type { IncomingMessage } from 'node:http';
-import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 
 const OAUTH_PROTECTED_RESOURCE_PATH = '/.well-known/oauth-protected-resource/mcp';
 
 import { parseAuthHeader, type ProductiveCredentials } from './auth.js';
+import { executeToolWithCredentials } from './handlers.js';
 import { INSTRUCTIONS } from './instructions.js';
 import {
   oauthMetadataHandler,
@@ -35,7 +37,6 @@ import {
 } from './oauth.js';
 import { listResources, listResourceTemplates, readResource } from './resources.js';
 import { getAvailablePrompts, handlePrompt } from './stdio.js';
-import { executeToolWithCredentials } from './handlers.js';
 import { TOOLS } from './tools.js';
 import { VERSION } from './version.js';
 
@@ -129,12 +130,15 @@ function getCredentialsFromAuthInfo(authInfo: AuthInfo | undefined | null): Prod
     typeof credentials.organizationId !== 'string' ||
     typeof credentials.apiToken !== 'string'
   ) {
-    throw new Error('Authentication required. Provide Bearer token with base64(organizationId:apiToken:userId)');
+    throw new Error(
+      'Authentication required. Provide Bearer token with base64(organizationId:apiToken:userId)',
+    );
   }
 
-  const userId = 'userId' in credentials && typeof credentials.userId === 'string'
-    ? credentials.userId
-    : undefined;
+  const userId =
+    'userId' in credentials && typeof credentials.userId === 'string'
+      ? credentials.userId
+      : undefined;
 
   return {
     organizationId: credentials.organizationId,

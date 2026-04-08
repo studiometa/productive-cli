@@ -86,7 +86,11 @@ describe('MCP: HTTP transport', () => {
     await mockProductiveApi.close();
   });
 
-  async function mcpCall(method: string, params?: unknown, id = 1): Promise<{
+  async function mcpCall(
+    method: string,
+    params?: unknown,
+    id = 1,
+  ): Promise<{
     status: number;
     body: unknown;
   }> {
