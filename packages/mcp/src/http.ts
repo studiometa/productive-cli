@@ -310,14 +310,21 @@ export function createHttpApp(): H3 {
         event.res.headers.set('Content-Type', 'application/json');
         return jsonRpcError(-32700, 'Parse error: Invalid JSON');
       }
+
+      const body = parsedBody as
+        | { method?: string; params?: { uri?: string }; id?: string | number | null }
+        | undefined;
+      if (body?.method === 'resources/read' && !body.params?.uri) {
+        event.res.status = 200;
+        event.res.headers.set('Content-Type', 'application/json');
+        return jsonRpcError(-32602, 'Invalid params: uri is required', body.id ?? null);
+      }
     }
 
     const transport = await createHttpMcpTransport();
     await transport.handleRequest(nodeReq, nodeRes, parsedBody);
 
-    // h3 should not try to write its own response after the SDK transport has
-    // already written directly to the underlying Node response.
-    return new Promise(() => {});
+    return undefined;
   });
 
   app.get('/mcp', mcpHandler);

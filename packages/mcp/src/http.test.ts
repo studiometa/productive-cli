@@ -278,7 +278,7 @@ describe('HTTP Server Integration', () => {
       const { response, data } = await mcpCall('resources/read', {});
 
       expect(response.status).toBe(200);
-      expect(data.error.code).toBe(-32603);
+      expect(data.error.code).toBe(-32602);
     });
 
     it('should return protocol error for unknown method', async () => {
