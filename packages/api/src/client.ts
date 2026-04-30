@@ -74,12 +74,12 @@ export class ProductiveApi {
     this.rateLimiter = new RateLimiter(options.rateLimit);
   }
 
-  private async request<T>(
+  private async executeRequest<T>(
     endpoint: string,
     options: {
       method?: string;
       body?: unknown;
-      query?: Record<string, string>;
+      query?: Record<string, string | number | boolean>;
     } = {},
   ): Promise<T> {
     const { method = 'GET', body, query } = options;
@@ -95,7 +95,7 @@ export class ProductiveApi {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     if (query) {
       Object.entries(query).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        url.searchParams.append(key, String(value));
       });
     }
 
@@ -174,6 +174,28 @@ export class ProductiveApi {
     // This should never be reached due to the throw in the loop,
     // but TypeScript needs a return path
     throw lastError ?? new ProductiveApiError('Request failed after all retry attempts', 500);
+  }
+
+  private async request<T>(
+    endpoint: string,
+    options: {
+      method?: string;
+      body?: unknown;
+      query?: Record<string, string | number | boolean>;
+    } = {},
+  ): Promise<T> {
+    return this.executeRequest<T>(endpoint, options);
+  }
+
+  async requestRaw<T>(
+    path: string,
+    options: {
+      method?: string;
+      body?: unknown;
+      query?: Record<string, string | number | boolean>;
+    } = {},
+  ): Promise<T> {
+    return this.executeRequest<T>(path, options);
   }
 
   // Projects
