@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { createTestExecutorContext } from '../../context/test-utils.js';
-import { apiWrite } from './write.js';
+import { writeApi } from './write.js';
 
-describe('apiWrite', () => {
+describe('writeApi', () => {
   it('makes a raw write request and returns the response payload', async () => {
     const payload = { data: { id: '123', type: 'tasks' } };
     const requestRaw = vi.fn().mockResolvedValue(payload);
     const ctx = createTestExecutorContext({ api: { requestRaw } });
 
-    const result = await apiWrite(
+    const result = await writeApi(
       {
         path: '/tasks/123',
         method: 'PATCH',

@@ -7,6 +7,8 @@ import {
   ReportTypeSchema,
   ParamDate,
   ParamTimeMinutes,
+  ApiReadToolInputSchema,
+  ApiWriteToolInputSchema,
   validateToolInput,
   safeValidateToolInput,
   formatValidationErrors,
@@ -161,6 +163,49 @@ describe('schema', () => {
       if (!result.success) {
         expect(result.error).toBeDefined();
       }
+    });
+  });
+
+  describe('ApiReadToolInputSchema', () => {
+    it('should validate raw read input', () => {
+      const result = parse(ApiReadToolInputSchema, {
+        path: '/invoices',
+        filter: { company_id: '123' },
+        include: ['company'],
+        paginate: true,
+        max_pages: 5,
+      });
+
+      expect(result.path).toBe('/invoices');
+      expect(result.max_pages).toBe(5);
+    });
+
+    it('should reject invalid max_pages', () => {
+      expect(() => parse(ApiReadToolInputSchema, { path: '/invoices', max_pages: 51 })).toThrow();
+    });
+  });
+
+  describe('ApiWriteToolInputSchema', () => {
+    it('should validate confirmed raw write input', () => {
+      const result = parse(ApiWriteToolInputSchema, {
+        method: 'PATCH',
+        path: '/tasks/123',
+        body: { data: { id: '123' } },
+        confirm: true,
+      });
+
+      expect(result.method).toBe('PATCH');
+      expect(result.confirm).toBe(true);
+    });
+
+    it('should reject confirm=false', () => {
+      expect(() =>
+        parse(ApiWriteToolInputSchema, {
+          method: 'DELETE',
+          path: '/tasks/123',
+          confirm: false,
+        }),
+      ).toThrow();
     });
   });
 

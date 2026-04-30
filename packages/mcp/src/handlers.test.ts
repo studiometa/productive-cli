@@ -65,6 +65,7 @@ vi.mock('@studiometa/productive-api', async (importOriginal) => {
     getCustomFields: vi.fn(),
     getCustomField: vi.fn(),
     getCustomFieldOptions: vi.fn(),
+    requestRaw: vi.fn(),
   };
 
   return {
@@ -1047,6 +1048,54 @@ describe('handlers', () => {
             }),
           }),
         );
+      });
+    });
+
+    describe('raw api tools', () => {
+      it('should route api_read through the raw request executor', async () => {
+        mockApi.requestRaw.mockResolvedValue({ data: [{ id: '1' }] });
+
+        const result = await executeToolWithCredentials(
+          'api_read',
+          { path: '/invoices', filter: { company_id: '123' } },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        expect(mockApi.requestRaw).toHaveBeenCalledWith('/invoices', {
+          method: 'GET',
+          query: {
+            'filter[company_id]': '123',
+            'page[number]': '1',
+            'page[size]': '20',
+          },
+        });
+      });
+
+      it('should support api_read describe mode without executing requests', async () => {
+        const result = await executeToolWithCredentials(
+          'api_read',
+          { path: '/invoices', describe: true },
+          credentials,
+        );
+
+        expect(result.isError).toBeUndefined();
+        expect(result.content[0].text).toContain('/invoices');
+        expect(mockApi.requestRaw).not.toHaveBeenCalled();
+      });
+
+      it('should enforce api_write security gate', async () => {
+        delete process.env.PRODUCTIVE_MCP_ENABLE_API_WRITE;
+
+        const result = await executeToolWithCredentials(
+          'api_write',
+          { method: 'PATCH', path: '/tasks/123', body: { data: { id: '123' } }, confirm: true },
+          credentials,
+        );
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('api_write is disabled');
+        expect(mockApi.requestRaw).not.toHaveBeenCalled();
       });
     });
 

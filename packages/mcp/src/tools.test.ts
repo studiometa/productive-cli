@@ -5,10 +5,9 @@ import { TOOLS, STDIO_ONLY_TOOLS } from './tools.js';
 
 describe('tools', () => {
   describe('TOOLS', () => {
-    it('should export a single consolidated tool', () => {
+    it('should export the productive and raw API tools', () => {
       expect(Array.isArray(TOOLS)).toBe(true);
-      expect(TOOLS.length).toBe(1);
-      expect(TOOLS[0].name).toBe('productive');
+      expect(TOOLS.map((tool) => tool.name)).toEqual(['productive', 'api_read', 'api_write']);
     });
 
     it('should have valid tool structure', () => {
@@ -90,6 +89,26 @@ describe('tools', () => {
         expect(tool.description).toContain(action);
       }
     });
+
+    it('should include raw API tool definitions', () => {
+      const apiRead = TOOLS.find((tool) => tool.name === 'api_read');
+      const apiWrite = TOOLS.find((tool) => tool.name === 'api_write');
+
+      expect(apiRead?.annotations).toMatchObject({
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      });
+      expect(apiWrite?.annotations).toMatchObject({
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: true,
+      });
+      expect(apiRead?.inputSchema.required).toEqual(['path']);
+      expect(apiWrite?.inputSchema.required).toEqual(['method', 'path', 'confirm']);
+    });
   });
 
   describe('STDIO_ONLY_TOOLS', () => {
@@ -115,14 +134,13 @@ describe('tools', () => {
   describe('token optimization', () => {
     it('should have reasonable tool schema size', () => {
       const totalSize = JSON.stringify(TOOLS).length;
-      // Single tool with all resources, batch/search/schema additions, and MCP annotations
-      expect(totalSize).toBeLessThan(4600);
+      expect(totalSize).toBeLessThan(6500);
     });
 
-    it('should estimate under 1200 tokens', () => {
+    it('should estimate under 1700 tokens', () => {
       const totalSize = JSON.stringify(TOOLS).length;
       const estimatedTokens = Math.ceil(totalSize / 4);
-      expect(estimatedTokens).toBeLessThan(1250);
+      expect(estimatedTokens).toBeLessThan(1700);
     });
   });
 });

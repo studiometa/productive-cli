@@ -11,7 +11,11 @@ MCP (Model Context Protocol) server for Productive.io. Provides a single unified
 
 Before your first interaction with any resource, call `action=help` with that resource to discover valid filters, required fields, includes, and examples.
 
-## The `productive` Tool
+## MCP Tools
+
+This server exposes one high-level tool and two low-level raw API tools.
+
+### `productive`
 
 Single unified tool with this signature:
 
@@ -878,6 +882,111 @@ Returns: deal details + services + comments + time entries
 - 480 = 8 hours (full day)
 - 240 = 4 hours (half day)
 
+## Raw API Tools
+
+Use raw API tools only as escape hatches when the unified `productive` tool does not support the documented endpoint you need.
+
+### `api_read`
+
+Read-only access to documented Productive `GET` endpoints.
+
+**Use it for:** unsupported read endpoints, inspecting endpoint capabilities, or fetching raw shapes.
+
+**Parameters**
+
+- `path` — required relative API path starting with `/`
+- `describe` — return endpoint documentation instead of executing
+- `filter` — validated against the endpoint spec
+- `include` — related resources to include
+- `sort` — validated sort values
+- `page`, `per_page` — page number and size (`per_page` max `200`)
+- `paginate`, `max_pages` — safe auto-pagination (`max_pages` default `20`, max `50`)
+
+**Safety model**
+
+- `GET` only
+- relative paths only; absolute URLs are rejected
+- path traversal is rejected
+- only documented Productive endpoints are allowed
+- filter fields, operators, and sort values are validated
+
+**Recommended workflow**
+
+1. Call `api_read` with `describe=true`
+2. Review allowed methods, filters, and sort values
+3. Make the real read call with the validated path and params
+
+**Examples**
+
+```json
+{ "path": "/invoices", "describe": true }
+```
+
+```json
+{
+  "path": "/projects/123/tasks",
+  "filter": { "status": "open" },
+  "sort": ["due_date"],
+  "per_page": 50
+}
+```
+
+### `api_write`
+
+Raw write access to documented Productive endpoints.
+
+**Use it only when:** the user explicitly wants a mutation and the higher-level `productive` tool cannot perform it.
+
+**Parameters**
+
+- `method` — required, one of `POST`, `PATCH`, `PUT`, `DELETE`
+- `path` — required relative API path
+- `body` — request payload
+- `confirm` — required, must be `true`
+- `dry_run` — preview the normalized request without executing it
+
+**Safety model**
+
+- disabled by default
+- requires server env `PRODUCTIVE_MCP_ENABLE_API_WRITE=true`
+- requires `confirm=true` on every call
+- only documented Productive endpoints are allowed
+- relative paths only; absolute URLs and traversal are rejected
+- prefer `dry_run=true` before the real write
+
+**Agent rules**
+
+1. Do not use `api_write` for routine mutations already covered by `productive`
+2. Always confirm intent with the user before using `api_write`
+3. Prefer `dry_run=true` first, then execute only after approval
+4. Preserve Productive payloads exactly; do not invent fields or IDs
+
+**Examples**
+
+```json
+{
+  "method": "PATCH",
+  "path": "/tasks/123",
+  "body": {
+    "data": {
+      "type": "tasks",
+      "id": "123",
+      "attributes": { "name": "Updated title" }
+    }
+  },
+  "confirm": true,
+  "dry_run": true
+}
+```
+
+```json
+{
+  "method": "DELETE",
+  "path": "/attachments/456",
+  "confirm": true
+}
+```
+
 ## Configuration Tools (stdio mode only)
 
 In local/stdio mode, additional configuration tools are available:
@@ -918,6 +1027,9 @@ Key points:
 5. **Check `people.me`** first to get the current user's ID for filters
 6. **Follow `_hints`** - When getting a resource, check the `_hints` field for suggestions on fetching related context
 7. **Act on `_suggestions`** - When present, `_suggestions` highlight data issues (overdue tasks, no time logged, etc.) that may need attention or should be surfaced to the user
+8. **Prefer `api_read` over `api_write`** when a raw endpoint is needed
+9. **Use `api_read.describe=true` first** before making raw API calls
+10. **Treat `api_write` as break-glass access** - confirm, dry-run, then execute
 
 ## Prompt Templates
 

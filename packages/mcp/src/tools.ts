@@ -143,6 +143,59 @@ export const TOOLS: Tool[] = [
       required: ['resource', 'action'],
     },
   },
+  {
+    name: 'api_read',
+    description:
+      'Read-only raw Productive API access for documented GET endpoints. Supports describe=true for endpoint docs, filter/include/sort, and optional safe pagination.',
+    annotations: {
+      title: 'Productive API Read',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: 'Relative Productive API path, e.g. /invoices' },
+        describe: {
+          type: 'boolean',
+          description: 'Return endpoint documentation instead of calling the API',
+        },
+        filter: { type: 'object' },
+        include: { type: 'array', items: { type: 'string' } },
+        sort: { type: 'array', items: { type: 'string' } },
+        page: { type: 'number' },
+        per_page: { type: 'number' },
+        paginate: { type: 'boolean' },
+        max_pages: { type: 'number' },
+      },
+      required: ['path'],
+    },
+  },
+  {
+    name: 'api_write',
+    description:
+      'Gated raw Productive API write access for documented endpoints. Disabled by default, requires PRODUCTIVE_MCP_ENABLE_API_WRITE=true and confirm=true. Supports dry_run=true.',
+    annotations: {
+      title: 'Productive API Write',
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    inputSchema: {
+      type: 'object',
+      properties: {
+        method: { type: 'string', enum: ['POST', 'PATCH', 'PUT', 'DELETE'] },
+        path: { type: 'string' },
+        body: { type: 'object' },
+        confirm: { type: 'boolean' },
+        dry_run: { type: 'boolean' },
+      },
+      required: ['method', 'path', 'confirm'],
+    },
+  },
 ];
 
 /**

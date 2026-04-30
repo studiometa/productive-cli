@@ -2,7 +2,7 @@ import type { ExecutorContext } from '../../context/types.js';
 import type { ExecutorResult } from '../types.js';
 import type { ApiWriteOptions } from './types.js';
 
-export async function apiWrite(
+export async function writeApi(
   options: ApiWriteOptions,
   ctx: ExecutorContext,
 ): Promise<ExecutorResult<unknown>> {
