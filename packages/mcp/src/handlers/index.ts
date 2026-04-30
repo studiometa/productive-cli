@@ -14,7 +14,14 @@ import type { McpFormatOptions } from '../formatters.js';
 import type { HandlerContext, ToolResult } from './types.js';
 
 import { ErrorMessages, UserInputError, isUserInputError } from '../errors.js';
+import {
+  ApiReadToolInputSchema,
+  ApiWriteToolInputSchema,
+  formatValidationErrors,
+} from '../schema.js';
 import { handleActivities } from './activities.js';
+import { handleApiRead, type ApiReadArgs } from './api-read.js';
+import { handleApiWrite, type ApiWriteArgs } from './api-write.js';
 import { handleAttachments } from './attachments.js';
 import { handleBatch } from './batch.js';
 import { handleBookings } from './bookings.js';
@@ -110,6 +117,9 @@ interface ProductiveArgs {
   week_start?: string;
 }
 
+interface ApiReadToolArgs extends ApiReadArgs {}
+interface ApiWriteToolArgs extends ApiWriteArgs {}
+
 /**
  * Route to the appropriate resource handler.
  * Extracted from executeToolWithCredentials to keep cyclomatic complexity manageable.
@@ -190,6 +200,54 @@ export async function executeToolWithCredentials(
   args: Record<string, unknown>,
   credentials: ProductiveCredentials,
 ): Promise<ToolResult> {
+  if (name === 'api_read') {
+    const parsed = ApiReadToolInputSchema.safeParse(args);
+    if (!parsed.success) {
+      return inputErrorResult(new UserInputError(formatValidationErrors(parsed.error)));
+    }
+
+    const api = new ProductiveApi({
+      config: {
+        apiToken: credentials.apiToken,
+        organizationId: credentials.organizationId,
+        userId: credentials.userId,
+        baseUrl: process.env.PRODUCTIVE_BASE_URL,
+      },
+    });
+    const execCtx = fromHandlerContext({ api }, { userId: credentials.userId });
+    return handleApiRead(parsed.data as ApiReadToolArgs, {
+      formatOptions: { compact: false },
+      perPage: DEFAULT_PER_PAGE,
+      includeHints: false,
+      includeSuggestions: false,
+      executor: () => execCtx,
+    });
+  }
+
+  if (name === 'api_write') {
+    const parsed = ApiWriteToolInputSchema.safeParse(args);
+    if (!parsed.success) {
+      return inputErrorResult(new UserInputError(formatValidationErrors(parsed.error)));
+    }
+
+    const api = new ProductiveApi({
+      config: {
+        apiToken: credentials.apiToken,
+        organizationId: credentials.organizationId,
+        userId: credentials.userId,
+        baseUrl: process.env.PRODUCTIVE_BASE_URL,
+      },
+    });
+    const execCtx = fromHandlerContext({ api }, { userId: credentials.userId });
+    return handleApiWrite(parsed.data as ApiWriteToolArgs, {
+      formatOptions: { compact: false },
+      perPage: DEFAULT_PER_PAGE,
+      includeHints: false,
+      includeSuggestions: false,
+      executor: () => execCtx,
+    });
+  }
+
   // Handle the single consolidated tool
   if (name !== 'productive') {
     return errorResult(`Unknown tool: ${name}`);

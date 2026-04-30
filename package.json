@@ -43,6 +43,8 @@
     "check:tests": "sh scripts/check-test-colocation.sh",
     "check:commit-msg": "sh scripts/check-commit-msg.sh",
     "check": "npm run lint && npm run format:check && npm run typecheck && npm run check:tests",
+    "api-reference:update": "python3 scripts/update-productive-api-reference.py",
+    "api-reference:check": "python3 scripts/update-productive-api-reference.py --check",
     "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules",
     "version:patch": "npm version --include-workspace-root --workspaces --no-git-tag-version patch",
     "version:minor": "npm version --include-workspace-root --workspaces --no-git-tag-version minor",

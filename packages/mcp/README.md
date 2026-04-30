@@ -17,6 +17,7 @@ MCP (Model Context Protocol) server for [Productive.io](https://productive.io). 
 - Two modes: **local (stdio)** for personal use, **remote (HTTP)** for teams
 - OAuth 2.0 support for Claude Desktop custom connectors
 - Built-in `help` action for self-documentation
+- Raw API escape hatches: `api_read` for documented GET endpoints and gated `api_write` for documented writes
 
 ## Mode 1: Local (stdio)
 
@@ -143,6 +144,125 @@ Use `action="help"` with any resource for detailed documentation on available pa
 | `compact`           | boolean  | Compact output (default: true for list, false for get)        |
 | `include`           | string[] | Related resources to include (e.g. `["project", "assignee"]`) |
 | `query`             | string   | Text search for `list` actions                                |
+
+### Raw API Tools
+
+In addition to the unified `productive` tool, the server exposes two low-level tools for documented Productive API endpoints.
+
+| Tool        | Description                                                                              |
+| ----------- | ---------------------------------------------------------------------------------------- |
+| `api_read`  | Read-only raw API access for documented `GET` endpoints                                  |
+| `api_write` | Gated raw API write access for documented `POST`, `PATCH`, `PUT`, and `DELETE` endpoints |
+
+#### `api_read`
+
+Use `api_read` when you need a documented endpoint that is not yet covered by the higher-level `productive` tool.
+
+**Parameters**
+
+| Parameter   | Type     | Description                                              |
+| ----------- | -------- | -------------------------------------------------------- |
+| `path`      | string   | Required relative API path, starting with `/`            |
+| `describe`  | boolean  | Return endpoint docs instead of executing the request    |
+| `filter`    | object   | Filter object, validated against the documented endpoint |
+| `include`   | string[] | Related resources to include                             |
+| `sort`      | string[] | Sort values, validated against the documented endpoint   |
+| `page`      | number   | Page number                                              |
+| `per_page`  | number   | Page size, max `200`                                     |
+| `paginate`  | boolean  | Follow pagination automatically                          |
+| `max_pages` | number   | Max pages when `paginate=true`, default `20`, max `50`   |
+
+**Safety model**
+
+- `GET` only
+- Path must be relative and start with `/`
+- Absolute URLs and path traversal are rejected
+- Only documented Productive endpoints are allowed
+- Filters and sort values are validated against the endpoint spec
+- `describe=true` is the safest way to inspect an endpoint before calling it
+
+**Examples**
+
+```json
+{
+  "path": "/invoices",
+  "describe": true
+}
+```
+
+```json
+{
+  "path": "/projects/123/tasks",
+  "filter": { "status": "open" },
+  "sort": ["due_date"],
+  "page": 1,
+  "per_page": 50
+}
+```
+
+```json
+{
+  "path": "/time_entries",
+  "filter": { "person_id": ["me"], "after": "2025-01-01", "before": "2025-01-31" },
+  "paginate": true,
+  "max_pages": 5
+}
+```
+
+#### `api_write`
+
+Use `api_write` only when the higher-level `productive` tool does not expose the mutation you need.
+
+**Parameters**
+
+| Parameter | Type    | Description                                        |
+| --------- | ------- | -------------------------------------------------- |
+| `method`  | string  | Required, one of `POST`, `PATCH`, `PUT`, `DELETE`  |
+| `path`    | string  | Required relative API path                         |
+| `body`    | object  | Request body for write methods                     |
+| `confirm` | boolean | Required, must be `true`                           |
+| `dry_run` | boolean | Return the normalized request without executing it |
+
+**Safety model**
+
+- Disabled by default
+- Requires `PRODUCTIVE_MCP_ENABLE_API_WRITE=true` on the server
+- Requires `confirm=true` on every call
+- Only documented Productive endpoints are allowed
+- Path must be relative; absolute URLs and traversal are rejected
+- `dry_run=true` lets you verify the exact method, path, and body before execution
+
+To enable writes in local or remote deployments:
+
+```bash
+PRODUCTIVE_MCP_ENABLE_API_WRITE=true productive-mcp-server
+```
+
+**Examples**
+
+```json
+{
+  "method": "PATCH",
+  "path": "/tasks/123",
+  "body": {
+    "data": {
+      "type": "tasks",
+      "id": "123",
+      "attributes": { "name": "Updated title" }
+    }
+  },
+  "confirm": true,
+  "dry_run": true
+}
+```
+
+```json
+{
+  "method": "DELETE",
+  "path": "/attachments/456",
+  "confirm": true
+}
+```
 
 ### Configuration Tools (Local mode only)
 

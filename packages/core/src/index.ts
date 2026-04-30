@@ -242,6 +242,15 @@ export type {
   UpdateDiscussionOptions,
 } from './executors/discussions/index.js';
 
+// Raw API executors
+export { DEFAULT_MAX_PAGES, MAX_MAX_PAGES, readApi, writeApi } from './executors/api/index.js';
+export type {
+  ApiPaginationMeta,
+  ApiReadOptions,
+  ApiWriteOptions,
+  RawApiListResponse,
+} from './executors/api/index.js';
+
 // Activities executors
 export { listActivities } from './executors/activities/index.js';
 export type { ListActivitiesOptions } from './executors/activities/index.js';
