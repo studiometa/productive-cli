@@ -49,7 +49,11 @@ describe('readApi', () => {
       query: { 'page[number]': 2 },
     });
     expect(result).toEqual({
-      data: [{ id: '1' }, { id: '2' }],
+      data: {
+        data: [{ id: '1' }, { id: '2' }],
+        meta: { current_page: 2, total_pages: 2, pagesFetched: 2, truncated: false },
+        included: [{ id: '10', type: 'companies', attributes: { name: 'ACME' } }],
+      },
       meta: { current_page: 2, total_pages: 2, pagesFetched: 2, truncated: false },
       included: [{ id: '10', type: 'companies', attributes: { name: 'ACME' } }],
     });
@@ -65,11 +69,14 @@ describe('readApi', () => {
     const result = await readApi({ path: '/invoices', paginate: true }, ctx);
 
     expect(requestRaw).toHaveBeenCalledTimes(DEFAULT_MAX_PAGES);
-    expect(result.meta).toEqual({
-      current_page: 1,
-      total_pages: DEFAULT_MAX_PAGES + 1,
-      pagesFetched: DEFAULT_MAX_PAGES,
-      truncated: true,
+    expect(result.data).toEqual({
+      data: Array.from({ length: DEFAULT_MAX_PAGES }, () => ({ id: '1' })),
+      meta: {
+        current_page: 1,
+        total_pages: DEFAULT_MAX_PAGES + 1,
+        pagesFetched: DEFAULT_MAX_PAGES,
+        truncated: true,
+      },
     });
   });
 });

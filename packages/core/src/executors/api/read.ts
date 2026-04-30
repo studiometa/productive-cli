@@ -1,4 +1,4 @@
-import type { ProductiveApiMeta } from '@studiometa/productive-api';
+import type { IncludedResource, ProductiveApiMeta } from '@studiometa/productive-api';
 
 import type { ExecutorContext } from '../../context/types.js';
 import type { ExecutorResult } from '../types.js';
@@ -47,7 +47,7 @@ export async function readApi(
 
   const maxPages = Math.min(options.maxPages ?? DEFAULT_MAX_PAGES, MAX_MAX_PAGES);
   const combined: unknown[] = [];
-  const included: RawApiListResponse['included'] = [];
+  const included: IncludedResource[] = [];
   let lastResponse: RawApiListResponse | null = null;
   let page = options.page ?? 1;
   let pagesFetched = 0;
@@ -86,13 +86,21 @@ export async function readApi(
   const truncated =
     !!lastResponse?.meta && hasMorePages(lastResponse.meta) && pagesFetched >= maxPages;
 
-  return {
+  const meta = {
+    ...lastResponse?.meta,
+    pagesFetched,
+    truncated,
+  } as ProductiveApiMeta & ApiPaginationMeta;
+
+  const data = {
     data: combined,
-    meta: {
-      ...lastResponse?.meta,
-      pagesFetched,
-      truncated,
-    } as ProductiveApiMeta & ApiPaginationMeta,
+    meta,
+    ...(included.length ? { included } : {}),
+  };
+
+  return {
+    data,
+    meta,
     ...(included.length ? { included } : {}),
   };
 }

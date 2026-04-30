@@ -115,16 +115,18 @@ export function validatePagination(args: { per_page?: number; max_pages?: number
   }
 }
 
-export function validateFilterSpec(
-  filter: Record<string, unknown> | undefined,
-  methodSpec: ApiMethodSpec,
-): void {
-  if (!filter) return;
-
+function validateFilterNode(filter: Record<string, unknown>, methodSpec: ApiMethodSpec): void {
   const allowedFilters = methodSpec.filters ?? {};
 
   for (const [key, value] of Object.entries(filter)) {
-    if (key === '$op' || /^\d+$/.test(key)) continue;
+    if (key === '$op') continue;
+
+    if (/^\d+$/.test(key)) {
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        validateFilterNode(value as Record<string, unknown>, methodSpec);
+      }
+      continue;
+    }
 
     const filterSpec = allowedFilters[key];
     if (!filterSpec) {
@@ -149,6 +151,15 @@ export function validateFilterSpec(
       }
     }
   }
+}
+
+export function validateFilterSpec(
+  filter: Record<string, unknown> | undefined,
+  methodSpec: ApiMethodSpec,
+): void {
+  if (!filter) return;
+
+  validateFilterNode(filter, methodSpec);
 }
 
 export function validateSort(sort: string[] | undefined, methodSpec: ApiMethodSpec): void {

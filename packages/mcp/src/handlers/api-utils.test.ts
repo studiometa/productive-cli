@@ -72,6 +72,41 @@ describe('api-utils', () => {
     );
   });
 
+  it('validates nested logical-group filters recursively', () => {
+    const { methodSpec } = resolveApiEndpoint('/invoices', 'GET');
+
+    expect(() =>
+      validateFilterSpec(
+        {
+          $op: 'and',
+          0: { sent_status: { eq: 2 } },
+          1: { amount_unpaid: { not_eq: 0 } },
+        },
+        methodSpec,
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      validateFilterSpec(
+        {
+          $op: 'and',
+          0: { nope: 'x' },
+        },
+        methodSpec,
+      ),
+    ).toThrow('Invalid filter field');
+
+    expect(() =>
+      validateFilterSpec(
+        {
+          $op: 'and',
+          0: { sent_status: { contains: 2 } },
+        },
+        methodSpec,
+      ),
+    ).toThrow('Invalid operator');
+  });
+
   it('validates sort values', () => {
     const { methodSpec } = resolveApiEndpoint('/invoices', 'GET');
     expect(() => validateSort(['-sent_on'], methodSpec)).not.toThrow();
