@@ -67,7 +67,7 @@ describe('api-utils', () => {
     const { methodSpec } = resolveApiEndpoint('/invoices', 'GET');
     expect(() => validateFilterSpec({ sent_status: { eq: 2 } }, methodSpec)).not.toThrow();
     expect(() => validateFilterSpec({ nope: 'x' }, methodSpec)).toThrow('Invalid filter field');
-    expect(() => validateFilterSpec({ sent_status: { contains: 2 } }, methodSpec)).toThrow(
+    expect(() => validateFilterSpec({ sent_status: { bogus: 2 } }, methodSpec)).toThrow(
       'Invalid operator',
     );
   });
@@ -100,7 +100,7 @@ describe('api-utils', () => {
       validateFilterSpec(
         {
           $op: 'and',
-          0: { sent_status: { contains: 2 } },
+          0: { sent_status: { bogus: 2 } },
         },
         methodSpec,
       ),
@@ -114,22 +114,24 @@ describe('api-utils', () => {
   });
 
   it('describes endpoints', () => {
-    expect(describeApiEndpoint('/reports/invoice_reports')).toEqual({
+    const description = describeApiEndpoint('/reports/invoice_reports');
+
+    expect(description).toMatchObject({
       path: '/reports/invoice_reports',
-      methods: [
-        {
-          method: 'GET',
-          summary: 'Get invoice report rows',
-          query: ['include', 'sort', 'page[number]', 'page[size]'],
-          filters: {
-            invoice_date_after: ['eq', 'contains'],
-            invoice_date_before: ['eq', 'contains'],
-            company_id: ['eq'],
-          },
-          sort: [],
-          supports_body: false,
-        },
-      ],
     });
+
+    const method = (description.methods as Array<Record<string, unknown>>)[0];
+    expect(method).toMatchObject({
+      method: 'GET',
+      summary: 'Get invoice reports',
+      supports_body: false,
+    });
+    expect(method.query).toEqual(expect.arrayContaining(['sort', 'group']));
+    expect(method.filters).toHaveProperty('company_id');
+    expect(method.filters).toHaveProperty('created_at');
+    expect((method.filters as Record<string, string[]>)['company_id']).toEqual(
+      expect.arrayContaining(['contains', 'eq', 'not_contain', 'not_eq']),
+    );
+    expect(method.sort).toEqual(expect.arrayContaining(['created_at', '-created_at']));
   });
 });

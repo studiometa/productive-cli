@@ -201,6 +201,7 @@ export function describeApiEndpoint(path: string): Record<string, unknown> {
         ]),
       ),
       sort: methodSpec?.sort ?? [],
+      path_params: methodSpec?.pathParams ?? {},
       supports_body: methodSpec?.supportsBody ?? false,
     })),
   };

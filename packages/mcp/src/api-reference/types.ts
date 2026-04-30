@@ -20,6 +20,7 @@ export interface ApiMethodSpec {
   query?: Record<string, ApiQueryParamSpec>;
   filters?: Record<string, ApiFilterSpec>;
   sort?: string[];
+  pathParams?: Record<string, ApiQueryParamSpec>;
   supportsBody?: boolean;
 }
 
