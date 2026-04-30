@@ -176,6 +176,51 @@ export function validateSort(sort: string[] | undefined, methodSpec: ApiMethodSp
   }
 }
 
+function buildExampleFilter(methodSpec: ApiMethodSpec): Record<string, unknown> | undefined {
+  const filterEntry = Object.entries(methodSpec.filters ?? {})[0];
+  if (!filterEntry) return undefined;
+
+  const [field, spec] = filterEntry;
+  const operators = Object.keys(spec.operators ?? {});
+  if (operators.includes('eq')) {
+    return { [field]: { eq: '<value>' } };
+  }
+
+  return { [field]: '<value>' };
+}
+
+function buildMethodExample(
+  path: string,
+  method: string,
+  methodSpec: ApiMethodSpec,
+): Record<string, unknown> {
+  const example: Record<string, unknown> = { path };
+
+  if (method === 'GET') {
+    const filter = buildExampleFilter(methodSpec);
+    if (filter) example.filter = filter;
+    if (methodSpec.sort?.length) example.sort = [methodSpec.sort[0]];
+    if (methodSpec.query?.include) example.include = ['<relationship>'];
+    if (methodSpec.query?.['page[number]']) example.page = 1;
+    if (methodSpec.query?.['page[size]']) example.per_page = 20;
+    return example;
+  }
+
+  example.method = method;
+  if (methodSpec.supportsBody) {
+    example.body = {
+      data: {
+        type: '<resource-type>',
+        attributes: Object.fromEntries(
+          (methodSpec.requestBodyFields ?? []).slice(0, 3).map((field) => [field, '<value>']),
+        ),
+      },
+    };
+  }
+
+  return example;
+}
+
 export function describeApiEndpoint(path: string): Record<string, unknown> {
   const normalizedPath = normalizeApiPath(path);
   const matches = Object.values(PRODUCTIVE_API_REFERENCE).filter((spec) => {
@@ -190,11 +235,15 @@ export function describeApiEndpoint(path: string): Record<string, unknown> {
   const spec = matches[0];
   return {
     path: spec.path,
+    normalized_path: normalizedPath,
     methods: Object.entries(spec.methods).map(([method, methodSpec]) => ({
       method,
       summary: methodSpec?.summary,
-      query: Object.keys(methodSpec?.query ?? {}),
-      filters: Object.fromEntries(
+      description: methodSpec?.description,
+      operation_id: methodSpec?.operationId,
+      query: methodSpec?.query ?? {},
+      filters: methodSpec?.filters ?? {},
+      filter_operators: Object.fromEntries(
         Object.entries(methodSpec?.filters ?? {}).map(([key, value]) => [
           key,
           Object.keys(value.operators ?? {}),
@@ -202,7 +251,9 @@ export function describeApiEndpoint(path: string): Record<string, unknown> {
       ),
       sort: methodSpec?.sort ?? [],
       path_params: methodSpec?.pathParams ?? {},
+      request_body_fields: methodSpec?.requestBodyFields ?? [],
       supports_body: methodSpec?.supportsBody ?? false,
+      example: methodSpec ? buildMethodExample(spec.path, method, methodSpec) : undefined,
     })),
   };
 }

@@ -113,25 +113,58 @@ describe('api-utils', () => {
     expect(() => validateSort(['-nope'], methodSpec)).toThrow('Invalid sort field');
   });
 
-  it('describes endpoints', () => {
+  it('describes endpoints with richer metadata and examples', () => {
     const description = describeApiEndpoint('/reports/invoice_reports');
 
     expect(description).toMatchObject({
       path: '/reports/invoice_reports',
+      normalized_path: '/reports/invoice_reports',
     });
 
     const method = (description.methods as Array<Record<string, unknown>>)[0];
     expect(method).toMatchObject({
       method: 'GET',
       summary: 'Get invoice reports',
+      description: 'Retrieve aggregated invoice report data grouped by configurable dimensions.',
+      operation_id: 'reports-invoice_reports-index',
       supports_body: false,
     });
-    expect(method.query).toEqual(expect.arrayContaining(['sort', 'group']));
+    expect(method.query).toHaveProperty('sort');
+    expect(method.query).toHaveProperty('group');
     expect(method.filters).toHaveProperty('company_id');
     expect(method.filters).toHaveProperty('created_at');
-    expect((method.filters as Record<string, string[]>)['company_id']).toEqual(
+    expect(method.filter_operators).toHaveProperty('company_id');
+    expect((method.filter_operators as Record<string, string[]>)['company_id']).toEqual(
       expect.arrayContaining(['contains', 'eq', 'not_contain', 'not_eq']),
     );
     expect(method.sort).toEqual(expect.arrayContaining(['created_at', '-created_at']));
+    expect(method.example).toMatchObject({
+      path: '/reports/invoice_reports',
+    });
+    expect(method.example).toHaveProperty('filter');
+    expect(method.example).toHaveProperty('sort');
+  });
+
+  it('describes write endpoints with request body fields and examples', () => {
+    const description = describeApiEndpoint('/tasks/123');
+    const patchMethod = (description.methods as Array<Record<string, unknown>>).find(
+      (method) => method.method === 'PATCH',
+    );
+
+    expect(patchMethod).toMatchObject({
+      method: 'PATCH',
+      summary: 'Update a task',
+      supports_body: true,
+    });
+    expect(patchMethod?.request_body_fields).toEqual(
+      expect.arrayContaining(['title', 'assignee_id', 'task_list_id']),
+    );
+    expect(patchMethod?.example).toMatchObject({
+      path: '/tasks/{id}',
+      method: 'PATCH',
+    });
+    expect(patchMethod).toBeDefined();
+    expect((patchMethod as Record<string, unknown>).example).toBeTruthy();
+    expect((patchMethod as { example: Record<string, unknown> }).example.body).toBeTruthy();
   });
 });

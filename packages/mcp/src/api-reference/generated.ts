@@ -6,6 +6,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get activities',
+        description: 'List activities with optional filters and pagination.',
+        operationId: 'activities-index',
         query: {
           sort: {
             type: 'array',
@@ -516,6 +518,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an activity',
+        description: 'Retrieve a single activity by ID.',
+        operationId: 'activities-show',
         pathParams: {
           id: {
             type: 'string',
@@ -530,6 +534,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get approval policies',
+        description: 'List approval policies with optional filters and pagination.',
+        operationId: 'approval_policies-index',
         query: {
           sort: {
             type: 'array',
@@ -607,7 +613,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates the approval policy',
+        description: 'Create a new approval policy.',
+        operationId: 'approval_policies-create',
         supportsBody: true,
+        requestBodyFields: ['custom', 'default', 'name', 'type_id'],
       },
     },
   },
@@ -616,6 +625,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets the approval policy',
+        description: 'Retrieve a single approval policy by ID.',
+        operationId: 'approval_policies-show',
         pathParams: {
           id: {
             type: 'string',
@@ -625,6 +636,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates the approval policy',
+        description: 'Update an approval policy.',
+        operationId: 'approval_policies-update',
         pathParams: {
           id: {
             type: 'string',
@@ -632,6 +645,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['custom', 'default', 'name', 'type_id'],
       },
     },
   },
@@ -640,6 +654,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives the approval policy',
+        description: 'Archive an approval policy.',
+        operationId: 'approval_policies-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -654,6 +670,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores the approval policy',
+        description: 'Restore an approval policy.',
+        operationId: 'approval_policies-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -668,6 +686,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get approval policy assignments',
+        description: 'List approval policy assignments with optional filters and pagination.',
+        operationId: 'approval_policy_assignments-index',
         query: {
           sort: {
             type: 'array',
@@ -725,7 +745,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates the approval policy assignment',
+        description: 'Create a new approval policy assignment.',
+        operationId: 'approval_policy_assignments-create',
         supportsBody: true,
+        requestBodyFields: ['target_type'],
       },
     },
   },
@@ -734,6 +757,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets the approval policy assignment',
+        description: 'Retrieve a single approval policy assignment by ID.',
+        operationId: 'approval_policy_assignments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -743,6 +768,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates the approval policy assignment',
+        description: 'Update an approval policy assignment.',
+        operationId: 'approval_policy_assignments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -750,9 +777,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['target_type'],
       },
       DELETE: {
         summary: 'Deletes the approval policy assignment',
+        description: 'Delete an approval policy assignment.',
+        operationId: 'approval_policy_assignments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -767,7 +797,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Creates the approval workflow',
+        description: 'Create a new approval workflow.',
+        operationId: 'approval_workflows-create',
         supportsBody: true,
+        requestBodyFields: [
+          'approval_policy_id',
+          'approval_requirement_id',
+          'approver_ids',
+          'dynamic_approver_ids',
+          'dynamic_subscriber_ids',
+          'event_id',
+          'subscriber_ids',
+          'target_type_id',
+        ],
       },
     },
   },
@@ -776,6 +818,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets the approval workflow',
+        description: 'Retrieve a single approval workflow by ID.',
+        operationId: 'approval_workflows-show',
         pathParams: {
           id: {
             type: 'string',
@@ -785,6 +829,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates the approval workflow',
+        description: 'Update an approval workflow.',
+        operationId: 'approval_workflows-update',
         pathParams: {
           id: {
             type: 'string',
@@ -792,9 +838,21 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'approval_policy_id',
+          'approval_requirement_id',
+          'approver_ids',
+          'dynamic_approver_ids',
+          'dynamic_subscriber_ids',
+          'event_id',
+          'subscriber_ids',
+          'target_type_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes the approval workflow',
+        description: 'Delete an approval workflow.',
+        operationId: 'approval_workflows-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -809,6 +867,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get attachments',
+        description: 'List attachments with optional filters and pagination.',
+        operationId: 'attachments-index',
         query: {
           sort: {
             type: 'array',
@@ -1065,7 +1125,29 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an attachment',
+        description: 'Create a new attachment.',
+        operationId: 'attachments-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachable_type',
+          'attachment_type',
+          'bill_id',
+          'booking_id',
+          'comment_id',
+          'content_type',
+          'document_style_id',
+          'document_type_id',
+          'expense_id',
+          'file_updated_at',
+          'invoice_id',
+          'name',
+          'page_id',
+          'purchase_order_id',
+          'size',
+          'task_id',
+          'temp_url',
+          'widget_id',
+        ],
       },
     },
   },
@@ -1074,6 +1156,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an attachment',
+        description: 'Retrieve a single attachment by ID.',
+        operationId: 'attachments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -1083,6 +1167,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an attachment',
+        description: 'Update an attachment.',
+        operationId: 'attachments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -1090,9 +1176,31 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachable_type',
+          'attachment_type',
+          'bill_id',
+          'booking_id',
+          'comment_id',
+          'content_type',
+          'document_style_id',
+          'document_type_id',
+          'expense_id',
+          'file_updated_at',
+          'invoice_id',
+          'name',
+          'page_id',
+          'purchase_order_id',
+          'size',
+          'task_id',
+          'temp_url',
+          'widget_id',
+        ],
       },
       DELETE: {
         summary: 'Delete an attachment',
+        description: 'Delete an attachment.',
+        operationId: 'attachments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -1107,6 +1215,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get automatic invoicing rules',
+        description: 'List automatic invoicing rules with optional filters and pagination.',
+        operationId: 'automatic_invoicing_rules-index',
         query: {
           sort: {
             type: 'array',
@@ -1173,7 +1283,16 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an automatic invoicing rule',
+        description: 'Create a new automatic invoicing rule.',
+        operationId: 'automatic_invoicing_rules-create',
         supportsBody: true,
+        requestBodyFields: [
+          'budget_id',
+          'creation_offset',
+          'creation_offset_unit',
+          'reference_date',
+          'skip_weekends',
+        ],
       },
     },
   },
@@ -1182,6 +1301,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an automatic invoicing rule',
+        description: 'Retrieve a single automatic invoicing rule by ID.',
+        operationId: 'automatic_invoicing_rules-show',
         pathParams: {
           id: {
             type: 'string',
@@ -1191,6 +1312,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an automatic invoicing rule',
+        description: 'Update an automatic invoicing rule.',
+        operationId: 'automatic_invoicing_rules-update',
         pathParams: {
           id: {
             type: 'string',
@@ -1198,9 +1321,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'budget_id',
+          'creation_offset',
+          'creation_offset_unit',
+          'reference_date',
+          'skip_weekends',
+        ],
       },
       DELETE: {
         summary: 'Deletes an automatic invoicing rule',
+        description: 'Delete an automatic invoicing rule.',
+        operationId: 'automatic_invoicing_rules-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -1215,6 +1347,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get bank accounts',
+        description: 'List bank accounts with optional filters and pagination.',
+        operationId: 'bank_accounts-index',
         query: {
           sort: {
             type: 'array',
@@ -1319,7 +1453,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a bank account',
+        description: 'Create a new bank account.',
+        operationId: 'bank_accounts-create',
         supportsBody: true,
+        requestBodyFields: [
+          'bank_address',
+          'bank_name',
+          'currency',
+          'name',
+          'number',
+          'subsidiary_id',
+          'swift_code',
+        ],
       },
     },
   },
@@ -1328,6 +1473,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a bank account',
+        description: 'Retrieve a single bank account by ID.',
+        operationId: 'bank_accounts-show',
         pathParams: {
           id: {
             type: 'string',
@@ -1337,6 +1484,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a bank account',
+        description: 'Update a bank account.',
+        operationId: 'bank_accounts-update',
         pathParams: {
           id: {
             type: 'string',
@@ -1344,6 +1493,15 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'bank_address',
+          'bank_name',
+          'currency',
+          'name',
+          'number',
+          'subsidiary_id',
+          'swift_code',
+        ],
       },
     },
   },
@@ -1352,6 +1510,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a bank account',
+        description: 'Archive a bank account.',
+        operationId: 'bank_accounts-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -1366,6 +1526,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores an archived bank account',
+        description: 'Restore a bank account.',
+        operationId: 'bank_accounts-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -1380,7 +1542,16 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Create a bill',
+        description: 'Create a new bill.',
+        operationId: 'bills-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'date',
+          'due_date',
+          'invoice_number',
+          'purchase_order_id',
+        ],
       },
     },
   },
@@ -1389,6 +1560,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a bill',
+        description: 'Retrieve a single bill by ID.',
+        operationId: 'bills-show',
         pathParams: {
           id: {
             type: 'string',
@@ -1398,6 +1571,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a bill',
+        description: 'Update a bill.',
+        operationId: 'bills-update',
         pathParams: {
           id: {
             type: 'string',
@@ -1405,9 +1580,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'date',
+          'due_date',
+          'invoice_number',
+          'purchase_order_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a bill',
+        description: 'Delete a bill.',
+        operationId: 'bills-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -1422,6 +1606,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get boards',
+        description: 'List boards with optional filters and pagination.',
+        operationId: 'boards-index',
         query: {
           sort: {
             type: 'array',
@@ -1506,7 +1692,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a board',
+        description: 'Create a new board.',
+        operationId: 'boards-create',
         supportsBody: true,
+        requestBodyFields: ['hidden', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -1515,6 +1704,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copy a board',
+        description: 'Copy a board.',
+        operationId: 'boards-copy-copy',
       },
     },
   },
@@ -1523,6 +1714,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a board',
+        description: 'Retrieve a single board by ID.',
+        operationId: 'boards-show',
         pathParams: {
           id: {
             type: 'string',
@@ -1532,6 +1725,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a board',
+        description: 'Update a board.',
+        operationId: 'boards-update',
         pathParams: {
           id: {
             type: 'string',
@@ -1539,6 +1734,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['hidden', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -1547,6 +1743,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a board',
+        description: 'Archive a board.',
+        operationId: 'boards-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -1561,6 +1759,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Move a board',
+        description: 'Move a board.',
+        operationId: 'boards-move-move',
         pathParams: {
           id: {
             type: 'string',
@@ -1575,6 +1775,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Repoisition a board',
+        description: 'Reposition a board.',
+        operationId: 'boards-reposition-reposition',
         pathParams: {
           id: {
             type: 'string',
@@ -1589,6 +1791,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a board',
+        description: 'Restore a board.',
+        operationId: 'boards-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -1603,6 +1807,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get bookings',
+        description: 'List bookings with optional filters and pagination.',
+        operationId: 'bookings-index',
         query: {
           sort: {
             type: 'array',
@@ -2316,7 +2522,31 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a booking',
+        description: 'Create a new booking.',
+        operationId: 'bookings-create',
         supportsBody: true,
+        requestBodyFields: [
+          'approver_id',
+          'attachment_ids',
+          'autotracking',
+          'booking_method_id',
+          'custom_fields',
+          'draft',
+          'ended_on',
+          'event_id',
+          'note',
+          'origin_id',
+          'percentage',
+          'person_id',
+          'rejected_reason',
+          'resource_request_id',
+          'service_id',
+          'started_on',
+          'task_id',
+          'time',
+          'total_time',
+          'use_salary_currency',
+        ],
       },
     },
   },
@@ -2325,6 +2555,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a booking',
+        description: 'Retrieve a single booking by ID.',
+        operationId: 'bookings-show',
         pathParams: {
           id: {
             type: 'string',
@@ -2334,6 +2566,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a booking',
+        description: 'Update a booking.',
+        operationId: 'bookings-update',
         pathParams: {
           id: {
             type: 'string',
@@ -2341,9 +2575,33 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'approver_id',
+          'attachment_ids',
+          'autotracking',
+          'booking_method_id',
+          'custom_fields',
+          'draft',
+          'ended_on',
+          'event_id',
+          'note',
+          'origin_id',
+          'percentage',
+          'person_id',
+          'rejected_reason',
+          'resource_request_id',
+          'service_id',
+          'started_on',
+          'task_id',
+          'time',
+          'total_time',
+          'use_salary_currency',
+        ],
       },
       DELETE: {
         summary: 'Deletes a booking',
+        description: 'Delete a booking.',
+        operationId: 'bookings-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -2358,6 +2616,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unapproves a booking',
+        description: 'Unapprove a booking.',
+        operationId: 'bookings-unapprove-unapprove',
         pathParams: {
           id: {
             type: 'string',
@@ -2372,6 +2632,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get comments',
+        description: 'List comments with optional filters and pagination.',
+        operationId: 'comments-index',
         query: {
           sort: {
             type: 'array',
@@ -2794,7 +3056,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a comment',
+        description: 'Create a new comment.',
+        operationId: 'comments-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'body',
+          'company_id',
+          'deal_id',
+          'discussion_id',
+          'draft',
+          'hidden',
+          'invoice_id',
+          'person_id',
+          'project_id',
+          'proposal_id',
+          'purchase_order_id',
+          'resource_request_id',
+          'task_id',
+          'version_number',
+        ],
       },
     },
   },
@@ -2803,6 +3084,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a comment',
+        description: 'Retrieve a single comment by ID.',
+        operationId: 'comments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -2812,6 +3095,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a comment',
+        description: 'Update a comment.',
+        operationId: 'comments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -2819,9 +3104,28 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'body',
+          'company_id',
+          'deal_id',
+          'discussion_id',
+          'draft',
+          'hidden',
+          'invoice_id',
+          'person_id',
+          'project_id',
+          'proposal_id',
+          'purchase_order_id',
+          'resource_request_id',
+          'task_id',
+          'version_number',
+        ],
       },
       DELETE: {
         summary: 'Deletes a comment',
+        description: 'Delete a comment.',
+        operationId: 'comments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -2836,6 +3140,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Adds reaction to a comment',
+        description: 'Add a reaction to a comment.',
+        operationId: 'comments-add_reaction-add_reaction',
         pathParams: {
           id: {
             type: 'string',
@@ -2850,6 +3156,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Pins a comment',
+        description: 'Pin a comment.',
+        operationId: 'comments-pin-pin',
         pathParams: {
           id: {
             type: 'string',
@@ -2864,6 +3172,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Removes reaction from comment',
+        description: 'Remove a reaction from a comment.',
+        operationId: 'comments-remove_reaction-remove_reaction',
         pathParams: {
           id: {
             type: 'string',
@@ -2878,6 +3188,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unpins a comment',
+        description: 'Unpin a comment.',
+        operationId: 'comments-unpin-unpin',
         pathParams: {
           id: {
             type: 'string',
@@ -2892,6 +3204,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get companies',
+        description: 'List companies with optional filters and pagination.',
+        operationId: 'companies-index',
         query: {
           sort: {
             type: 'array',
@@ -3454,7 +3768,28 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a company',
+        description: 'Create a new company.',
+        operationId: 'companies-create',
         supportsBody: true,
+        requestBodyFields: [
+          'avatar_url',
+          'billing_name',
+          'company_code',
+          'contact',
+          'custom_fields',
+          'default_currency',
+          'default_document_type_id',
+          'default_subsidiary_id',
+          'default_tax_rate_id',
+          'domain',
+          'due_days',
+          'name',
+          'parent_company_id',
+          'settings',
+          'subscriber_ids',
+          'tag_list',
+          'vat',
+        ],
       },
     },
   },
@@ -3463,6 +3798,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a company',
+        description: 'Retrieve a single company by ID.',
+        operationId: 'companies-show',
         pathParams: {
           id: {
             type: 'string',
@@ -3472,6 +3809,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a company',
+        description: 'Update a company.',
+        operationId: 'companies-update',
         pathParams: {
           id: {
             type: 'string',
@@ -3479,6 +3818,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'avatar_url',
+          'billing_name',
+          'company_code',
+          'contact',
+          'custom_fields',
+          'default_currency',
+          'default_document_type_id',
+          'default_subsidiary_id',
+          'default_tax_rate_id',
+          'domain',
+          'due_days',
+          'name',
+          'parent_company_id',
+          'settings',
+          'subscriber_ids',
+          'tag_list',
+          'vat',
+        ],
       },
     },
   },
@@ -3487,6 +3845,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a company',
+        description: 'Archive a company.',
+        operationId: 'companies-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -3501,6 +3861,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a company',
+        description: 'Restore a company.',
+        operationId: 'companies-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -3515,6 +3877,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get contact entries',
+        description: 'List contact entries with optional filters and pagination.',
+        operationId: 'contact_entries-index',
         query: {
           sort: {
             type: 'array',
@@ -3648,7 +4012,32 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a contact entry',
+        description: 'Create a new contact entry.',
+        operationId: 'contact_entries-create',
         supportsBody: true,
+        requestBodyFields: [
+          'address',
+          'billing_address',
+          'billing_email',
+          'city',
+          'company_id',
+          'contactable_type',
+          'country',
+          'email',
+          'invoice_id',
+          'invoice_template_id',
+          'name',
+          'organization_id',
+          'person_id',
+          'phone',
+          'purchase_order_id',
+          'state',
+          'subsidiary_id',
+          'type',
+          'vat',
+          'website',
+          'zipcode',
+        ],
       },
     },
   },
@@ -3657,6 +4046,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a contact entry',
+        description: 'Retrieve a single contact entry by ID.',
+        operationId: 'contact_entries-show',
         pathParams: {
           id: {
             type: 'string',
@@ -3666,6 +4057,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a contact entry',
+        description: 'Update a contact entry.',
+        operationId: 'contact_entries-update',
         pathParams: {
           id: {
             type: 'string',
@@ -3673,9 +4066,34 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'address',
+          'billing_address',
+          'billing_email',
+          'city',
+          'company_id',
+          'contactable_type',
+          'country',
+          'email',
+          'invoice_id',
+          'invoice_template_id',
+          'name',
+          'organization_id',
+          'person_id',
+          'phone',
+          'purchase_order_id',
+          'state',
+          'subsidiary_id',
+          'type',
+          'vat',
+          'website',
+          'zipcode',
+        ],
       },
       DELETE: {
         summary: 'Deletes a contact entry',
+        description: 'Delete a contact entry.',
+        operationId: 'contact_entries-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -3690,6 +4108,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get contracts',
+        description: 'List contracts with optional filters and pagination.',
+        operationId: 'contracts-index',
         query: {
           sort: {
             type: 'array',
@@ -3799,7 +4219,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a contract',
+        description: 'Create a new contract.',
+        operationId: 'contracts-create',
         supportsBody: true,
+        requestBodyFields: [
+          'copy_expenses',
+          'copy_purchase_order_number',
+          'ends_on',
+          'interval_id',
+          'next_occurrence_on',
+          'template_id',
+          'use_rollover_hours',
+        ],
       },
     },
   },
@@ -3808,6 +4239,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a contract',
+        description: 'Retrieve a single contract by ID.',
+        operationId: 'contracts-show',
         pathParams: {
           id: {
             type: 'string',
@@ -3817,6 +4250,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a contract',
+        description: 'Update a contract.',
+        operationId: 'contracts-update',
         pathParams: {
           id: {
             type: 'string',
@@ -3824,9 +4259,20 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'copy_expenses',
+          'copy_purchase_order_number',
+          'ends_on',
+          'interval_id',
+          'next_occurrence_on',
+          'template_id',
+          'use_rollover_hours',
+        ],
       },
       DELETE: {
         summary: 'Deletes a contract',
+        description: 'Delete a contract.',
+        operationId: 'contracts-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -3841,6 +4287,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Generates new budget',
+        description: 'Generate a contract.',
+        operationId: 'contracts-generate-generate',
         pathParams: {
           id: {
             type: 'string',
@@ -3855,6 +4303,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get custom domains',
+        description: 'List custom domains with optional filters and pagination.',
+        operationId: 'custom_domains-index',
         query: {
           sort: {
             type: 'array',
@@ -3902,7 +4352,15 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a custom domain',
+        description: 'Create a new custom domain.',
+        operationId: 'custom_domains-create',
         supportsBody: true,
+        requestBodyFields: [
+          'allow_user_email',
+          'email_sender_address',
+          'email_sender_name',
+          'name',
+        ],
       },
     },
   },
@@ -3911,6 +4369,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a custom domain',
+        description: 'Retrieve a single custom domain by ID.',
+        operationId: 'custom_domains-show',
         pathParams: {
           id: {
             type: 'string',
@@ -3920,6 +4380,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a custom domain',
+        description: 'Delete a custom domain.',
+        operationId: 'custom_domains-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -3934,6 +4396,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get custom field options',
+        description: 'List custom field options with optional filters and pagination.',
+        operationId: 'custom_field_options-index',
         query: {
           sort: {
             type: 'array',
@@ -3986,7 +4450,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates a custom field option',
+        description: 'Create a new custom field option.',
+        operationId: 'custom_field_options-create',
         supportsBody: true,
+        requestBodyFields: ['color_id', 'custom_field_id', 'name', 'position'],
       },
     },
   },
@@ -3995,6 +4462,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a custom field option',
+        description: 'Retrieve a single custom field option by ID.',
+        operationId: 'custom_field_options-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4004,6 +4473,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates a custom field option',
+        description: 'Update a custom field option.',
+        operationId: 'custom_field_options-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4011,6 +4482,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['color_id', 'custom_field_id', 'name', 'position'],
       },
     },
   },
@@ -4019,6 +4491,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a custom field option',
+        description: 'Archive a custom field option.',
+        operationId: 'custom_field_options-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -4033,6 +4507,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get custom field sections',
+        description: 'List custom field sections with optional filters and pagination.',
+        operationId: 'custom_field_sections-index',
         query: {
           sort: {
             type: 'array',
@@ -4063,7 +4539,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates the custom field section',
+        description: 'Create a new custom field section.',
+        operationId: 'custom_field_sections-create',
         supportsBody: true,
+        requestBodyFields: ['customizable_type', 'name', 'position'],
       },
     },
   },
@@ -4072,6 +4551,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets the custom field section',
+        description: 'Retrieve a single custom field section by ID.',
+        operationId: 'custom_field_sections-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4081,6 +4562,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates the custom field section',
+        description: 'Update a custom field section.',
+        operationId: 'custom_field_sections-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4088,6 +4571,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['customizable_type', 'name', 'position'],
       },
     },
   },
@@ -4096,6 +4580,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives the custom field section',
+        description: 'Archive a custom field section.',
+        operationId: 'custom_field_sections-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -4110,6 +4596,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get custom fields',
+        description: 'List custom fields with optional filters and pagination.',
+        operationId: 'custom_fields-index',
         query: {
           sort: {
             type: 'array',
@@ -4262,7 +4750,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates a custom field',
+        description: 'Create a new custom field.',
+        operationId: 'custom_fields-create',
         supportsBody: true,
+        requestBodyFields: [
+          'aggregation_type_id',
+          'customizable_type',
+          'data_type_id',
+          'formatting_type_id',
+          'global',
+          'name',
+          'position',
+          'project_id',
+          'quick_add_enabled',
+          'required',
+          'section_id',
+          'sensitive',
+          'show_in_add_edit_views',
+          'survey_id',
+        ],
       },
     },
   },
@@ -4271,6 +4777,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a custom field',
+        description: 'Retrieve a single custom field by ID.',
+        operationId: 'custom_fields-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4280,6 +4788,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates a custom field',
+        description: 'Update a custom field.',
+        operationId: 'custom_fields-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4287,6 +4797,22 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'aggregation_type_id',
+          'customizable_type',
+          'data_type_id',
+          'formatting_type_id',
+          'global',
+          'name',
+          'position',
+          'project_id',
+          'quick_add_enabled',
+          'required',
+          'section_id',
+          'sensitive',
+          'show_in_add_edit_views',
+          'survey_id',
+        ],
       },
     },
   },
@@ -4295,6 +4821,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a custom field',
+        description: 'Archive a custom field.',
+        operationId: 'custom_fields-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -4309,6 +4837,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get all dashboards',
+        description: 'List dashboards with optional filters and pagination.',
+        operationId: 'dashboards-index',
         query: {
           sort: {
             type: 'array',
@@ -4374,7 +4904,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a dashboard',
+        description: 'Create a new dashboard.',
+        operationId: 'dashboards-create',
         supportsBody: true,
+        requestBodyFields: ['is_private', 'name', 'person_id', 'project_id', 'subscriber_ids'],
       },
     },
   },
@@ -4383,6 +4916,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copy a dashboard',
+        description: 'Copy a dashboard.',
+        operationId: 'dashboards-copy-copy',
       },
     },
   },
@@ -4391,6 +4926,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a dashboard',
+        description: 'Retrieve a single dashboard by ID.',
+        operationId: 'dashboards-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4400,6 +4937,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a dashboard',
+        description: 'Update a dashboard.',
+        operationId: 'dashboards-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4407,9 +4946,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['is_private', 'name', 'person_id', 'project_id', 'subscriber_ids'],
       },
       DELETE: {
         summary: 'Delete a dashboard',
+        description: 'Delete a dashboard.',
+        operationId: 'dashboards-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -4424,6 +4966,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get deal cost rates',
+        description: 'List deal cost rates with optional filters and pagination.',
+        operationId: 'deal_cost_rates-index',
         query: {
           sort: {
             type: 'array',
@@ -4472,7 +5016,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a deal cost rate',
+        description: 'Create a new deal cost rate.',
+        operationId: 'deal_cost_rates-create',
         supportsBody: true,
+        requestBodyFields: ['currency', 'deal_id', 'person_id', 'rate_cents'],
       },
     },
   },
@@ -4481,6 +5028,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a deal cost rate',
+        description: 'Retrieve a single deal cost rate by ID.',
+        operationId: 'deal_cost_rates-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4490,6 +5039,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a deal cost rate',
+        description: 'Update a deal cost rate.',
+        operationId: 'deal_cost_rates-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4497,9 +5048,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['currency', 'deal_id', 'person_id', 'rate_cents'],
       },
       DELETE: {
         summary: 'Deletes a deal cost rate',
+        description: 'Delete a deal cost rate.',
+        operationId: 'deal_cost_rates-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -4514,6 +5068,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get deal statuses',
+        description: 'List deal statuses with optional filters and pagination.',
+        operationId: 'deal_statuses-index',
         query: {
           sort: {
             type: 'array',
@@ -4743,7 +5299,22 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a deal status',
+        description: 'Create a new deal status.',
+        operationId: 'deal_statuses-create',
         supportsBody: true,
+        requestBodyFields: [
+          'booking_tracking_enabled',
+          'color_id',
+          'expense_tracking_enabled',
+          'lost_reason_enabled',
+          'name',
+          'pipeline_id',
+          'position',
+          'probability',
+          'probability_enabled',
+          'status_id',
+          'time_tracking_enabled',
+        ],
       },
     },
   },
@@ -4752,6 +5323,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Merges a deal status',
+        description: 'Merge deal statuses.',
+        operationId: 'deal_statuses-merge-merge',
       },
     },
   },
@@ -4760,6 +5333,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a deal status',
+        description: 'Retrieve a single deal status by ID.',
+        operationId: 'deal_statuses-show',
         pathParams: {
           id: {
             type: 'string',
@@ -4769,6 +5344,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a deal status',
+        description: 'Update a deal status.',
+        operationId: 'deal_statuses-update',
         pathParams: {
           id: {
             type: 'string',
@@ -4776,9 +5353,24 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'booking_tracking_enabled',
+          'color_id',
+          'expense_tracking_enabled',
+          'lost_reason_enabled',
+          'name',
+          'pipeline_id',
+          'position',
+          'probability',
+          'probability_enabled',
+          'status_id',
+          'time_tracking_enabled',
+        ],
       },
       DELETE: {
         summary: 'Destroy a deal status',
+        description: 'Delete a deal status.',
+        operationId: 'deal_statuses-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -4793,6 +5385,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a deal status',
+        description: 'Archive a deal status.',
+        operationId: 'deal_statuses-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -4807,6 +5401,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get deals',
+        description:
+          'List deals with optional filters. Returns paginated deal records the caller has access to.',
+        operationId: 'deals-index',
         query: {
           sort: {
             type: 'array',
@@ -6977,7 +7574,63 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a deal',
+        description: 'Create a new deal.',
+        operationId: 'deals-create',
         supportsBody: true,
+        requestBodyFields: [
+          'budget',
+          'budget_warning',
+          'client_access',
+          'color_id',
+          'company_id',
+          'contact_id',
+          'currency',
+          'custom_fields',
+          'date',
+          'deal_status_id',
+          'deal_type_id',
+          'deal_value',
+          'deal_value_source',
+          'delivered_on',
+          'designated_approver_id',
+          'destroy_future_bookings',
+          'document_type_id',
+          'editor_config',
+          'end_date',
+          'expense_approval',
+          'lost_comment',
+          'lost_reason_id',
+          'man_day_minutes',
+          'manual_invoicing_reason',
+          'manual_invoicing_status_id',
+          'name',
+          'note',
+          'open_hours',
+          'origin_deal_id',
+          'position',
+          'probability',
+          'project_id',
+          'proposal_document_type_id',
+          'proposal_note',
+          'purchase_order_number',
+          'responsible_id',
+          'retainer_deal_value_type',
+          'retainer_interval',
+          'retainer_interval_count',
+          'revenue_distribution_method',
+          'revenue_distribution_type',
+          'rounding_interval_id',
+          'rounding_method_id',
+          'sales_closed_on',
+          'service_type_restricted_tracking',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'tax_rate_id',
+          'time_approval',
+          'tracking_type_id',
+          'validate_expense_when_closing',
+        ],
       },
     },
   },
@@ -6986,6 +7639,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a deal',
+        description: 'Create a copy of an existing deal.',
+        operationId: 'deals-copy-copy',
       },
     },
   },
@@ -6994,6 +7649,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Creates a budget from origin deal',
+        description: 'Create a new deal from an origin deal.',
+        operationId: 'deals-create_from_origin-create_from_origin',
       },
     },
   },
@@ -7002,6 +7659,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a deal',
+        description: 'Retrieve a single deal by ID.',
+        operationId: 'deals-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7011,6 +7670,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a deal',
+        description: "Update a deal's attributes or relationships.",
+        operationId: 'deals-update',
         pathParams: {
           id: {
             type: 'string',
@@ -7018,9 +7679,65 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'budget',
+          'budget_warning',
+          'client_access',
+          'color_id',
+          'company_id',
+          'contact_id',
+          'currency',
+          'custom_fields',
+          'date',
+          'deal_status_id',
+          'deal_type_id',
+          'deal_value',
+          'deal_value_source',
+          'delivered_on',
+          'designated_approver_id',
+          'destroy_future_bookings',
+          'document_type_id',
+          'editor_config',
+          'end_date',
+          'expense_approval',
+          'lost_comment',
+          'lost_reason_id',
+          'man_day_minutes',
+          'manual_invoicing_reason',
+          'manual_invoicing_status_id',
+          'name',
+          'note',
+          'open_hours',
+          'origin_deal_id',
+          'position',
+          'probability',
+          'project_id',
+          'proposal_document_type_id',
+          'proposal_note',
+          'purchase_order_number',
+          'responsible_id',
+          'retainer_deal_value_type',
+          'retainer_interval',
+          'retainer_interval_count',
+          'revenue_distribution_method',
+          'revenue_distribution_type',
+          'rounding_interval_id',
+          'rounding_method_id',
+          'sales_closed_on',
+          'service_type_restricted_tracking',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'tax_rate_id',
+          'time_approval',
+          'tracking_type_id',
+          'validate_expense_when_closing',
+        ],
       },
       DELETE: {
         summary: 'Deletes a deal',
+        description: 'Delete a deal.',
+        operationId: 'deals-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -7035,6 +7752,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Closes a deal',
+        description: 'Close a deal.',
+        operationId: 'deals-close-close',
         pathParams: {
           id: {
             type: 'string',
@@ -7049,6 +7768,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Opens a deal',
+        description: 'Reopen a closed deal.',
+        operationId: 'deals-open-open',
         pathParams: {
           id: {
             type: 'string',
@@ -7063,6 +7784,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get deleted items',
+        description: 'List deleted items in the recycle bin.',
+        operationId: 'deleted_items-index',
         query: {
           sort: {
             type: 'array',
@@ -7212,6 +7935,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a deleted item',
+        description: 'Retrieve a single deleted item.',
+        operationId: 'deleted_items-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7226,6 +7951,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores deleted object',
+        description: 'Restore a deleted item from the recycle bin.',
+        operationId: 'deleted_items-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -7240,6 +7967,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get discussions',
+        description: 'List discussions.',
+        operationId: 'discussions-index',
         query: {
           sort: {
             type: 'array',
@@ -7314,7 +8043,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an discussion',
+        description: 'Create a new discussion.',
+        operationId: 'discussions-create',
         supportsBody: true,
+        requestBodyFields: ['excerpt', 'page_id'],
       },
     },
   },
@@ -7323,6 +8055,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a discussion',
+        description: 'Retrieve a single discussion.',
+        operationId: 'discussions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7332,6 +8066,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an discussion',
+        description: 'Update a discussion.',
+        operationId: 'discussions-update',
         pathParams: {
           id: {
             type: 'string',
@@ -7339,9 +8075,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['excerpt', 'page_id'],
       },
       DELETE: {
         summary: 'Deletes a discussion',
+        description: 'Delete a discussion.',
+        operationId: 'discussions-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -7356,6 +8095,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reopens a discussion',
+        description: 'Reopen a resolved discussion.',
+        operationId: 'discussions-reopen-reopen',
         pathParams: {
           id: {
             type: 'string',
@@ -7370,6 +8111,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Resolves a discussion',
+        description: 'Resolve an open discussion.',
+        operationId: 'discussions-resolve-resolve',
         pathParams: {
           id: {
             type: 'string',
@@ -7384,6 +8127,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Subscribes to discussion',
+        description: 'Subscribe to a discussion.',
+        operationId: 'discussions-subscribe-subscribe',
         pathParams: {
           id: {
             type: 'string',
@@ -7398,6 +8143,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unsubscribes from discussion',
+        description: 'Unsubscribe from a discussion.',
+        operationId: 'discussions-unsubscribe-unsubscribe',
         pathParams: {
           id: {
             type: 'string',
@@ -7412,6 +8159,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get document_styles',
+        description: 'List document styles.',
+        operationId: 'document_styles-index',
         query: {
           sort: {
             type: 'array',
@@ -7459,7 +8208,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a document_style',
+        description: 'Create a new document style.',
+        operationId: 'document_styles-create',
         supportsBody: true,
+        requestBodyFields: ['attachment_ids', 'name', 'styles'],
       },
     },
   },
@@ -7468,6 +8220,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Duplicates a document style',
+        description: 'Copy an existing document style.',
+        operationId: 'document_styles-copy-copy',
       },
     },
   },
@@ -7476,6 +8230,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a document_style',
+        description: 'Retrieve a single document style.',
+        operationId: 'document_styles-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7485,6 +8241,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a document_style',
+        description: 'Update a document style.',
+        operationId: 'document_styles-update',
         pathParams: {
           id: {
             type: 'string',
@@ -7492,9 +8250,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['attachment_ids', 'name', 'styles'],
       },
       DELETE: {
         summary: 'Destroys a document style',
+        description: 'Delete a document style.',
+        operationId: 'document_styles-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -7509,6 +8270,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get document_types',
+        description: 'List document types.',
+        operationId: 'document_types-index',
         query: {
           sort: {
             type: 'array',
@@ -7618,7 +8381,31 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a document_type',
+        description: 'Create a new document type.',
+        operationId: 'document_types-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'document_style_id',
+          'document_template_id',
+          'dual_currency',
+          'email_data',
+          'email_subject',
+          'email_template',
+          'exportable_type_id',
+          'exporter_options',
+          'filename_schema',
+          'footer',
+          'locale',
+          'name',
+          'note',
+          'subsidiary_id',
+          'tax1_name',
+          'tax1_value',
+          'tax2_name',
+          'tax2_value',
+          'template_options',
+        ],
       },
     },
   },
@@ -7627,6 +8414,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Duplicates a document type',
+        description: 'Copy an existing document type.',
+        operationId: 'document_types-copy-copy',
       },
     },
   },
@@ -7635,6 +8424,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a document_type',
+        description: 'Retrieve a single document type.',
+        operationId: 'document_types-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7644,6 +8435,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a document_type',
+        description: 'Update a document type.',
+        operationId: 'document_types-update',
         pathParams: {
           id: {
             type: 'string',
@@ -7651,6 +8444,28 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'document_style_id',
+          'document_template_id',
+          'dual_currency',
+          'email_data',
+          'email_subject',
+          'email_template',
+          'exportable_type_id',
+          'exporter_options',
+          'filename_schema',
+          'footer',
+          'locale',
+          'name',
+          'note',
+          'subsidiary_id',
+          'tax1_name',
+          'tax1_value',
+          'tax2_name',
+          'tax2_value',
+          'template_options',
+        ],
       },
     },
   },
@@ -7659,6 +8474,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a document type',
+        description: 'Archive a document type.',
+        operationId: 'document_types-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -7673,6 +8490,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a list of e-invoice identities',
+        description: 'Lists e-invoice identities. Supports filtering by company or subsidiary.',
+        operationId: 'einvoice_identities-index',
         filters: {
           company_id: {
             type: 'integer',
@@ -7724,7 +8543,20 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates an e-invoice identity',
+        description: 'Creates a new e-invoice identity for a company or subsidiary.',
+        operationId: 'einvoice_identities-create',
         supportsBody: true,
+        requestBodyFields: [
+          'buyer_reference',
+          'company_id',
+          'dir3_fiscal_code',
+          'dir3_pagador_code',
+          'dir3_receptor_code',
+          'dire_code',
+          'is_government_entity',
+          'peppol_id',
+          'subsidiary_id',
+        ],
       },
     },
   },
@@ -7733,6 +8565,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an e-invoice identity',
+        description: 'Returns a single e-invoice identity by ID.',
+        operationId: 'einvoice_identities-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7742,6 +8576,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates an e-invoice identity',
+        description: 'Updates an existing e-invoice identity.',
+        operationId: 'einvoice_identities-update',
         pathParams: {
           id: {
             type: 'string',
@@ -7749,6 +8585,17 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'buyer_reference',
+          'company_id',
+          'dir3_fiscal_code',
+          'dir3_pagador_code',
+          'dir3_receptor_code',
+          'dire_code',
+          'is_government_entity',
+          'peppol_id',
+          'subsidiary_id',
+        ],
       },
     },
   },
@@ -7757,6 +8604,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get emails',
+        description: 'List emails.',
+        operationId: 'emails-index',
         query: {
           sort: {
             type: 'array',
@@ -7930,6 +8779,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an email',
+        description: 'Retrieve a single email.',
+        operationId: 'emails-show',
         pathParams: {
           id: {
             type: 'string',
@@ -7939,6 +8790,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Delete an email',
+        description: 'Delete an email.',
+        operationId: 'emails-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -7953,6 +8806,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Attach an email',
+        description: 'Attach an email to a resource.',
+        operationId: 'emails-attach-attach',
         pathParams: {
           id: {
             type: 'string',
@@ -7967,6 +8822,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Dismiss an email',
+        description: 'Dismiss an email from the inbox.',
+        operationId: 'emails-dismiss-dismiss',
         pathParams: {
           id: {
             type: 'string',
@@ -7981,6 +8838,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get entitlements',
+        description: 'List entitlements.',
+        operationId: 'entitlements-index',
         query: {
           sort: {
             type: 'array',
@@ -8169,7 +9028,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates an entitlement',
+        description: 'Create a new entitlement.',
+        operationId: 'entitlements-create',
         supportsBody: true,
+        requestBodyFields: ['allocated', 'end_date', 'event_id', 'note', 'person_id', 'start_date'],
       },
     },
   },
@@ -8178,6 +9040,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an entitlement',
+        description: 'Retrieve a single entitlement.',
+        operationId: 'entitlements-show',
         pathParams: {
           id: {
             type: 'string',
@@ -8187,6 +9051,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates an entitlement',
+        description: 'Update an entitlement.',
+        operationId: 'entitlements-update',
         pathParams: {
           id: {
             type: 'string',
@@ -8194,9 +9060,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['allocated', 'end_date', 'event_id', 'note', 'person_id', 'start_date'],
       },
       DELETE: {
         summary: 'Deletes an entitlement',
+        description: 'Delete an entitlement.',
+        operationId: 'entitlements-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -8211,6 +9080,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get events',
+        description: 'List events.',
+        operationId: 'events-index',
         query: {
           sort: {
             type: 'array',
@@ -8398,7 +9269,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an event',
+        description: 'Create a new event.',
+        operationId: 'events-create',
         supportsBody: true,
+        requestBodyFields: [
+          'absence_type',
+          'color_id',
+          'event_type_id',
+          'half_day_bookings',
+          'icon_id',
+          'limitation_type_id',
+          'name',
+          'sync_personal_integrations',
+        ],
       },
     },
   },
@@ -8407,6 +9290,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an event',
+        description: 'Retrieve a single event.',
+        operationId: 'events-show',
         pathParams: {
           id: {
             type: 'string',
@@ -8416,6 +9301,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an event',
+        description: 'Update an event.',
+        operationId: 'events-update',
         pathParams: {
           id: {
             type: 'string',
@@ -8423,9 +9310,21 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'absence_type',
+          'color_id',
+          'event_type_id',
+          'half_day_bookings',
+          'icon_id',
+          'limitation_type_id',
+          'name',
+          'sync_personal_integrations',
+        ],
       },
       DELETE: {
         summary: 'Deletes an event',
+        description: 'Delete an event.',
+        operationId: 'events-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -8440,6 +9339,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives an event',
+        description: 'Archive an event.',
+        operationId: 'events-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -8454,6 +9355,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get exchange rates',
+        description: 'List exchange rates.',
+        operationId: 'exchange_rates-index',
         query: {
           sort: {
             type: 'array',
@@ -8513,6 +9416,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get expenses',
+        description:
+          'List expenses. Returns a paginated collection of expenses matching the specified filters.',
+        operationId: 'expenses-index',
         query: {
           sort: {
             type: 'array',
@@ -9612,14 +10518,66 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a expense',
+        description: 'Create a new expense and associate it with a budget service.',
+        operationId: 'expenses-create',
         supportsBody: true,
+        requestBodyFields: [
+          'amount',
+          'attachment_id',
+          'billable_amount',
+          'currency',
+          'custom_fields',
+          'date',
+          'markup',
+          'name',
+          'paid_on',
+          'pay_on',
+          'person_id',
+          'position',
+          'purchase_order_id',
+          'quantity',
+          'reimbursable',
+          'reimbursed_on',
+          'rejected_reason',
+          'service_id',
+          'tax_inclusion',
+          'tax_rate_id',
+          'vendor_id',
+        ],
       },
       PATCH: {
         summary: 'Update expenses',
+        description: 'Bulk update expenses.',
+        operationId: 'expenses-update-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'amount',
+          'attachment_id',
+          'billable_amount',
+          'currency',
+          'custom_fields',
+          'date',
+          'markup',
+          'name',
+          'paid_on',
+          'pay_on',
+          'person_id',
+          'position',
+          'purchase_order_id',
+          'quantity',
+          'reimbursable',
+          'reimbursed_on',
+          'rejected_reason',
+          'service_id',
+          'tax_inclusion',
+          'tax_rate_id',
+          'vendor_id',
+        ],
       },
       DELETE: {
         summary: 'Delete expenses',
+        description: 'Bulk delete expenses.',
+        operationId: 'expenses-destroy-bulk',
       },
     },
   },
@@ -9628,6 +10586,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copy an expense',
+        description: 'Copy an expense to create a duplicate.',
+        operationId: 'expenses-copy-copy',
       },
     },
   },
@@ -9636,6 +10596,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a expense',
+        description: 'Retrieve a single expense by ID.',
+        operationId: 'expenses-show',
         pathParams: {
           id: {
             type: 'string',
@@ -9645,6 +10607,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a expense',
+        description: 'Update an existing expense.',
+        operationId: 'expenses-update',
         pathParams: {
           id: {
             type: 'string',
@@ -9652,9 +10616,34 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'amount',
+          'attachment_id',
+          'billable_amount',
+          'currency',
+          'custom_fields',
+          'date',
+          'markup',
+          'name',
+          'paid_on',
+          'pay_on',
+          'person_id',
+          'position',
+          'purchase_order_id',
+          'quantity',
+          'reimbursable',
+          'reimbursed_on',
+          'rejected_reason',
+          'service_id',
+          'tax_inclusion',
+          'tax_rate_id',
+          'vendor_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a expense',
+        description: 'Delete an expense by ID.',
+        operationId: 'expenses-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -9669,6 +10658,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Approves an expense',
+        description: 'Approve an expense by ID.',
+        operationId: 'expenses-approve-approve',
         pathParams: {
           id: {
             type: 'string',
@@ -9683,6 +10674,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Exports an expense',
+        description: 'Export an expense to an external accounting system.',
+        operationId: 'expenses-export-export',
         pathParams: {
           id: {
             type: 'string',
@@ -9697,6 +10690,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Updates exported expense',
+        description: 'Update the export status of an expense in the external accounting system.',
+        operationId: 'expenses-export_update-export_update',
         pathParams: {
           id: {
             type: 'string',
@@ -9711,6 +10706,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unapproves an expense',
+        description: 'Unapprove an expense by ID.',
+        operationId: 'expenses-unapprove-unapprove',
         pathParams: {
           id: {
             type: 'string',
@@ -9725,6 +10722,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get filters',
+        description: 'List filters.',
+        operationId: 'filters-index',
         query: {
           sort: {
             type: 'array',
@@ -10169,7 +11168,35 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a filter',
+        description: 'Create a new filter.',
+        operationId: 'filters-create',
         supportsBody: true,
+        requestBodyFields: [
+          'chart_type_id',
+          'column_settings',
+          'columns',
+          'exchange_currency',
+          'exchange_date',
+          'export_params',
+          'filterable_collection',
+          'filterable_id',
+          'filterable_type',
+          'formulas',
+          'group_by',
+          'hidden',
+          'layout_id',
+          'name',
+          'params',
+          'predefined_id',
+          'public',
+          'report',
+          'report_category_id',
+          'report_layout_id',
+          'settings',
+          'sort_by',
+          'transpose_by',
+          'type_id',
+        ],
       },
     },
   },
@@ -10178,6 +11205,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a filter',
+        description: 'Retrieve a single filter.',
+        operationId: 'filters-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10187,6 +11216,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a filter',
+        description: 'Update a filter.',
+        operationId: 'filters-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10194,9 +11225,37 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'chart_type_id',
+          'column_settings',
+          'columns',
+          'exchange_currency',
+          'exchange_date',
+          'export_params',
+          'filterable_collection',
+          'filterable_id',
+          'filterable_type',
+          'formulas',
+          'group_by',
+          'hidden',
+          'layout_id',
+          'name',
+          'params',
+          'predefined_id',
+          'public',
+          'report',
+          'report_category_id',
+          'report_layout_id',
+          'settings',
+          'sort_by',
+          'transpose_by',
+          'type_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a filter',
+        description: 'Delete a filter.',
+        operationId: 'filters-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10211,6 +11270,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get folders',
+        description: 'Returns a paginated list of folders across all projects.',
+        operationId: 'folders-index',
         query: {
           sort: {
             type: 'array',
@@ -10306,7 +11367,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a folder',
+        description: 'Creates a new folder in a project.',
+        operationId: 'folders-create',
         supportsBody: true,
+        requestBodyFields: ['hidden', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -10315,6 +11379,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copy a folder',
+        description: 'Creates a copy of an existing folder, including its task lists.',
+        operationId: 'folders-copy-copy',
       },
     },
   },
@@ -10323,6 +11389,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a folder',
+        description: 'Returns a single folder by ID.',
+        operationId: 'folders-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10332,6 +11400,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a folder',
+        description: 'Updates an existing folder.',
+        operationId: 'folders-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10339,6 +11409,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['hidden', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -10347,6 +11418,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a folder',
+        description:
+          'Archives a folder, hiding it from the default view while preserving its data.',
+        operationId: 'folders-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -10361,6 +11435,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Move a folder',
+        description: 'Moves a folder to a different project.',
+        operationId: 'folders-move-move',
         pathParams: {
           id: {
             type: 'string',
@@ -10375,6 +11451,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reposition a folder',
+        description: 'Changes the sort order position of a folder within its project.',
+        operationId: 'folders-reposition-reposition',
         pathParams: {
           id: {
             type: 'string',
@@ -10389,6 +11467,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a folder',
+        description: 'Restores a previously archived folder.',
+        operationId: 'folders-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -10403,6 +11483,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get all holiday calendars',
+        description: 'List holiday calendars.',
+        operationId: 'holiday_calendars-index',
         query: {
           sort: {
             type: 'array',
@@ -10432,7 +11514,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a holiday calendar',
+        description: 'Create a new holiday calendar.',
+        operationId: 'holiday_calendars-create',
         supportsBody: true,
+        requestBodyFields: ['autogenerate_holidays', 'country', 'name', 'state'],
       },
     },
   },
@@ -10441,6 +11526,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a holiday calendar',
+        description: 'Retrieve a single holiday calendar.',
+        operationId: 'holiday_calendars-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10450,6 +11537,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a holiday calendar',
+        description: 'Update a holiday calendar.',
+        operationId: 'holiday_calendars-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10457,9 +11546,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['autogenerate_holidays', 'country', 'name', 'state'],
       },
       DELETE: {
         summary: 'Deletes a holiday calendar',
+        description: 'Delete a holiday calendar.',
+        operationId: 'holiday_calendars-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10474,6 +11566,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get all holidays',
+        description: 'List holidays.',
+        operationId: 'holidays-index',
         query: {
           sort: {
             type: 'array',
@@ -10541,7 +11635,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a holiday',
+        description: 'Create a new holiday.',
+        operationId: 'holidays-create',
         supportsBody: true,
+        requestBodyFields: ['date', 'holiday_calendar_id', 'name'],
       },
     },
   },
@@ -10550,6 +11647,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a holiday',
+        description: 'Retrieve a single holiday.',
+        operationId: 'holidays-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10559,6 +11658,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a holiday',
+        description: 'Update a holiday.',
+        operationId: 'holidays-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10566,9 +11667,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['date', 'holiday_calendar_id', 'name'],
       },
       DELETE: {
         summary: 'Deletes a holiday',
+        description: 'Delete a holiday.',
+        operationId: 'holidays-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10583,6 +11687,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get integration exporter configurations',
+        description: 'List integration exporter configurations.',
+        operationId: 'integration_exporter_configurations-index',
         query: {
           sort: {
             type: 'array',
@@ -10613,7 +11719,15 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create integration exporter configuration',
+        description: 'Create a new integration exporter configuration.',
+        operationId: 'integration_exporter_configurations-create',
         supportsBody: true,
+        requestBodyFields: [
+          'company_id',
+          'company_type',
+          'datev_client_account_code',
+          'datev_vendor_account_code',
+        ],
       },
     },
   },
@@ -10622,6 +11736,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get integration exporter configuration',
+        description: 'Retrieve a single integration exporter configuration.',
+        operationId: 'integration_exporter_configurations-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10631,6 +11747,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update integration exporter configuration',
+        description: 'Update an integration exporter configuration.',
+        operationId: 'integration_exporter_configurations-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10638,9 +11756,17 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'company_id',
+          'company_type',
+          'datev_client_account_code',
+          'datev_vendor_account_code',
+        ],
       },
       DELETE: {
         summary: 'Delete integration exporter configuration',
+        description: 'Delete an integration exporter configuration.',
+        operationId: 'integration_exporter_configurations-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10655,6 +11781,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get integration',
+        description: 'List integrations.',
+        operationId: 'integrations-index',
         query: {
           sort: {
             type: 'array',
@@ -10797,7 +11925,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an integration',
+        description: 'Create a new integration.',
+        operationId: 'integrations-create',
         supportsBody: true,
+        requestBodyFields: ['data'],
       },
     },
   },
@@ -10806,6 +11937,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an integration',
+        description: 'Retrieve a single integration.',
+        operationId: 'integrations-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10815,6 +11948,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes an integration',
+        description: 'Delete an integration.',
+        operationId: 'integrations-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10829,6 +11964,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Checks if integration is valid',
+        description: 'Check the connection status of an integration.',
+        operationId: 'integrations-check-check',
         pathParams: {
           id: {
             type: 'string',
@@ -10843,6 +11980,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: '',
+        description:
+          'Completes the OAuth connection flow for an integration by exchanging the authorization code for access tokens.',
+        operationId: 'integrations-connect-connect',
         pathParams: {
           id: {
             type: 'string',
@@ -10857,7 +11997,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Create an invitation',
+        description: 'Create a new invitation.',
+        operationId: 'invitations-create',
         supportsBody: true,
+        requestBodyFields: ['first_name', 'last_name', 'newsletter_consent', 'password'],
       },
     },
   },
@@ -10866,6 +12009,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an invitation',
+        description: 'Retrieve a single invitation.',
+        operationId: 'invitations-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10875,6 +12020,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an invitation',
+        description: 'Accept an invitation.',
+        operationId: 'invitations-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10882,6 +12029,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['first_name', 'last_name', 'newsletter_consent', 'password'],
       },
     },
   },
@@ -10890,6 +12038,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get invoice attributions',
+        description: 'List invoice attributions.',
+        operationId: 'invoice_attributions-index',
         query: {
           sort: {
             type: 'array',
@@ -10937,7 +12087,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an invoice attribution',
+        description: 'Create a new invoice attribution.',
+        operationId: 'invoice_attributions-create',
         supportsBody: true,
+        requestBodyFields: ['amount', 'budget_id', 'date_from', 'date_to', 'invoice_id'],
       },
     },
   },
@@ -10946,6 +12099,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an invoice attribution',
+        description: 'Retrieve a single invoice attribution.',
+        operationId: 'invoice_attributions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -10955,6 +12110,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an invoice attribution',
+        description: 'Update an invoice attribution.',
+        operationId: 'invoice_attributions-update',
         pathParams: {
           id: {
             type: 'string',
@@ -10962,9 +12119,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['amount', 'budget_id', 'date_from', 'date_to', 'invoice_id'],
       },
       DELETE: {
         summary: 'Deletes an invoice attribution',
+        description: 'Delete an invoice attribution.',
+        operationId: 'invoice_attributions-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -10979,6 +12139,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get invoice templates',
+        description: 'List invoice templates.',
+        operationId: 'invoice_templates-index',
         query: {
           sort: {
             type: 'array',
@@ -11155,7 +12317,21 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an invoice template',
+        description: 'Create a new invoice template.',
+        operationId: 'invoice_templates-create',
         supportsBody: true,
+        requestBodyFields: [
+          'bank_account_details',
+          'bank_account_id',
+          'budget_id',
+          'custom_fields',
+          'document_type_id',
+          'invoice_creation_options',
+          'invoice_due_in_days',
+          'issuer_id',
+          'note',
+          'subsidiary_id',
+        ],
       },
     },
   },
@@ -11164,6 +12340,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an invoice template',
+        description: 'Retrieve a single invoice template.',
+        operationId: 'invoice_templates-show',
         pathParams: {
           id: {
             type: 'string',
@@ -11173,6 +12351,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an invoice template',
+        description: 'Update an invoice template.',
+        operationId: 'invoice_templates-update',
         pathParams: {
           id: {
             type: 'string',
@@ -11180,9 +12360,23 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'bank_account_details',
+          'bank_account_id',
+          'budget_id',
+          'custom_fields',
+          'document_type_id',
+          'invoice_creation_options',
+          'invoice_due_in_days',
+          'issuer_id',
+          'note',
+          'subsidiary_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes an invoice template',
+        description: 'Delete an invoice template.',
+        operationId: 'invoice_templates-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -11197,6 +12391,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get invoices',
+        description: 'List invoices.',
+        operationId: 'invoices-index',
         query: {
           sort: {
             type: 'array',
@@ -12163,7 +13359,42 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an invoice',
+        description: 'Create a new invoice.',
+        operationId: 'invoices-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'bank_account_details',
+          'bank_account_id',
+          'company_id',
+          'creation_options',
+          'currency',
+          'custom_fields',
+          'delivery_on',
+          'discount',
+          'document_type_id',
+          'export_id',
+          'export_invoice_url',
+          'exported',
+          'invoice_type_id',
+          'invoiced_on',
+          'issuer_id',
+          'note',
+          'number',
+          'parent_invoice_id',
+          'pay_on',
+          'pay_on_relative',
+          'purchase_order_number',
+          'sent_on',
+          'subject',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'tax1_name',
+          'tax1_value',
+          'tax2_name',
+          'tax2_value',
+        ],
       },
     },
   },
@@ -12172,6 +13403,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an invoice',
+        description: 'Retrieve a single invoice.',
+        operationId: 'invoices-show',
         pathParams: {
           id: {
             type: 'string',
@@ -12181,6 +13414,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an invoice',
+        description: 'Update an invoice.',
+        operationId: 'invoices-update',
         pathParams: {
           id: {
             type: 'string',
@@ -12188,9 +13423,44 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'bank_account_details',
+          'bank_account_id',
+          'company_id',
+          'creation_options',
+          'currency',
+          'custom_fields',
+          'delivery_on',
+          'discount',
+          'document_type_id',
+          'export_id',
+          'export_invoice_url',
+          'exported',
+          'invoice_type_id',
+          'invoiced_on',
+          'issuer_id',
+          'note',
+          'number',
+          'parent_invoice_id',
+          'pay_on',
+          'pay_on_relative',
+          'purchase_order_number',
+          'sent_on',
+          'subject',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'tax1_name',
+          'tax1_value',
+          'tax2_name',
+          'tax2_value',
+        ],
       },
       DELETE: {
         summary: 'Deletes an invoice',
+        description: 'Delete an invoice.',
+        operationId: 'invoices-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -12205,6 +13475,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Exports an invoice',
+        description: 'Export an invoice to an external accounting system.',
+        operationId: 'invoices-export-export',
         pathParams: {
           id: {
             type: 'string',
@@ -12219,6 +13491,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Updates an exported invoice',
+        description: 'Update the export data on an already-exported invoice.',
+        operationId: 'invoices-export_update-export_update',
         pathParams: {
           id: {
             type: 'string',
@@ -12233,6 +13507,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Finalizes an invoice',
+        description: 'Finalize a draft invoice.',
+        operationId: 'invoices-finalize-finalize',
         pathParams: {
           id: {
             type: 'string',
@@ -12247,6 +13523,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Preview invoice',
+        description:
+          'The preview endpoint lets you simulate invoice line item generation without persisting any changes. It returns the exact line items and invoice attributions that would be created for a given invoice based on the selected invoicing method and options.\n\n- Builds line items using the same logic as the line items "[generate](openapi:group:line-items)" method\n- Returns data only, does not modify the invoice\n',
+        operationId: 'invoices-preview-preview',
         pathParams: {
           id: {
             type: 'string',
@@ -12261,6 +13540,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Sends an invoice',
+        description: 'Send an invoice to the client.',
+        operationId: 'invoices-send-send_mail',
         pathParams: {
           id: {
             type: 'string',
@@ -12275,6 +13556,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Sends an e-invoice',
+        description:
+          'Sends the specified invoice as an e-invoice using the given format. Creates an e-invoice transaction and submits it to the appropriate external service.',
+        operationId: 'invoices-send_einvoice',
         pathParams: {
           id: {
             type: 'string',
@@ -12282,6 +13566,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['business_process', 'format_id'],
       },
     },
   },
@@ -12290,6 +13575,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get line items',
+        description: 'List line items.',
+        operationId: 'line_items-index',
         query: {
           sort: {
             type: 'array',
@@ -12541,7 +13828,24 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a line item',
+        description: 'Create a new line item.',
+        operationId: 'line_items-create',
         supportsBody: true,
+        requestBodyFields: [
+          'discount',
+          'expense_id',
+          'invoice_id',
+          'kpd_code_id',
+          'position',
+          'quantity',
+          'service_id',
+          'service_type_id',
+          'tax_name',
+          'tax_rate_id',
+          'tax_value',
+          'unit_id',
+          'unit_price',
+        ],
       },
     },
   },
@@ -12550,6 +13854,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Create line items',
+        description:
+          'The `generate` method provides a way to automatically create line items for an invoice based on the provided invoicing method.\n\nThis [help article](https://help.productive.io/en/articles/4656350-understanding-invoicing-methods) explains the supported invoicing methods.\n',
+        operationId: 'line_items-generate-generate',
       },
     },
   },
@@ -12558,6 +13865,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a line item',
+        description: 'Retrieve a single line item.',
+        operationId: 'line_items-show',
         pathParams: {
           id: {
             type: 'string',
@@ -12567,6 +13876,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a line item',
+        description: 'Update a line item.',
+        operationId: 'line_items-update',
         pathParams: {
           id: {
             type: 'string',
@@ -12574,9 +13885,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'discount',
+          'expense_id',
+          'invoice_id',
+          'kpd_code_id',
+          'position',
+          'quantity',
+          'service_id',
+          'service_type_id',
+          'tax_name',
+          'tax_rate_id',
+          'tax_value',
+          'unit_id',
+          'unit_price',
+        ],
       },
       DELETE: {
         summary: 'Deletes a line item',
+        description: 'Delete a line item.',
+        operationId: 'line_items-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -12591,6 +13919,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get lost reasons',
+        description: 'List lost reasons.',
+        operationId: 'lost_reasons-index',
         query: {
           sort: {
             type: 'array',
@@ -12620,7 +13950,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a lost reason',
+        description: 'Create a new lost reason.',
+        operationId: 'lost_reasons-create',
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
     },
   },
@@ -12629,6 +13962,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a lost reason',
+        description: 'Retrieve a single lost reason.',
+        operationId: 'lost_reasons-show',
         pathParams: {
           id: {
             type: 'string',
@@ -12638,6 +13973,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a lost reason',
+        description: 'Update a lost reason.',
+        operationId: 'lost_reasons-update',
         pathParams: {
           id: {
             type: 'string',
@@ -12645,6 +13982,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
     },
   },
@@ -12653,6 +13991,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a lost reason',
+        description: 'Archive a lost reason.',
+        operationId: 'lost_reasons-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -12667,6 +14007,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get memberships',
+        description: 'List memberships.',
+        operationId: 'memberships-index',
         query: {
           sort: {
             type: 'array',
@@ -12981,7 +14323,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a membership',
+        description: 'Create a new membership.',
+        operationId: 'memberships-create',
         supportsBody: true,
+        requestBodyFields: [
+          'agent_id',
+          'dashboard_id',
+          'deal_id',
+          'filter_id',
+          'page_id',
+          'project_id',
+          'pulse_id',
+          'survey_id',
+        ],
       },
     },
   },
@@ -12990,6 +14344,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a membership',
+        description: 'Retrieve a single membership.',
+        operationId: 'memberships-show',
         pathParams: {
           id: {
             type: 'string',
@@ -12999,6 +14355,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a membership',
+        description: 'Update a membership.',
+        operationId: 'memberships-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13006,9 +14364,21 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'agent_id',
+          'dashboard_id',
+          'deal_id',
+          'filter_id',
+          'page_id',
+          'project_id',
+          'pulse_id',
+          'survey_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a membership',
+        description: 'Delete a membership.',
+        operationId: 'memberships-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -13023,6 +14393,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get notifications',
+        description: 'List notifications.',
+        operationId: 'notifications-index',
         query: {
           sort: {
             type: 'array',
@@ -13271,6 +14643,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Shows a notification',
+        description: 'Retrieve a single notification.',
+        operationId: 'notifications-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13285,6 +14659,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Dismisses a notification',
+        description: 'Dismiss a notification.',
+        operationId: 'notifications-dismiss-dismiss',
         pathParams: {
           id: {
             type: 'string',
@@ -13299,6 +14675,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reads a notification',
+        description: 'Mark a notification as read.',
+        operationId: 'notifications-read-read',
         pathParams: {
           id: {
             type: 'string',
@@ -13313,6 +14691,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Undismisses a notification',
+        description: 'Restore a dismissed notification to the inbox.',
+        operationId: 'notifications-undismiss-undismiss',
         pathParams: {
           id: {
             type: 'string',
@@ -13327,6 +14707,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get organization memberships',
+        description: 'List organization memberships.',
+        operationId: 'organization_memberships-index',
         query: {
           sort: {
             type: 'array',
@@ -13361,6 +14743,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an organization membership',
+        description: 'Retrieve a single organization membership.',
+        operationId: 'organization_memberships-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13370,6 +14754,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an organization membership',
+        description: 'Update an organization membership.',
+        operationId: 'organization_memberships-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13377,9 +14763,42 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'booking_approvals_filter_id',
+          'bookings_filter_id',
+          'budget_services_filter_id',
+          'budgets_filter_id',
+          'companies_filter_id',
+          'company_time_filter_id',
+          'contacts_filter_id',
+          'deal_services_filter_id',
+          'deals_filter_id',
+          'docs_filter_id',
+          'email_notifications',
+          'employees_filter_id',
+          'expense_approvals_filter_id',
+          'expenses_filter_id',
+          'granular_notification_preferences',
+          'internal_budget_services_filter_id',
+          'invoices_filter_id',
+          'payments_filter_id',
+          'people_filter_id',
+          'preferences',
+          'projects_filter_id',
+          'quick_start_config',
+          'salary_reports_filter_id',
+          'tasks_filter_id',
+          'time_approvals_filter_id',
+          'time_entry_reports_filter_id',
+          'time_reminders',
+          'time_reports_filter_id',
+          'weekly_emails',
+        ],
       },
       DELETE: {
         summary: 'Destroy organization membership',
+        description: 'Delete an organization membership.',
+        operationId: 'organization_memberships-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -13394,6 +14813,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Clear notifications for organization membership',
+        description: 'Clear all notifications for an organization membership.',
+        operationId: 'organization_memberships-clear_notifications-clear_notifications',
         pathParams: {
           id: {
             type: 'string',
@@ -13408,6 +14829,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Dismiss notifications for organization membership',
+        description: 'Dismiss all notifications for an organization membership.',
+        operationId: 'organization_memberships-dismiss_notifications-dismiss_notifications',
         pathParams: {
           id: {
             type: 'string',
@@ -13422,6 +14845,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a organization subscription',
+        description: 'Retrieve a single organization subscription.',
+        operationId: 'organization_subscriptions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13431,6 +14856,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a organization subscription',
+        description: 'Update an organization subscription.',
+        operationId: 'organization_subscriptions-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13438,6 +14865,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'active_products',
+          'billing_address',
+          'billing_email',
+          'billing_group_seats',
+          'plan_cycle',
+          'plan_type',
+          'product_types',
+          'seats',
+          'stripe_token',
+          'trial_plan_type',
+          'trial_product_ids',
+        ],
       },
     },
   },
@@ -13446,6 +14886,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Cancels a organization subscription',
+        description: 'Cancel an organization subscription.',
+        operationId: 'organization_subscriptions-cancel-cancel',
         pathParams: {
           id: {
             type: 'string',
@@ -13460,6 +14902,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reactivates a organization subscription',
+        description: 'Reactivate a cancelled organization subscription.',
+        operationId: 'organization_subscriptions-reactivate-reactivate',
         pathParams: {
           id: {
             type: 'string',
@@ -13474,6 +14918,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Retry last payment for a organization subscription',
+        description: 'Retry the last failed payment for an organization subscription.',
+        operationId: 'organization_subscriptions-retry_last_payment-retry_last_payment',
         pathParams: {
           id: {
             type: 'string',
@@ -13488,6 +14934,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get organizations',
+        description: 'List organizations.',
+        operationId: 'organizations-index',
         query: {
           sort: {
             type: 'array',
@@ -13511,6 +14959,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get an organization',
+        description: 'Retrieve a single organization.',
+        operationId: 'organizations-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13520,6 +14970,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an organization',
+        description: 'Update an organization.',
+        operationId: 'organizations-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13527,9 +14979,78 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'addons',
+          'ai_enabled',
+          'allow_time_off',
+          'allow_user_email',
+          'autotracking_schedule_id',
+          'avatar_url',
+          'booked_demo',
+          'conflict_resolver_active',
+          'currency',
+          'currency_format_id',
+          'date_format_id',
+          'deal_settings',
+          'decimal_places_id',
+          'delivered_budget_recognition_date_id',
+          'due_days',
+          'email_local_name',
+          'email_sender_name',
+          'email_type_id',
+          'expense_markup',
+          'expense_settings',
+          'facility_costs',
+          'facility_costs_breakdown',
+          'financial_month_locking_date',
+          'financial_month_locking_partial_edit',
+          'fiscal_year_start',
+          'invoice_rounding_method_id',
+          'invoice_timesheet_export_configuration',
+          'limited_service_types',
+          'locale',
+          'man_day_minutes',
+          'name',
+          'number_format_id',
+          'numbering_format_settings',
+          'onboarding_progress',
+          'open_budget_recognition_date_id',
+          'overhead',
+          'overhead_amortization_period',
+          'overhead_recalculation_day',
+          'overhead_subsidiary_switched_at',
+          'overhead_type_id',
+          'owner_id',
+          'quick_start_config',
+          'remove_branding',
+          'request_for_resource_enabled',
+          'revenue_recognition_type_id',
+          'rounding_interval_id',
+          'rounding_method_id',
+          'time_display_id',
+          'time_format_id',
+          'time_locking',
+          'time_locking_interval',
+          'time_locking_period_id',
+          'time_locking_reminders',
+          'time_reminder_at',
+          'time_reminder_condition',
+          'time_reminder_id',
+          'time_reminders',
+          'time_tracking_policies_enabled',
+          'time_tracking_policy_id',
+          'time_zone',
+          'timesheet_submission',
+          'timesheet_submission_reminders',
+          'timesheet_submission_settings',
+          'week_start_day_id',
+          'working_hours',
+        ],
       },
       DELETE: {
         summary: 'Delete an organization',
+        description: 'Delete an organization.',
+        operationId: 'organizations-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -13544,6 +15065,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Resend verification code',
+        description: 'Resend the verification code for an organization.',
+        operationId: 'organizations-resend_code-resend_code',
         pathParams: {
           id: {
             type: 'string',
@@ -13558,6 +15081,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get overheads',
+        description: 'List overheads.',
+        operationId: 'overheads-index',
         query: {
           sort: {
             type: 'array',
@@ -13598,6 +15123,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets an overhead',
+        description: 'Retrieve a single overhead record.',
+        operationId: 'overheads-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13607,6 +15134,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an overhead',
+        description: 'Update an overhead record.',
+        operationId: 'overheads-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13614,6 +15143,13 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'averaging_period',
+          'facility_costs',
+          'facility_costs_breakdown',
+          'overhead_controls',
+          'use_overhead',
+        ],
       },
     },
   },
@@ -13622,6 +15158,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Recalculate an overhead',
+        description: 'Recalculate overhead costs for a period.',
+        operationId: 'overheads-recalculate-recalculate',
         pathParams: {
           id: {
             type: 'string',
@@ -13636,6 +15174,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get page_versions',
+        description: 'List page versions.',
+        operationId: 'page_versions-index',
         query: {
           sort: {
             type: 'array',
@@ -13720,7 +15260,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a page_version',
+        description: 'Create a new page version.',
+        operationId: 'page_versions-create',
         supportsBody: true,
+        requestBodyFields: ['name', 'page_id', 'restored_from_version_id'],
       },
     },
   },
@@ -13729,6 +15272,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a page_version',
+        description: 'Retrieve a single page version.',
+        operationId: 'page_versions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -13738,6 +15283,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a page_version',
+        description: 'Restore a page to a specific version.',
+        operationId: 'page_versions-update',
         pathParams: {
           id: {
             type: 'string',
@@ -13745,6 +15292,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['name', 'page_id', 'restored_from_version_id'],
       },
     },
   },
@@ -13753,6 +15301,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get pages',
+        description: 'List pages.',
+        operationId: 'pages-index',
         query: {
           sort: {
             type: 'array',
@@ -14155,7 +15705,27 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a page',
+        description: 'Create a new page.',
+        operationId: 'pages-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'body',
+          'cover_image_meta',
+          'cover_image_url',
+          'custom_fields',
+          'icon_id',
+          'parent_page_id',
+          'position',
+          'preferences',
+          'project_id',
+          'public_access',
+          'root_page_id',
+          'steps',
+          'subscriber_ids',
+          'title',
+          'version_number',
+        ],
       },
     },
   },
@@ -14164,6 +15734,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a page',
+        description: 'Copy an existing page.',
+        operationId: 'pages-copy-copy',
       },
     },
   },
@@ -14172,6 +15744,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a page',
+        description: 'Retrieve a single page.',
+        operationId: 'pages-show',
         pathParams: {
           id: {
             type: 'string',
@@ -14181,6 +15755,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a page',
+        description: 'Update a page.',
+        operationId: 'pages-update',
         pathParams: {
           id: {
             type: 'string',
@@ -14188,9 +15764,29 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'body',
+          'cover_image_meta',
+          'cover_image_url',
+          'custom_fields',
+          'icon_id',
+          'parent_page_id',
+          'position',
+          'preferences',
+          'project_id',
+          'public_access',
+          'root_page_id',
+          'steps',
+          'subscriber_ids',
+          'title',
+          'version_number',
+        ],
       },
       DELETE: {
         summary: 'Deletes a page',
+        description: 'Delete a page.',
+        operationId: 'pages-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -14205,6 +15801,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Moves a page',
+        description: 'Move a page to a different location.',
+        operationId: 'pages-move-move',
         pathParams: {
           id: {
             type: 'string',
@@ -14219,6 +15817,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Publishes a page',
+        description: 'Publish a page to make it publicly visible.',
+        operationId: 'pages-publish-publish',
         pathParams: {
           id: {
             type: 'string',
@@ -14233,6 +15833,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unpublishes a page',
+        description: 'Unpublish a page to remove it from public visibility.',
+        operationId: 'pages-unpublish-unpublish',
         pathParams: {
           id: {
             type: 'string',
@@ -14247,7 +15849,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Create a password',
+        description: 'Create a new password reset request.',
+        operationId: 'passwords-create',
         supportsBody: true,
+        requestBodyFields: ['password', 'password_confirmation'],
       },
     },
   },
@@ -14256,6 +15861,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a password',
+        description: 'Retrieve a single password reset by ID.',
+        operationId: 'passwords-show',
         pathParams: {
           id: {
             type: 'string',
@@ -14265,6 +15872,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a password',
+        description: 'Update a password reset.',
+        operationId: 'passwords-update',
         pathParams: {
           id: {
             type: 'string',
@@ -14272,6 +15881,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['password', 'password_confirmation'],
       },
     },
   },
@@ -14280,6 +15890,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get payment reminder sequences',
+        description: 'List all payment reminder sequences.',
+        operationId: 'payment_reminder_sequences-index',
         query: {
           sort: {
             type: 'array',
@@ -14315,7 +15927,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a payment reminder sequence',
+        description: 'Create a new payment reminder sequence.',
+        operationId: 'payment_reminder_sequences-create',
         supportsBody: true,
+        requestBodyFields: ['default_sequence', 'name'],
       },
     },
   },
@@ -14324,6 +15939,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a payment reminder sequence',
+        description: 'Retrieve a single payment reminder sequence by ID.',
+        operationId: 'payment_reminder_sequences-show',
         pathParams: {
           id: {
             type: 'string',
@@ -14333,6 +15950,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a payment reminder sequence',
+        description: 'Update a payment reminder sequence.',
+        operationId: 'payment_reminder_sequences-update',
         pathParams: {
           id: {
             type: 'string',
@@ -14340,9 +15959,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['default_sequence', 'name'],
       },
       DELETE: {
         summary: 'Deletes a payment reminder sequence',
+        description: 'Delete a payment reminder sequence by ID.',
+        operationId: 'payment_reminder_sequences-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -14357,6 +15979,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get payments',
+        description: 'List all payments.',
+        operationId: 'payments-index',
         query: {
           sort: {
             type: 'array',
@@ -14679,7 +16303,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a payment',
+        description: 'Create a new payment.',
+        operationId: 'payments-create',
         supportsBody: true,
+        requestBodyFields: ['amount', 'invoice_id', 'note', 'paid_on', 'written_off_on'],
       },
     },
   },
@@ -14688,6 +16315,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a payment',
+        description: 'Retrieve a single payment by ID.',
+        operationId: 'payments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -14697,6 +16326,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a payment',
+        description: 'Update a payment.',
+        operationId: 'payments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -14704,9 +16335,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['amount', 'invoice_id', 'note', 'paid_on', 'written_off_on'],
       },
       DELETE: {
         summary: 'Deletes a payment',
+        description: 'Delete a payment by ID.',
+        operationId: 'payments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -14721,6 +16355,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get people',
+        description:
+          'List people in the organization. Supports filtering by name, email, type, status, team, company, manager, tags, and custom fields.',
+        operationId: 'people-index',
         query: {
           sort: {
             type: 'array',
@@ -15847,7 +17484,43 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a person',
+        description:
+          'Create a new person. Depending on the role and company assignment, the person will be classified as an employee, contractor, client contact, or placeholder.',
+        operationId: 'people-create',
         supportsBody: true,
+        requestBodyFields: [
+          'account_id',
+          'autotracking',
+          'avatar_url',
+          'company_id',
+          'contact',
+          'custom_fields',
+          'custom_role_id',
+          'email',
+          'first_name',
+          'granular_notification_preferences',
+          'last_name',
+          'manager_id',
+          'nickname',
+          'role_id',
+          'status_emoji',
+          'status_expires_at',
+          'status_text',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'time_off_status_sync',
+          'time_tracking_policy_id',
+          'time_unlocked',
+          'time_unlocked_end_date',
+          'time_unlocked_interval',
+          'time_unlocked_on',
+          'time_unlocked_period_id',
+          'time_unlocked_start_date',
+          'timesheet_submission_disabled',
+          'title',
+          'virtual',
+        ],
       },
     },
   },
@@ -15856,6 +17529,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Merge a person',
+        description:
+          'Merge two person records into one, transferring all associated data to the target person.',
+        operationId: 'people-merge-merge',
       },
     },
   },
@@ -15864,6 +17540,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a person',
+        description: 'Retrieve a single person by ID.',
+        operationId: 'people-show',
         pathParams: {
           id: {
             type: 'string',
@@ -15873,6 +17551,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a person',
+        description: "Update an existing person's attributes, relationships, or settings.",
+        operationId: 'people-update',
         pathParams: {
           id: {
             type: 'string',
@@ -15880,6 +17560,39 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'account_id',
+          'autotracking',
+          'avatar_url',
+          'company_id',
+          'contact',
+          'custom_fields',
+          'custom_role_id',
+          'email',
+          'first_name',
+          'granular_notification_preferences',
+          'last_name',
+          'manager_id',
+          'nickname',
+          'role_id',
+          'status_emoji',
+          'status_expires_at',
+          'status_text',
+          'subscriber_ids',
+          'subsidiary_id',
+          'tag_list',
+          'time_off_status_sync',
+          'time_tracking_policy_id',
+          'time_unlocked',
+          'time_unlocked_end_date',
+          'time_unlocked_interval',
+          'time_unlocked_on',
+          'time_unlocked_period_id',
+          'time_unlocked_start_date',
+          'timesheet_submission_disabled',
+          'title',
+          'virtual',
+        ],
       },
     },
   },
@@ -15888,6 +17601,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Activate a person',
+        description:
+          'Reactivate a previously deactivated person, restoring their access to the organization.',
+        operationId: 'people-activate-activate',
         pathParams: {
           id: {
             type: 'string',
@@ -15902,6 +17618,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archive a person',
+        description:
+          'Archive a person record. Archived people are hidden from most views and cannot log in.',
+        operationId: 'people-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -15916,6 +17635,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Deactivate a person',
+        description: 'Deactivate a person, removing their platform access. Their data is retained.',
+        operationId: 'people-deactivate-deactivate',
         pathParams: {
           id: {
             type: 'string',
@@ -15930,6 +17651,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Invite a person',
+        description:
+          'Action used to invite contacts into your Productive organization. By doing so, the contact can accept that invitation and then become a user.\n',
+        operationId: 'people-invite-invite',
         pathParams: {
           id: {
             type: 'string',
@@ -15944,6 +17668,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Regenerate 2FA recovery codes',
+        description: 'Regenerate two-factor authentication recovery codes for the person.',
+        operationId: 'people-regenerate_recovery_codes-regenerate_recovery_codes',
         pathParams: {
           id: {
             type: 'string',
@@ -15958,6 +17684,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Resend email to a person',
+        description:
+          'Resend the invitation email to a person who has not yet accepted their invite.',
+        operationId: 'people-resend-resend',
         pathParams: {
           id: {
             type: 'string',
@@ -15972,6 +17701,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restore a person',
+        description: 'Restore an archived person, making them active again.',
+        operationId: 'people-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -15986,6 +17717,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Virtualize a person',
+        description:
+          'Convert a person to a virtual (non-seat) record, used for system or integration purposes.',
+        operationId: 'people-virtualize-virtualize',
         pathParams: {
           id: {
             type: 'string',
@@ -16000,6 +17734,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get pipelines',
+        description: 'List all pipelines.',
+        operationId: 'pipelines-index',
         query: {
           sort: {
             type: 'array',
@@ -16030,7 +17766,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a pipeline',
+        description: 'Create a new pipeline.',
+        operationId: 'pipelines-create',
         supportsBody: true,
+        requestBodyFields: ['icon_id', 'name', 'pipeline_type_id', 'position'],
       },
     },
   },
@@ -16039,6 +17778,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a pipeline',
+        description: 'Retrieve a single pipeline by ID.',
+        operationId: 'pipelines-show',
         pathParams: {
           id: {
             type: 'string',
@@ -16048,6 +17789,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a pipeline',
+        description: 'Update a pipeline.',
+        operationId: 'pipelines-update',
         pathParams: {
           id: {
             type: 'string',
@@ -16055,9 +17798,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['icon_id', 'name', 'pipeline_type_id', 'position'],
       },
       DELETE: {
         summary: 'Deletes a pipeline',
+        description: 'Delete a pipeline by ID.',
+        operationId: 'pipelines-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -16072,6 +17818,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get placeholder usages',
+        description: 'List all placeholder usages.',
+        operationId: 'placeholder_usages-index',
         query: {
           sort: {
             type: 'array',
@@ -16307,6 +18055,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a placeholder usage',
+        description: 'Create a new placeholder usage.',
+        operationId: 'placeholder_usages-create',
       },
     },
   },
@@ -16315,6 +18065,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a placeholder usage',
+        description: 'Retrieve a single placeholder usage by ID.',
+        operationId: 'placeholder_usages-show',
         pathParams: {
           id: {
             type: 'string',
@@ -16324,6 +18076,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a placeholder usage',
+        description: 'Update a placeholder usage.',
+        operationId: 'placeholder_usages-update',
         pathParams: {
           id: {
             type: 'string',
@@ -16333,6 +18087,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a placeholder usage',
+        description: 'Delete a placeholder usage by ID.',
+        operationId: 'placeholder_usages-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -16347,6 +18103,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get placeholders',
+        description: 'List all placeholders.',
+        operationId: 'placeholders-index',
         query: {
           sort: {
             type: 'array',
@@ -16522,7 +18280,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a placeholder',
+        description: 'Create a new placeholder.',
+        operationId: 'placeholders-create',
         supportsBody: true,
+        requestBodyFields: ['category', 'color', 'icon', 'name', 'project_id', 'type'],
       },
     },
   },
@@ -16531,6 +18292,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a placeholder',
+        description: 'Retrieve a single placeholder by ID.',
+        operationId: 'placeholders-show',
         pathParams: {
           id: {
             type: 'string',
@@ -16540,6 +18303,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a placeholder',
+        description: 'Update a placeholder.',
+        operationId: 'placeholders-update',
         pathParams: {
           id: {
             type: 'string',
@@ -16547,9 +18312,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['category', 'color', 'icon', 'name', 'project_id', 'type'],
       },
       DELETE: {
         summary: 'Deletes a placeholder',
+        description: 'Delete a placeholder by ID.',
+        operationId: 'placeholders-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -16564,6 +18332,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get prices',
+        description: 'List all prices.',
+        operationId: 'prices-index',
         query: {
           sort: {
             type: 'array',
@@ -16820,7 +18590,30 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a price',
+        description: 'Create a new price.',
+        operationId: 'prices-create',
         supportsBody: true,
+        requestBodyFields: [
+          'billing_type_id',
+          'booking_tracking_enabled',
+          'budget_cap_enabled',
+          'company_id',
+          'currency',
+          'custom_fields',
+          'discount',
+          'editor_config',
+          'estimated_cost',
+          'estimated_hours',
+          'expense_tracking_enabled',
+          'markup',
+          'name',
+          'quantity',
+          'rate',
+          'rate_card_id',
+          'service_type_id',
+          'time_tracking_enabled',
+          'unit_id',
+        ],
       },
     },
   },
@@ -16829,6 +18622,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a price',
+        description: 'Retrieve a single price by ID.',
+        operationId: 'prices-show',
         pathParams: {
           id: {
             type: 'string',
@@ -16838,6 +18633,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a price',
+        description: 'Update a price.',
+        operationId: 'prices-update',
         pathParams: {
           id: {
             type: 'string',
@@ -16845,9 +18642,32 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'billing_type_id',
+          'booking_tracking_enabled',
+          'budget_cap_enabled',
+          'company_id',
+          'currency',
+          'custom_fields',
+          'discount',
+          'editor_config',
+          'estimated_cost',
+          'estimated_hours',
+          'expense_tracking_enabled',
+          'markup',
+          'name',
+          'quantity',
+          'rate',
+          'rate_card_id',
+          'service_type_id',
+          'time_tracking_enabled',
+          'unit_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a price',
+        description: 'Delete a price by ID.',
+        operationId: 'prices-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -16862,6 +18682,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get project assignments',
+        description: 'List all project assignments.',
+        operationId: 'project_assignments-index',
         query: {
           sort: {
             type: 'array',
@@ -16927,7 +18749,23 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a project assignment',
+        description: 'Create a new project assignment.',
+        operationId: 'project_assignments-create',
         supportsBody: true,
+        requestBodyFields: [
+          'budgets_filter_id',
+          'deals_filter_id',
+          'default_filter_id',
+          'docs_filter_id',
+          'invoices_filter_id',
+          'person_id',
+          'preferences',
+          'project_id',
+          'subscribe',
+          'tasks_layout_id',
+          'unsubscribe',
+          'watched',
+        ],
       },
     },
   },
@@ -16936,6 +18774,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a project assignment',
+        description: 'Retrieve a single project assignment by ID.',
+        operationId: 'project_assignments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -16945,6 +18785,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a project assignment',
+        description: 'Update a project assignment.',
+        operationId: 'project_assignments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -16952,9 +18794,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'budgets_filter_id',
+          'deals_filter_id',
+          'default_filter_id',
+          'docs_filter_id',
+          'invoices_filter_id',
+          'person_id',
+          'preferences',
+          'project_id',
+          'subscribe',
+          'tasks_layout_id',
+          'unsubscribe',
+          'watched',
+        ],
       },
       DELETE: {
         summary: 'Deletes a project assignment',
+        description: 'Delete a project assignment by ID.',
+        operationId: 'project_assignments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -16969,6 +18827,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get projects',
+        description:
+          'List projects. Returns a paginated collection of projects accessible to the authenticated user. Supports filtering, sorting, and including related resources.',
+        operationId: 'projects-index',
         query: {
           sort: {
             type: 'array',
@@ -17638,7 +19499,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a project',
+        description:
+          'Create a project. Creates a new project with the specified attributes. Requires a client company, project manager, project type, and workflow.',
+        operationId: 'projects-create',
         supportsBody: true,
+        requestBodyFields: [
+          'company_id',
+          'custom_fields',
+          'name',
+          'page_custom_fields_ids',
+          'page_custom_fields_positions',
+          'preferences',
+          'project_color_id',
+          'project_manager_id',
+          'project_type_id',
+          'tag_colors',
+          'task_custom_fields_ids',
+          'task_custom_fields_positions',
+          'workflow_id',
+        ],
       },
     },
   },
@@ -17647,6 +19526,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a project',
+        description:
+          'Copy a project. Creates a copy of an existing project, duplicating its structure and optionally its tasks and other content.',
+        operationId: 'projects-copy-copy',
       },
     },
   },
@@ -17655,6 +19537,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a project',
+        description: 'Get a project. Returns a single project by ID.',
+        operationId: 'projects-show',
         pathParams: {
           id: {
             type: 'string',
@@ -17664,6 +19548,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a project',
+        description: 'Update a project. Updates attributes of an existing project.',
+        operationId: 'projects-update',
         pathParams: {
           id: {
             type: 'string',
@@ -17671,9 +19557,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'company_id',
+          'custom_fields',
+          'name',
+          'page_custom_fields_ids',
+          'page_custom_fields_positions',
+          'preferences',
+          'project_color_id',
+          'project_manager_id',
+          'project_type_id',
+          'tag_colors',
+          'task_custom_fields_ids',
+          'task_custom_fields_positions',
+          'workflow_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a project',
+        description: 'Delete a project. Permanently deletes a project and all its associated data.',
+        operationId: 'projects-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -17688,6 +19591,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a project',
+        description:
+          'Archive a project. Moves a project to archived status, hiding it from active project lists.',
+        operationId: 'projects-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -17702,6 +19608,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Changes workflow on project',
+        description:
+          'Change workflow. Changes the task workflow used by this project, remapping existing task statuses to the new workflow.',
+        operationId: 'projects-change_workflow-change_workflow',
         pathParams: {
           id: {
             type: 'string',
@@ -17716,6 +19625,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a project',
+        description: 'Restore a project. Restores an archived project back to active status.',
+        operationId: 'projects-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -17730,6 +19641,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Subscribes to project',
+        description: 'Subscribes the current user to project notifications.',
+        operationId: 'projects-subscribe-subscribe',
         pathParams: {
           id: {
             type: 'string',
@@ -17744,6 +19657,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unsubscribes from project',
+        description: 'Unsubscribes the current user from project notifications.',
+        operationId: 'projects-unsubscribe-unsubscribe',
         pathParams: {
           id: {
             type: 'string',
@@ -17758,6 +19673,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get proposals',
+        description: 'List all proposals.',
+        operationId: 'proposals-index',
         query: {
           sort: {
             type: 'array',
@@ -18000,6 +19917,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a proposal',
+        description: 'Create a new proposal.',
+        operationId: 'proposals-create',
       },
     },
   },
@@ -18008,6 +19927,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a proposal',
+        description: 'Retrieve a single proposal by ID.',
+        operationId: 'proposals-show',
         pathParams: {
           id: {
             type: 'string',
@@ -18017,6 +19938,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a proposal',
+        description: 'Update a proposal.',
+        operationId: 'proposals-update',
         pathParams: {
           id: {
             type: 'string',
@@ -18026,6 +19949,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a proposal',
+        description: 'Delete a proposal by ID.',
+        operationId: 'proposals-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -18040,6 +19965,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Sync a proposal',
+        description: 'Sync a proposal with the associated deal.',
+        operationId: 'proposals-sync-sync',
         pathParams: {
           id: {
             type: 'string',
@@ -18054,6 +19981,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: "Get proposal's sync status",
+        description: 'Retrieve the sync status of a proposal.',
+        operationId: 'proposals-sync_status-sync_status',
         pathParams: {
           id: {
             type: 'string',
@@ -18068,6 +19997,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get pulses',
+        description: 'List all pulses.',
+        operationId: 'pulses-index',
         query: {
           sort: {
             type: 'array',
@@ -18151,7 +20082,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates a pulse',
+        description: 'Create a new pulse.',
+        operationId: 'pulses-create',
         supportsBody: true,
+        requestBodyFields: [
+          'document_format_id',
+          'export_params',
+          'filter_id',
+          'recipients',
+          'repeat_schedule_id',
+          'schedule_day_id',
+          'schedule_frame_id',
+          'schedule_hour',
+          'skip_if_empty',
+          'slack_channel',
+          'teams_channel',
+          'teams_team',
+          'test_pulse',
+          'type_id',
+          'version',
+        ],
       },
     },
   },
@@ -18160,6 +20110,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a pulse',
+        description: 'Retrieve a single pulse by ID.',
+        operationId: 'pulses-show',
         pathParams: {
           id: {
             type: 'string',
@@ -18169,6 +20121,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates a pulse',
+        description: 'Update a pulse.',
+        operationId: 'pulses-update',
         pathParams: {
           id: {
             type: 'string',
@@ -18176,9 +20130,28 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'document_format_id',
+          'export_params',
+          'filter_id',
+          'recipients',
+          'repeat_schedule_id',
+          'schedule_day_id',
+          'schedule_frame_id',
+          'schedule_hour',
+          'skip_if_empty',
+          'slack_channel',
+          'teams_channel',
+          'teams_team',
+          'test_pulse',
+          'type_id',
+          'version',
+        ],
       },
       DELETE: {
         summary: 'Deletes a pulse',
+        description: 'Delete a pulse by ID.',
+        operationId: 'pulses-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -18193,6 +20166,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Send a pulse',
+        description: 'Send a pulse to recipients.',
+        operationId: 'pulses-send-send_pulse',
         pathParams: {
           id: {
             type: 'string',
@@ -18207,6 +20182,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get purchase orders',
+        description:
+          'Lists purchase orders in the current account with pagination, filtering, sorting, and sparse fieldsets. Returns a JSON:API collection of `purchase_orders` resources.',
+        operationId: 'purchase_orders-index',
         query: {
           sort: {
             type: 'array',
@@ -18625,14 +20603,49 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a purchase order',
+        description: 'Create a new purchase order.',
+        operationId: 'purchase_orders-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'currency',
+          'deal_id',
+          'delivery_on',
+          'document_type_id',
+          'issued_on',
+          'note',
+          'sent_on',
+          'status_id',
+          'subject',
+          'subscriber_ids',
+          'vendor_id',
+        ],
       },
       PATCH: {
         summary: 'Update purchase orders',
+        description:
+          'Bulk-updates multiple purchase orders in a single request. Accepts a JSON:API array of partial `purchase_orders` resources keyed by ID.',
+        operationId: 'purchase_orders-update-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'currency',
+          'deal_id',
+          'delivery_on',
+          'document_type_id',
+          'issued_on',
+          'note',
+          'sent_on',
+          'status_id',
+          'subject',
+          'subscriber_ids',
+          'vendor_id',
+        ],
       },
       DELETE: {
         summary: 'Delete purchase orders',
+        description: 'Bulk-deletes purchase orders by ID in a single request.',
+        operationId: 'purchase_orders-destroy-bulk',
       },
     },
   },
@@ -18641,7 +20654,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a purchase order',
+        description: 'Copy an existing purchase order.',
+        operationId: 'purchase_orders-copy-copy',
         supportsBody: true,
+        requestBodyFields: ['deal_id', 'template_id'],
       },
     },
   },
@@ -18650,6 +20666,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a purchase order',
+        description: 'Retrieve a single purchase order by ID.',
+        operationId: 'purchase_orders-show',
         pathParams: {
           id: {
             type: 'string',
@@ -18659,6 +20677,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a purchase order',
+        description: 'Update a purchase order.',
+        operationId: 'purchase_orders-update',
         pathParams: {
           id: {
             type: 'string',
@@ -18666,9 +20686,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_id',
+          'currency',
+          'deal_id',
+          'delivery_on',
+          'document_type_id',
+          'issued_on',
+          'note',
+          'sent_on',
+          'status_id',
+          'subject',
+          'subscriber_ids',
+          'vendor_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a purchase order',
+        description: 'Delete a purchase order by ID.',
+        operationId: 'purchase_orders-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -18683,6 +20719,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Exports a purchase order',
+        description: 'Export a purchase order to an external format.',
+        operationId: 'purchase_orders-export-export',
         pathParams: {
           id: {
             type: 'string',
@@ -18690,6 +20728,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['company_reference_id', 'xero_status_id'],
       },
     },
   },
@@ -18698,6 +20737,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Updates exported purchase order',
+        description: 'Update the export status of a purchase order.',
+        operationId: 'purchase_orders-export_update-export_update',
         pathParams: {
           id: {
             type: 'string',
@@ -18705,6 +20746,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['company_reference_id', 'xero_status_id'],
       },
     },
   },
@@ -18713,6 +20755,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Sends a purchase order',
+        description: 'Send a purchase order to a vendor.',
+        operationId: 'purchase_orders-send-send_mail',
         pathParams: {
           id: {
             type: 'string',
@@ -18720,6 +20764,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['attachment_ids', 'bcc', 'body', 'cc', 'from', 'subject', 'to'],
       },
     },
   },
@@ -18728,6 +20773,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get rate cards',
+        description: 'List all rate cards.',
+        operationId: 'rate_cards-index',
         query: {
           sort: {
             type: 'array',
@@ -18814,7 +20861,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a price',
+        description: 'Create a new rate card.',
+        operationId: 'rate_cards-create',
         supportsBody: true,
+        requestBodyFields: ['company_id', 'name'],
       },
     },
   },
@@ -18823,6 +20873,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copy a rate card',
+        description: 'Copy an existing rate card.',
+        operationId: 'rate_cards-copy-copy',
       },
     },
   },
@@ -18831,6 +20883,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a rate card',
+        description: 'Retrieve a single rate card by ID.',
+        operationId: 'rate_cards-show',
         pathParams: {
           id: {
             type: 'string',
@@ -18840,6 +20894,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a price',
+        description: 'Update a rate card.',
+        operationId: 'rate_cards-update',
         pathParams: {
           id: {
             type: 'string',
@@ -18847,9 +20903,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['company_id', 'name'],
       },
       DELETE: {
         summary: 'Deletes a price',
+        description: 'Delete a rate card by ID.',
+        operationId: 'rate_cards-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -18864,6 +20923,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a rate card',
+        description: 'Archive a rate card to deactivate it.',
+        operationId: 'rate_cards-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -18878,6 +20939,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a rate card',
+        description: 'Restore an archived rate card.',
+        operationId: 'rate_cards-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -18892,6 +20955,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get report categories',
+        description: 'List all report categories.',
+        operationId: 'report_categories-index',
         query: {
           sort: {
             type: 'array',
@@ -18909,7 +20974,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a report category',
+        description: 'Create a new report category.',
+        operationId: 'report_categories-create',
         supportsBody: true,
+        requestBodyFields: ['color_id', 'name', 'position'],
       },
     },
   },
@@ -18918,6 +20986,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a report category',
+        description: 'Retrieve a specific report category by ID.',
+        operationId: 'report_categories-show',
         pathParams: {
           id: {
             type: 'string',
@@ -18927,6 +20997,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a report category',
+        description: 'Update an existing report category.',
+        operationId: 'report_categories-update',
         pathParams: {
           id: {
             type: 'string',
@@ -18934,9 +21006,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['color_id', 'name', 'position'],
       },
       DELETE: {
         summary: 'Deletes a report category',
+        description: 'Delete a report category.',
+        operationId: 'report_categories-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -18951,6 +21026,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get booking reports',
+        description: 'Retrieve aggregated booking report data grouped by configurable dimensions.',
+        operationId: 'reports-booking_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -19819,6 +21896,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get budget reports',
+        description:
+          'Retrieve a paginated list of aggregated budget report rows. Supports filtering, grouping, and sorting by budget dimensions and metrics.',
+        operationId: 'reports-budget_reports-index',
         query: {
           group: {
             type: 'string',
@@ -22175,6 +24255,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get company reports',
+        description: 'Retrieve aggregated company report data grouped by configurable dimensions.',
+        operationId: 'reports-company_reports-index',
         query: {
           group: {
             type: 'string',
@@ -22789,6 +24871,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get funnel reports',
+        description:
+          'Retrieve aggregated deal funnel report data grouped by configurable dimensions.',
+        operationId: 'reports-deal_funnel_reports-index',
         query: {
           group: {
             type: 'string',
@@ -22926,6 +25011,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get deal reports',
+        description: 'Retrieve aggregated deal report data grouped by configurable dimensions.',
+        operationId: 'reports-deal_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -25255,6 +27342,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get entitlement reports',
+        description:
+          'Retrieve aggregated entitlement report data grouped by configurable dimensions.',
+        operationId: 'reports-entitlement_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -25513,6 +27603,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get expense reports',
+        description: 'Retrieve aggregated expense report data grouped by configurable dimensions.',
+        operationId: 'reports-expense_reports-index',
         query: {
           group: {
             type: 'string',
@@ -26689,6 +28781,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get financial item reports',
+        description:
+          'Retrieve aggregated financial item report data grouped by configurable dimensions.',
+        operationId: 'reports-financial_item_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -27707,6 +29802,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get invoice reports',
+        description: 'Retrieve aggregated invoice report data grouped by configurable dimensions.',
+        operationId: 'reports-invoice_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -28955,6 +31052,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get line item reports',
+        description:
+          'Retrieve aggregated line item report data grouped by configurable dimensions.',
+        operationId: 'reports-line_item_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -29241,6 +31341,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get page reports',
+        description: 'Retrieve aggregated page report data grouped by configurable dimensions.',
+        operationId: 'reports-page_reports-index',
         query: {
           group: {
             type: 'string',
@@ -29632,6 +31734,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get payment reports',
+        description: 'Retrieve aggregated payment report data grouped by configurable dimensions.',
+        operationId: 'reports-payment_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -29963,6 +32067,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get payroll item reports',
+        description:
+          'Retrieve aggregated payroll item report data grouped by configurable dimensions.',
+        operationId: 'reports-payroll_item_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -30327,6 +32434,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get person reports',
+        description: 'Retrieve aggregated person report data grouped by configurable dimensions.',
+        operationId: 'reports-person_reports-index',
         query: {
           group: {
             type: 'string',
@@ -31394,6 +33503,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get price reports',
+        description: 'Retrieve aggregated price report data grouped by configurable dimensions.',
+        operationId: 'reports-price_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -31655,6 +33766,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get project reports',
+        description: 'Retrieve aggregated project report data grouped by configurable dimensions.',
+        operationId: 'reports-project_reports-index',
         query: {
           group: {
             type: 'string',
@@ -32365,6 +34478,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get proposal reports',
+        description:
+          'Returns a paginated list of proposal report records, suitable for building custom proposal analytics.',
+        operationId: 'reports-proposal_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -32728,6 +34844,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get salary reports',
+        description: 'Retrieve aggregated salary report data grouped by configurable dimensions.',
+        operationId: 'reports-salary_reports-index',
         query: {
           group: {
             type: 'string',
@@ -33104,6 +35222,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get service reports',
+        description: 'Retrieve aggregated service report data grouped by configurable dimensions.',
+        operationId: 'reports-service_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -34805,6 +36925,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get survey reports',
+        description: 'Retrieve aggregated survey report data grouped by configurable dimensions.',
+        operationId: 'reports-survey_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -34970,6 +37092,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get task reports',
+        description: 'Retrieve aggregated task report data grouped by configurable dimensions.',
+        operationId: 'reports-task_reports-index',
         query: {
           group: {
             type: 'string',
@@ -36393,6 +38517,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get time entry reports',
+        description:
+          'Retrieve aggregated time entry report data grouped by configurable dimensions.',
+        operationId: 'reports-time_entry_reports-index',
         query: {
           group: {
             type: 'string',
@@ -37832,6 +39959,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get time reports',
+        description: 'Retrieve aggregated time report data grouped by configurable dimensions.',
+        operationId: 'reports-time_reports-index',
         query: {
           group: {
             type: 'string',
@@ -38526,6 +40655,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get timesheet reports',
+        description:
+          'Retrieve aggregated timesheet report data grouped by configurable dimensions.',
+        operationId: 'reports-timesheet_reports-index',
         query: {
           sort: {
             type: 'array',
@@ -38731,6 +40863,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get resource requests',
+        description:
+          'Returns a paginated list of resource requests, optionally filtered and sorted.',
+        operationId: 'resource_requests-index',
         query: {
           sort: {
             type: 'array',
@@ -39208,6 +41343,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a resource request',
+        description: 'Creates a new resource request for a service.',
+        operationId: 'resource_requests-create',
       },
     },
   },
@@ -39216,6 +41353,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a resource request',
+        description: 'Returns a single resource request by ID.',
+        operationId: 'resource_requests-show',
         pathParams: {
           id: {
             type: 'string',
@@ -39225,6 +41364,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a resource request',
+        description: 'Updates an existing resource request by ID.',
+        operationId: 'resource_requests-update',
         pathParams: {
           id: {
             type: 'string',
@@ -39234,6 +41375,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a resource request',
+        description: 'Deletes a resource request by ID.',
+        operationId: 'resource_requests-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -39248,6 +41391,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Cancel a resource request',
+        description: 'Cancels a resource request by ID, setting its status to canceled.',
+        operationId: 'resource_requests-cancel-cancel',
         pathParams: {
           id: {
             type: 'string',
@@ -39262,6 +41407,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reject a resource request',
+        description: 'Rejects a resource request by ID, setting its status to rejected.',
+        operationId: 'resource_requests-reject-reject',
         pathParams: {
           id: {
             type: 'string',
@@ -39276,6 +41423,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Resolve a resource request by creating bookings',
+        description: 'Resolves a resource request by ID, setting its status to resolved.',
+        operationId: 'resource_requests-resolve-resolve',
         pathParams: {
           id: {
             type: 'string',
@@ -39290,6 +41439,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get revenue distributions',
+        description: 'List all revenue distributions.',
+        operationId: 'revenue_distributions-index',
         query: {
           sort: {
             type: 'array',
@@ -39475,6 +41626,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a revenue distribution',
+        description: 'Create a new revenue distribution.',
+        operationId: 'revenue_distributions-create',
       },
     },
   },
@@ -39483,6 +41636,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a revenue distribution',
+        description: 'Retrieve a single revenue distribution by ID.',
+        operationId: 'revenue_distributions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -39492,6 +41647,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a revenue distribution',
+        description: 'Update a revenue distribution.',
+        operationId: 'revenue_distributions-update',
         pathParams: {
           id: {
             type: 'string',
@@ -39501,6 +41658,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a revenue distribution',
+        description: 'Delete a revenue distribution by ID.',
+        operationId: 'revenue_distributions-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -39515,6 +41674,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get permission sets',
+        description: 'List all roles.',
+        operationId: 'roles-index',
         query: {
           sort: {
             type: 'array',
@@ -39714,7 +41875,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a permission set',
+        operationId: 'roles-create',
         supportsBody: true,
+        requestBodyFields: ['base_role_id', 'description', 'name', 'permissions', 'user_type_id'],
       },
     },
   },
@@ -39723,6 +41886,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a permission set',
+        description: 'Retrieve a single role by ID.',
+        operationId: 'roles-show',
         pathParams: {
           id: {
             type: 'string',
@@ -39732,15 +41897,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a permission set',
+        operationId: 'roles-update',
         pathParams: {
           id: {
             type: 'string',
           },
         },
         supportsBody: true,
+        requestBodyFields: ['base_role_id', 'description', 'name', 'permissions', 'user_type_id'],
       },
       DELETE: {
         summary: 'Delete a permission set',
+        operationId: 'roles-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -39754,6 +41922,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get salaries',
+        description: 'List all salaries.',
+        operationId: 'salaries-index',
         query: {
           sort: {
             type: 'array',
@@ -39831,7 +42001,22 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a salary',
+        description: 'Create a new salary.',
+        operationId: 'salaries-create',
         supportsBody: true,
+        requestBodyFields: [
+          'alternating_hours',
+          'cost',
+          'currency',
+          'ended_on',
+          'holiday_calendar_id',
+          'note',
+          'overhead',
+          'person_id',
+          'salary_type_id',
+          'started_on',
+          'working_hours',
+        ],
       },
     },
   },
@@ -39840,6 +42025,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a salary',
+        description: 'Retrieve a single salary by ID.',
+        operationId: 'salaries-show',
         pathParams: {
           id: {
             type: 'string',
@@ -39849,6 +42036,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a salary',
+        description: 'Update a salary.',
+        operationId: 'salaries-update',
         pathParams: {
           id: {
             type: 'string',
@@ -39856,9 +42045,24 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'alternating_hours',
+          'cost',
+          'currency',
+          'ended_on',
+          'holiday_calendar_id',
+          'note',
+          'overhead',
+          'person_id',
+          'salary_type_id',
+          'started_on',
+          'working_hours',
+        ],
       },
       DELETE: {
         summary: 'Deletes a salary',
+        description: 'Delete a salary by ID.',
+        operationId: 'salaries-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -39873,6 +42077,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get sections',
+        description: 'List all sections.',
+        operationId: 'sections-index',
         query: {
           sort: {
             type: 'array',
@@ -39956,7 +42162,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a section',
+        description: 'Create a new section.',
+        operationId: 'sections-create',
         supportsBody: true,
+        requestBodyFields: ['deal_id', 'editor_config', 'name', 'position', 'preferences'],
       },
     },
   },
@@ -39965,6 +42174,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a section',
+        description: 'Retrieve a single section by ID.',
+        operationId: 'sections-show',
         pathParams: {
           id: {
             type: 'string',
@@ -39974,6 +42185,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a section',
+        description: 'Update a section.',
+        operationId: 'sections-update',
         pathParams: {
           id: {
             type: 'string',
@@ -39981,9 +42194,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['deal_id', 'editor_config', 'name', 'position', 'preferences'],
       },
       DELETE: {
         summary: 'Deletes a section',
+        description: 'Delete a section by ID.',
+        operationId: 'sections-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -39998,6 +42214,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get service assignments',
+        description: 'List all service assignments.',
+        operationId: 'service_assignments-index',
         query: {
           sort: {
             type: 'array',
@@ -40063,7 +42281,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a service assignment',
+        description: 'Create a new service assignment.',
+        operationId: 'service_assignments-create',
         supportsBody: true,
+        requestBodyFields: ['person_id', 'service_id'],
       },
     },
   },
@@ -40072,6 +42293,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a service assignment',
+        description: 'Retrieve a single service assignment by ID.',
+        operationId: 'service_assignments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -40081,6 +42304,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a service assignment',
+        description: 'Update a service assignment.',
+        operationId: 'service_assignments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -40088,9 +42313,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['person_id', 'service_id'],
       },
       DELETE: {
         summary: 'Deletes a service assignment',
+        description: 'Delete a service assignment by ID.',
+        operationId: 'service_assignments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -40105,6 +42333,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get service type assignments',
+        description: 'List all service type assignments.',
+        operationId: 'service_type_assignments-index',
         query: {
           sort: {
             type: 'array',
@@ -40170,7 +42400,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a service type assignment',
+        description: 'Create a new service type assignment.',
+        operationId: 'service_type_assignments-create',
         supportsBody: true,
+        requestBodyFields: ['person_id', 'service_type_id'],
       },
     },
   },
@@ -40179,6 +42412,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a service type assignment',
+        description: 'Retrieve a single service type assignment by ID.',
+        operationId: 'service_type_assignments-show',
         pathParams: {
           id: {
             type: 'string',
@@ -40188,6 +42423,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a service type assignment',
+        description: 'Update a service type assignment.',
+        operationId: 'service_type_assignments-update',
         pathParams: {
           id: {
             type: 'string',
@@ -40195,9 +42432,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['person_id', 'service_type_id'],
       },
       DELETE: {
         summary: 'Deletes a service type assignment',
+        description: 'Delete a service type assignment by ID.',
+        operationId: 'service_type_assignments-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -40212,6 +42452,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get service types',
+        description: 'List all service types.',
+        operationId: 'service_types-index',
         query: {
           sort: {
             type: 'array',
@@ -40314,7 +42556,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a service type',
+        description: 'Create a new service type.',
+        operationId: 'service_types-create',
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
     },
   },
@@ -40323,6 +42568,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Merge a service type',
+        description: 'Merge two or more service types into one.',
+        operationId: 'service_types-merge-merge',
       },
     },
   },
@@ -40331,6 +42578,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a service type',
+        description: 'Retrieve a single service type by ID.',
+        operationId: 'service_types-show',
         pathParams: {
           id: {
             type: 'string',
@@ -40340,6 +42589,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a service type',
+        description: 'Update a service type.',
+        operationId: 'service_types-update',
         pathParams: {
           id: {
             type: 'string',
@@ -40347,6 +42598,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
     },
   },
@@ -40355,6 +42607,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a service type',
+        description: 'Archive a service type to deactivate it.',
+        operationId: 'service_types-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -40369,6 +42623,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get services',
+        description: 'List services with optional filters and pagination.',
+        operationId: 'services-index',
         query: {
           sort: {
             type: 'array',
@@ -41855,7 +44111,33 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a service',
+        description: 'Create a new service on a deal.',
+        operationId: 'services-create',
         supportsBody: true,
+        requestBodyFields: [
+          'billing_type_id',
+          'booking_tracking_enabled',
+          'budget_cap_enabled',
+          'custom_fields',
+          'deal_id',
+          'discount',
+          'editor_config',
+          'estimated_cost',
+          'estimated_time',
+          'expense_tracking_enabled',
+          'limitation_type',
+          'markup',
+          'name',
+          'person_id',
+          'position',
+          'price',
+          'quantity',
+          'rolled_over_time',
+          'section_id',
+          'service_type_id',
+          'time_tracking_enabled',
+          'unit_id',
+        ],
       },
     },
   },
@@ -41864,6 +44146,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a service',
+        description: 'Retrieve a single service by ID.',
+        operationId: 'services-show',
         pathParams: {
           id: {
             type: 'string',
@@ -41873,6 +44157,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a service',
+        description: 'Update a service.',
+        operationId: 'services-update',
         pathParams: {
           id: {
             type: 'string',
@@ -41880,9 +44166,35 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'billing_type_id',
+          'booking_tracking_enabled',
+          'budget_cap_enabled',
+          'custom_fields',
+          'deal_id',
+          'discount',
+          'editor_config',
+          'estimated_cost',
+          'estimated_time',
+          'expense_tracking_enabled',
+          'limitation_type',
+          'markup',
+          'name',
+          'person_id',
+          'position',
+          'price',
+          'quantity',
+          'rolled_over_time',
+          'section_id',
+          'service_type_id',
+          'time_tracking_enabled',
+          'unit_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a service',
+        description: 'Delete a service.',
+        operationId: 'services-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -41897,6 +44209,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get all sessions',
+        description: 'List all active sessions.',
+        operationId: 'sessions-index',
         query: {
           sort: {
             type: 'array',
@@ -41977,7 +44291,22 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a session',
+        description: 'Create a new session (sign in).',
+        operationId: 'sessions-create',
         supportsBody: true,
+        requestBodyFields: [
+          'app_version',
+          'browser',
+          'cordova_device_model',
+          'cordova_device_platform',
+          'cordova_device_uid',
+          'cordova_device_version',
+          'device',
+          'firebase_token',
+          'name',
+          'platform',
+          'read_only',
+        ],
       },
     },
   },
@@ -41986,6 +44315,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Create a machine session',
+        description: 'Create a machine session for API access.',
+        operationId: 'sessions-machine-machine',
       },
     },
   },
@@ -41994,6 +44325,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       DELETE: {
         summary: 'Deletes a session',
+        description: 'Delete a session (sign out) by ID.',
+        operationId: 'sessions-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -42008,6 +44341,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PUT: {
         summary: 'Validate session OTP',
+        description: 'Validate a one-time password for a session.',
+        operationId: 'sessions-validate_otp-validate_otp',
         pathParams: {
           id: {
             type: 'string',
@@ -42022,6 +44357,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets all subsidiaries',
+        description: 'List all subsidiaries.',
+        operationId: 'subsidiaries-index',
         query: {
           sort: {
             type: 'array',
@@ -42075,7 +44412,22 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a subsidiary',
+        description: 'Create a new subsidiary.',
+        operationId: 'subsidiaries-create',
         supportsBody: true,
+        requestBodyFields: [
+          'custom_domain_id',
+          'default_bank_account_id',
+          'default_document_type_id',
+          'default_tax_rate_id',
+          'facility_costs',
+          'facility_costs_breakdown',
+          'invoice_logo_url',
+          'invoice_number_format',
+          'invoice_number_scope',
+          'name',
+          'show_delivery_date',
+        ],
       },
     },
   },
@@ -42084,6 +44436,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a subsidiary',
+        description: 'Retrieve a single subsidiary by ID.',
+        operationId: 'subsidiaries-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42093,6 +44447,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a subsidiary',
+        description: 'Update a subsidiary.',
+        operationId: 'subsidiaries-update',
         pathParams: {
           id: {
             type: 'string',
@@ -42100,6 +44456,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'custom_domain_id',
+          'default_bank_account_id',
+          'default_document_type_id',
+          'default_tax_rate_id',
+          'facility_costs',
+          'facility_costs_breakdown',
+          'invoice_logo_url',
+          'invoice_number_format',
+          'invoice_number_scope',
+          'name',
+          'show_delivery_date',
+        ],
       },
     },
   },
@@ -42108,6 +44477,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a subsidiary',
+        description: 'Archive a subsidiary to deactivate it.',
+        operationId: 'subsidiaries-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -42122,6 +44493,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get survey field options',
+        description: 'List all survey field options.',
+        operationId: 'survey_field_options-index',
         query: {
           sort: {
             type: 'array',
@@ -42187,7 +44560,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates a survey field option',
+        description: 'Create a new survey field option.',
+        operationId: 'survey_field_options-create',
         supportsBody: true,
+        requestBodyFields: ['color_id', 'name', 'position', 'survey_field_id'],
       },
     },
   },
@@ -42196,6 +44572,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a survey field option',
+        description: 'Retrieve a single survey field option by ID.',
+        operationId: 'survey_field_options-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42205,6 +44583,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates a survey field option',
+        description: 'Update a survey field option.',
+        operationId: 'survey_field_options-update',
         pathParams: {
           id: {
             type: 'string',
@@ -42212,6 +44592,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['color_id', 'name', 'position', 'survey_field_id'],
       },
     },
   },
@@ -42220,6 +44601,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a survey field option',
+        description: 'Archive a survey field option to deactivate it.',
+        operationId: 'survey_field_options-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -42234,6 +44617,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get survey fields',
+        description: 'List all survey fields.',
+        operationId: 'survey_fields-index',
         query: {
           sort: {
             type: 'array',
@@ -42394,7 +44779,21 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Creates a survey field',
+        description: 'Create a new survey field.',
+        operationId: 'survey_fields-create',
         supportsBody: true,
+        requestBodyFields: [
+          'aggregation_type_id',
+          'data_type_id',
+          'formatting_type_id',
+          'name',
+          'origin_field_id',
+          'position',
+          'quick_add_enabled',
+          'required',
+          'show_in_add_edit_views',
+          'survey_id',
+        ],
       },
     },
   },
@@ -42403,6 +44802,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a survey field',
+        description: 'Retrieve a single survey field by ID.',
+        operationId: 'survey_fields-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42412,6 +44813,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Updates a survey field',
+        description: 'Update a survey field.',
+        operationId: 'survey_fields-update',
         pathParams: {
           id: {
             type: 'string',
@@ -42419,6 +44822,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'aggregation_type_id',
+          'data_type_id',
+          'formatting_type_id',
+          'name',
+          'origin_field_id',
+          'position',
+          'quick_add_enabled',
+          'required',
+          'show_in_add_edit_views',
+          'survey_id',
+        ],
       },
     },
   },
@@ -42427,6 +44842,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a survey field',
+        description: 'Archive a survey field to deactivate it.',
+        operationId: 'survey_fields-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -42441,6 +44858,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get survey responses',
+        description: 'List all survey responses.',
+        operationId: 'survey_responses-index',
         query: {
           sort: {
             type: 'array',
@@ -42560,7 +44979,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a survey response',
+        description: 'Create a new survey response.',
+        operationId: 'survey_responses-create',
         supportsBody: true,
+        requestBodyFields: ['custom_fields', 'survey_fields', 'survey_id'],
       },
     },
   },
@@ -42569,6 +44991,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a survey response',
+        description: 'Retrieve a single survey response by ID.',
+        operationId: 'survey_responses-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42578,6 +45002,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a survey response',
+        description: 'Delete a survey response by ID.',
+        operationId: 'survey_responses-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -42592,6 +45018,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get surveys',
+        description: 'List all surveys.',
+        operationId: 'surveys-index',
         query: {
           sort: {
             type: 'array',
@@ -42732,7 +45160,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a survey',
+        description: 'Create a new survey.',
+        operationId: 'surveys-create',
         supportsBody: true,
+        requestBodyFields: ['project_id', 'submission_access', 'title'],
       },
     },
   },
@@ -42741,6 +45172,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a survey',
+        description: 'Copy an existing survey.',
+        operationId: 'surveys-copy-copy',
       },
     },
   },
@@ -42749,6 +45182,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a survey',
+        description: 'Retrieve a single survey by ID.',
+        operationId: 'surveys-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42758,6 +45193,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a survey',
+        description: 'Update a survey.',
+        operationId: 'surveys-update',
         pathParams: {
           id: {
             type: 'string',
@@ -42765,9 +45202,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['project_id', 'submission_access', 'title'],
       },
       DELETE: {
         summary: 'Deletes a survey',
+        description: 'Delete a survey by ID.',
+        operationId: 'surveys-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -42782,6 +45222,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get tags',
+        description: 'List all tags.',
+        operationId: 'tags-index',
         query: {
           sort: {
             type: 'array',
@@ -42947,6 +45389,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a tag',
+        description: 'Retrieve a single tag by ID.',
+        operationId: 'tags-show',
         pathParams: {
           id: {
             type: 'string',
@@ -42961,6 +45405,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get task dependncies',
+        description: 'List all task dependencies.',
+        operationId: 'task_dependencies-index',
         query: {
           sort: {
             type: 'array',
@@ -43169,7 +45615,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a task dependency',
+        description: 'Create a new task dependency.',
+        operationId: 'task_dependencies-create',
         supportsBody: true,
+        requestBodyFields: ['dependent_task_id', 'task_id', 'type_id'],
       },
     },
   },
@@ -43178,6 +45627,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a task dependency',
+        description: 'Retrieve a single task dependency by ID.',
+        operationId: 'task_dependencies-show',
         pathParams: {
           id: {
             type: 'string',
@@ -43187,6 +45638,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a task dependency',
+        description: 'Update a task dependency.',
+        operationId: 'task_dependencies-update',
         pathParams: {
           id: {
             type: 'string',
@@ -43194,9 +45647,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['dependent_task_id', 'task_id', 'type_id'],
       },
       DELETE: {
         summary: 'Deletes a task dependency',
+        description: 'Delete a task dependency by ID.',
+        operationId: 'task_dependencies-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -43211,6 +45667,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get task lists',
+        description: 'List all task lists.',
+        operationId: 'task_lists-index',
         query: {
           sort: {
             type: 'array',
@@ -43364,7 +45822,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a task list',
+        description: 'Create a new task list.',
+        operationId: 'task_lists-create',
         supportsBody: true,
+        requestBodyFields: ['board_id', 'folder_id', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -43373,6 +45834,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a task list',
+        description: 'Copy an existing task list.',
+        operationId: 'task_lists-copy-copy',
       },
     },
   },
@@ -43381,6 +45844,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a task list',
+        description: 'Retrieve a single task list by ID.',
+        operationId: 'task_lists-show',
         pathParams: {
           id: {
             type: 'string',
@@ -43390,6 +45855,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a task list',
+        description: 'Update a task list.',
+        operationId: 'task_lists-update',
         pathParams: {
           id: {
             type: 'string',
@@ -43397,6 +45864,7 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['board_id', 'folder_id', 'name', 'position', 'project_id'],
       },
     },
   },
@@ -43405,6 +45873,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a task list',
+        description: 'Archive a task list to deactivate it.',
+        operationId: 'task_lists-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -43419,6 +45889,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Moves a task list',
+        description: 'Move a task list to a different folder or project.',
+        operationId: 'task_lists-move-move',
         pathParams: {
           id: {
             type: 'string',
@@ -43433,6 +45905,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Repoisition a task list',
+        description: 'Reposition a task list within its folder.',
+        operationId: 'task_lists-reposition-reposition',
         pathParams: {
           id: {
             type: 'string',
@@ -43447,6 +45921,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a task list',
+        description: 'Restore an archived task list.',
+        operationId: 'task_lists-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -43461,6 +45937,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get tasks',
+        description:
+          'Returns a paginated list of tasks. Supports filtering by project, assignee, status, dates, tags, and more.',
+        operationId: 'tasks-index',
         query: {
           sort: {
             type: 'array',
@@ -44858,7 +47337,36 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a task',
+        description:
+          'Creates a new task. Provide attributes such as title, project, assignee, due date, and workflow status.',
+        operationId: 'tasks-create',
         supportsBody: true,
+        requestBodyFields: [
+          'assignee_id',
+          'attachment_ids',
+          'custom_fields',
+          'due_date',
+          'due_time',
+          'initial_estimate',
+          'parent_task_id',
+          'private',
+          'project_id',
+          'remaining_time',
+          'repeat_on_date',
+          'repeat_on_interval',
+          'repeat_on_monthday',
+          'repeat_on_weekday',
+          'repeat_schedule_id',
+          'service_id',
+          'skip_reposition',
+          'start_date',
+          'subscriber_ids',
+          'tag_list',
+          'task_list_id',
+          'title',
+          'type_id',
+          'workflow_status_id',
+        ],
       },
     },
   },
@@ -44867,6 +47375,9 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       POST: {
         summary: 'Copies a task',
+        description:
+          'Copies an existing task, duplicating its attributes and optionally its subtasks and attachments.',
+        operationId: 'tasks-copy-copy',
       },
     },
   },
@@ -44875,6 +47386,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a task',
+        description: 'Returns a single task by ID.',
+        operationId: 'tasks-show',
         pathParams: {
           id: {
             type: 'string',
@@ -44884,6 +47397,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a task',
+        description: 'Updates an existing task by ID. Only the provided attributes are modified.',
+        operationId: 'tasks-update',
         pathParams: {
           id: {
             type: 'string',
@@ -44891,9 +47406,37 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'assignee_id',
+          'attachment_ids',
+          'custom_fields',
+          'due_date',
+          'due_time',
+          'initial_estimate',
+          'parent_task_id',
+          'private',
+          'project_id',
+          'remaining_time',
+          'repeat_on_date',
+          'repeat_on_interval',
+          'repeat_on_monthday',
+          'repeat_on_weekday',
+          'repeat_schedule_id',
+          'service_id',
+          'skip_reposition',
+          'start_date',
+          'subscriber_ids',
+          'tag_list',
+          'task_list_id',
+          'title',
+          'type_id',
+          'workflow_status_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a task',
+        description: 'Permanently deletes a task by ID.',
+        operationId: 'tasks-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -44908,6 +47451,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Repositions a task',
+        description: 'Repositions a task within its task list, changing its display order.',
+        operationId: 'tasks-reposition-reposition',
         pathParams: {
           id: {
             type: 'string',
@@ -44922,6 +47467,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get tax rates',
+        description: 'List all tax rates.',
+        operationId: 'tax_rates-index',
         query: {
           sort: {
             type: 'array',
@@ -45069,7 +47616,17 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a tax rate',
+        description: 'Create a new tax rate.',
+        operationId: 'tax_rates-create',
         supportsBody: true,
+        requestBodyFields: [
+          'name',
+          'primary_component_name',
+          'primary_component_value',
+          'secondary_component_name',
+          'secondary_component_value',
+          'subsidiary_id',
+        ],
       },
     },
   },
@@ -45078,6 +47635,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a tax rate',
+        description: 'Retrieve a single tax rate by ID.',
+        operationId: 'tax_rates-show',
         pathParams: {
           id: {
             type: 'string',
@@ -45087,6 +47646,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a tax rate',
+        description: 'Update a tax rate.',
+        operationId: 'tax_rates-update',
         pathParams: {
           id: {
             type: 'string',
@@ -45094,6 +47655,14 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'name',
+          'primary_component_name',
+          'primary_component_value',
+          'secondary_component_name',
+          'secondary_component_value',
+          'subsidiary_id',
+        ],
       },
     },
   },
@@ -45102,6 +47671,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a tax rate',
+        description: 'Archive a tax rate to deactivate it.',
+        operationId: 'tax_rates-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -45116,6 +47687,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores an archived tax rate',
+        description: 'Restore an archived tax rate.',
+        operationId: 'tax_rates-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -45130,6 +47703,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get team memberships',
+        description: 'List all team memberships.',
+        operationId: 'team_memberships-index',
         query: {
           sort: {
             type: 'array',
@@ -45214,7 +47789,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a team membership',
+        description: 'Create a new team membership.',
+        operationId: 'team_memberships-create',
         supportsBody: true,
+        requestBodyFields: ['person_id', 'team_id'],
       },
     },
   },
@@ -45223,6 +47801,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a team membership',
+        description: 'Retrieve a single team membership by ID.',
+        operationId: 'team_memberships-show',
         pathParams: {
           id: {
             type: 'string',
@@ -45232,6 +47812,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a team membership',
+        description: 'Delete a team membership by ID.',
+        operationId: 'team_memberships-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -45246,6 +47828,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get teams',
+        description: 'List all teams.',
+        operationId: 'teams-index',
         query: {
           sort: {
             type: 'array',
@@ -45330,7 +47914,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a team',
+        description: 'Create a new team.',
+        operationId: 'teams-create',
         supportsBody: true,
+        requestBodyFields: ['color_id', 'icon_id', 'name'],
       },
     },
   },
@@ -45339,6 +47926,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a team',
+        description: 'Retrieve a single team by ID.',
+        operationId: 'teams-show',
         pathParams: {
           id: {
             type: 'string',
@@ -45348,6 +47937,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a team',
+        description: 'Update a team.',
+        operationId: 'teams-update',
         pathParams: {
           id: {
             type: 'string',
@@ -45355,9 +47946,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['color_id', 'icon_id', 'name'],
       },
       DELETE: {
         summary: 'Deletes a team',
+        description: 'Delete a team by ID.',
+        operationId: 'teams-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -45372,6 +47966,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get time entries',
+        description: 'List time entries with optional filters and pagination.',
+        operationId: 'time_entries-index',
         query: {
           sort: {
             type: 'array',
@@ -46648,14 +49244,54 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create time entries',
+        description: 'Create a new time entry.',
+        operationId: 'time_entries-create-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'billable_time',
+          'calendar_event_id',
+          'date',
+          'jira_issue_id',
+          'jira_issue_status',
+          'jira_issue_summary',
+          'jira_organization',
+          'jira_worklog_id',
+          'note',
+          'person_id',
+          'service_id',
+          'started_at',
+          'task_id',
+          'time',
+          'use_salary_currency',
+        ],
       },
       PATCH: {
         summary: 'Update time entries',
+        description: 'Update multiple time entries.',
+        operationId: 'time_entries-update-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'billable_time',
+          'calendar_event_id',
+          'date',
+          'jira_issue_id',
+          'jira_issue_status',
+          'jira_issue_summary',
+          'jira_organization',
+          'jira_worklog_id',
+          'note',
+          'person_id',
+          'service_id',
+          'started_at',
+          'task_id',
+          'time',
+          'use_salary_currency',
+        ],
       },
       DELETE: {
         summary: 'Deletes time entries',
+        description: 'Delete multiple time entries.',
+        operationId: 'time_entries-destroy-bulk',
       },
     },
   },
@@ -46664,7 +49300,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Approves time entries',
+        description: 'Approve a time entry (alternate endpoint).',
+        operationId: 'time_entries-approve-update-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'billable_time',
+          'calendar_event_id',
+          'date',
+          'jira_issue_id',
+          'jira_issue_status',
+          'jira_issue_summary',
+          'jira_organization',
+          'jira_worklog_id',
+          'note',
+          'person_id',
+          'service_id',
+          'started_at',
+          'task_id',
+          'time',
+          'use_salary_currency',
+        ],
       },
     },
   },
@@ -46673,7 +49328,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unapproves time entries',
+        description: 'Revoke approval of a time entry (alternate endpoint).',
+        operationId: 'time_entries-unapprove-update-bulk',
         supportsBody: true,
+        requestBodyFields: [
+          'billable_time',
+          'calendar_event_id',
+          'date',
+          'jira_issue_id',
+          'jira_issue_status',
+          'jira_issue_summary',
+          'jira_organization',
+          'jira_worklog_id',
+          'note',
+          'person_id',
+          'service_id',
+          'started_at',
+          'task_id',
+          'time',
+          'use_salary_currency',
+        ],
       },
     },
   },
@@ -46682,6 +49356,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a time entry',
+        description: 'Retrieve a single time entry by ID.',
+        operationId: 'time_entries-show',
         pathParams: {
           id: {
             type: 'string',
@@ -46691,6 +49367,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a time entry',
+        description: 'Update a time entry.',
+        operationId: 'time_entries-update',
         pathParams: {
           id: {
             type: 'string',
@@ -46698,9 +49376,28 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'billable_time',
+          'calendar_event_id',
+          'date',
+          'jira_issue_id',
+          'jira_issue_status',
+          'jira_issue_summary',
+          'jira_organization',
+          'jira_worklog_id',
+          'note',
+          'person_id',
+          'service_id',
+          'started_at',
+          'task_id',
+          'time',
+          'use_salary_currency',
+        ],
       },
       DELETE: {
         summary: 'Deletes a time entry',
+        description: 'Delete a time entry.',
+        operationId: 'time_entries-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -46715,6 +49412,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Approves a time entry',
+        description: 'Approve a time entry.',
+        operationId: 'time_entries-approve-approve',
         pathParams: {
           id: {
             type: 'string',
@@ -46729,6 +49428,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Reject a time entry',
+        description: 'Reject a time entry.',
+        operationId: 'time_entries-reject-reject',
         pathParams: {
           id: {
             type: 'string',
@@ -46743,6 +49444,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unapproves a time entry',
+        description: 'Revoke approval of a time entry.',
+        operationId: 'time_entries-unapprove-unapprove',
         pathParams: {
           id: {
             type: 'string',
@@ -46757,6 +49460,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Unreject a time entry',
+        description: 'Revoke rejection of a time entry.',
+        operationId: 'time_entries-unreject-unreject',
         pathParams: {
           id: {
             type: 'string',
@@ -46771,6 +49476,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get time entry versions',
+        description: 'List all time entry versions.',
+        operationId: 'time_entry_versions-index',
         query: {
           sort: {
             type: 'array',
@@ -46884,6 +49591,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a time entry version',
+        description: 'Retrieve a single time entry version by ID.',
+        operationId: 'time_entry_versions-show',
         pathParams: {
           id: {
             type: 'string',
@@ -46898,6 +49607,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get time tracking policies',
+        description: 'List all time tracking policies.',
+        operationId: 'time_tracking_policies-index',
         query: {
           sort: {
             type: 'array',
@@ -46987,7 +49698,25 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a time tracking policy',
+        description: 'Create a new time tracking policy.',
+        operationId: 'time_tracking_policies-create',
         supportsBody: true,
+        requestBodyFields: [
+          'disabled_tracking_message',
+          'full_day_absence_limit',
+          'half_day_absence_limit',
+          'holiday_limit',
+          'limited_tracking_message',
+          'name',
+          'non_working_day_limit',
+          'note_mandatory',
+          'restrict_future_tracking',
+          'restrict_time_entry_overlap',
+          'restrict_tracking_over_budget',
+          'task_mandatory',
+          'time_range_mandatory',
+          'working_day_limit',
+        ],
       },
     },
   },
@@ -46996,6 +49725,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a time tracking policy',
+        description: 'Retrieve a single time tracking policy by ID.',
+        operationId: 'time_tracking_policies-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47005,6 +49736,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a time tracking policy',
+        description: 'Update a time tracking policy.',
+        operationId: 'time_tracking_policies-update',
         pathParams: {
           id: {
             type: 'string',
@@ -47012,9 +49745,27 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'disabled_tracking_message',
+          'full_day_absence_limit',
+          'half_day_absence_limit',
+          'holiday_limit',
+          'limited_tracking_message',
+          'name',
+          'non_working_day_limit',
+          'note_mandatory',
+          'restrict_future_tracking',
+          'restrict_time_entry_overlap',
+          'restrict_tracking_over_budget',
+          'task_mandatory',
+          'time_range_mandatory',
+          'working_day_limit',
+        ],
       },
       DELETE: {
         summary: 'Deletes a time tracking policy',
+        description: 'Delete a time tracking policy by ID.',
+        operationId: 'time_tracking_policies-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -47029,6 +49780,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a time tracking policy',
+        description: 'Archives a time tracking policy.',
+        operationId: 'time_tracking_policies-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -47043,6 +49796,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores an archived time tracking policy',
+        description: 'Restores a previously archived time tracking policy.',
+        operationId: 'time_tracking_policies-restore-restore',
         pathParams: {
           id: {
             type: 'string',
@@ -47057,6 +49812,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get timers',
+        description: 'List all timers.',
+        operationId: 'timers-index',
         query: {
           sort: {
             type: 'array',
@@ -47143,7 +49900,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an timer',
+        description: 'Create a new timer.',
+        operationId: 'timers-create',
         supportsBody: true,
+        requestBodyFields: ['person_id', 'service_id', 'started_at', 'time_entry_id'],
       },
     },
   },
@@ -47152,6 +49912,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a timer',
+        description: 'Retrieve a single timer by ID.',
+        operationId: 'timers-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47166,6 +49928,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Stops a timer',
+        description: 'Stop a running timer.',
+        operationId: 'timers-stop-stop',
         pathParams: {
           id: {
             type: 'string',
@@ -47180,6 +49944,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get timesheets',
+        description: 'List all timesheets.',
+        operationId: 'timesheets-index',
         query: {
           sort: {
             type: 'array',
@@ -47248,7 +50014,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a timesheet',
+        description: 'Create a new timesheet.',
+        operationId: 'timesheets-create',
         supportsBody: true,
+        requestBodyFields: ['date', 'person_id'],
       },
     },
   },
@@ -47257,6 +50026,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a timesheet',
+        description: 'Retrieve a single timesheet by ID.',
+        operationId: 'timesheets-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47266,6 +50037,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a timesheet',
+        description: 'Delete a timesheet by ID.',
+        operationId: 'timesheets-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -47280,6 +50053,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get todos',
+        description: 'List all todos.',
+        operationId: 'todos-index',
         query: {
           sort: {
             type: 'array',
@@ -47423,7 +50198,18 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a todo',
+        description: 'Create a new todo.',
+        operationId: 'todos-create',
         supportsBody: true,
+        requestBodyFields: [
+          'assignee_id',
+          'closed',
+          'deal_id',
+          'due_date',
+          'due_time',
+          'position',
+          'task_id',
+        ],
       },
     },
   },
@@ -47432,6 +50218,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a todo',
+        description: 'Retrieve a single todo by ID.',
+        operationId: 'todos-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47441,6 +50229,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a todo',
+        description: 'Update a todo.',
+        operationId: 'todos-update',
         pathParams: {
           id: {
             type: 'string',
@@ -47448,9 +50238,20 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'assignee_id',
+          'closed',
+          'deal_id',
+          'due_date',
+          'due_time',
+          'position',
+          'task_id',
+        ],
       },
       DELETE: {
         summary: 'Deletes a todo',
+        description: 'Delete a todo by ID.',
+        operationId: 'todos-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -47465,6 +50266,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets users',
+        description: 'List all users.',
+        operationId: 'users-index',
         query: {
           sort: {
             type: 'array',
@@ -47487,6 +50290,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a user',
+        description: 'Retrieve a single user by ID.',
+        operationId: 'users-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47496,6 +50301,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a user',
+        description: 'Update a user.',
+        operationId: 'users-update',
         pathParams: {
           id: {
             type: 'string',
@@ -47503,6 +50310,19 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'account_access_expires_at',
+          'avatar_url',
+          'default_organization_id',
+          'email',
+          'first_name',
+          'ical_token',
+          'last_name',
+          'locale',
+          'newsletter_consent',
+          'preferences',
+          'time_zone',
+        ],
       },
     },
   },
@@ -47511,6 +50331,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Update password for a user',
+        description: 'Update the password for a user.',
+        operationId: 'users-update_password-update_password',
         pathParams: {
           id: {
             type: 'string',
@@ -47525,6 +50347,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get webhook logs',
+        description: 'List all webhook logs.',
+        operationId: 'webhook_logs-index',
         query: {
           sort: {
             type: 'array',
@@ -47661,6 +50485,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get webhooks',
+        description: 'List all webhooks.',
+        operationId: 'webhooks-index',
         query: {
           sort: {
             type: 'array',
@@ -47755,7 +50581,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a webhook',
+        description: 'Create a new webhook.',
+        operationId: 'webhooks-create',
         supportsBody: true,
+        requestBodyFields: ['custom_headers', 'event_id', 'name', 'target_url', 'type_id'],
       },
     },
   },
@@ -47764,6 +50593,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a webhook',
+        description: 'Retrieve a single webhook by ID.',
+        operationId: 'webhooks-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47773,6 +50604,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       DELETE: {
         summary: 'Deletes a webhook',
+        description: 'Delete a webhook by ID.',
+        operationId: 'webhooks-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -47787,6 +50620,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get all widgets',
+        description: 'List all widgets.',
+        operationId: 'widgets-index',
         query: {
           sort: {
             type: 'array',
@@ -47834,7 +50669,24 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create a widget',
+        description: 'Create a new widget.',
+        operationId: 'widgets-create',
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'column_position',
+          'content',
+          'dashboard_id',
+          'default_filter_id',
+          'filter_id',
+          'height',
+          'params',
+          'report_layout_id',
+          'row_position',
+          'title',
+          'widget_type_id',
+          'width',
+        ],
       },
     },
   },
@@ -47843,6 +50695,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get a widget',
+        description: 'Retrieve a single widget by ID.',
+        operationId: 'widgets-show',
         pathParams: {
           id: {
             type: 'string',
@@ -47852,6 +50706,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update a widget',
+        description: 'Update a widget.',
+        operationId: 'widgets-update',
         pathParams: {
           id: {
             type: 'string',
@@ -47859,9 +50715,26 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: [
+          'attachment_ids',
+          'column_position',
+          'content',
+          'dashboard_id',
+          'default_filter_id',
+          'filter_id',
+          'height',
+          'params',
+          'report_layout_id',
+          'row_position',
+          'title',
+          'widget_type_id',
+          'width',
+        ],
       },
       DELETE: {
         summary: 'Deletes a widget',
+        description: 'Delete a widget by ID.',
+        operationId: 'widgets-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -47876,6 +50749,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get workflow statuses',
+        description: 'List all workflow statuses.',
+        operationId: 'workflow_statuses-index',
         query: {
           sort: {
             type: 'array',
@@ -47984,7 +50859,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an workflow status',
+        description: 'Create a new workflow status.',
+        operationId: 'workflow_statuses-create',
         supportsBody: true,
+        requestBodyFields: ['category_id', 'color_id', 'name', 'position', 'workflow_id'],
       },
     },
   },
@@ -47993,6 +50871,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a workflow status',
+        description: 'Retrieve a single workflow status by ID.',
+        operationId: 'workflow_statuses-show',
         pathParams: {
           id: {
             type: 'string',
@@ -48002,6 +50882,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an workflow status',
+        description: 'Update a workflow status.',
+        operationId: 'workflow_statuses-update',
         pathParams: {
           id: {
             type: 'string',
@@ -48009,9 +50891,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['category_id', 'color_id', 'name', 'position', 'workflow_id'],
       },
       DELETE: {
         summary: 'Deletes a workflow status and moves tasks to other workflow status',
+        description: 'Delete a workflow status by ID.',
+        operationId: 'workflow_statuses-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -48026,6 +50911,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Get workflows',
+        description: 'List all workflows.',
+        operationId: 'workflows-index',
         query: {
           sort: {
             type: 'array',
@@ -48092,7 +50979,10 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       POST: {
         summary: 'Create an workflow',
+        description: 'Create a new workflow.',
+        operationId: 'workflows-create',
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
     },
   },
@@ -48101,6 +50991,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       GET: {
         summary: 'Gets a workflow',
+        description: 'Retrieve a single workflow by ID.',
+        operationId: 'workflows-show',
         pathParams: {
           id: {
             type: 'string',
@@ -48110,6 +51002,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
       },
       PATCH: {
         summary: 'Update an workflow',
+        description: 'Update a workflow.',
+        operationId: 'workflows-update',
         pathParams: {
           id: {
             type: 'string',
@@ -48117,9 +51011,12 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
           },
         },
         supportsBody: true,
+        requestBodyFields: ['name'],
       },
       DELETE: {
         summary: 'Deletes a workflow',
+        description: 'Delete a workflow by ID.',
+        operationId: 'workflows-destroy',
         pathParams: {
           id: {
             type: 'string',
@@ -48134,6 +51031,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Archives a workflow',
+        description: 'Archive a workflow to deactivate it.',
+        operationId: 'workflows-archive-archive',
         pathParams: {
           id: {
             type: 'string',
@@ -48148,6 +51047,8 @@ export const PRODUCTIVE_API_REFERENCE: ApiReference = {
     methods: {
       PATCH: {
         summary: 'Restores a workflow',
+        description: 'Restore an archived workflow.',
+        operationId: 'workflows-restore-restore',
         pathParams: {
           id: {
             type: 'string',

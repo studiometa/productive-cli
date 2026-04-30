@@ -17,10 +17,13 @@ export interface ApiQueryParamSpec {
 
 export interface ApiMethodSpec {
   summary: string;
+  description?: string;
+  operationId?: string;
   query?: Record<string, ApiQueryParamSpec>;
   filters?: Record<string, ApiFilterSpec>;
   sort?: string[];
   pathParams?: Record<string, ApiQueryParamSpec>;
+  requestBodyFields?: string[];
   supportsBody?: boolean;
 }
 

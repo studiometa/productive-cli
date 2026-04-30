@@ -176,6 +176,51 @@ def param_type(document: dict[str, Any], parameter: dict[str, Any]) -> str | Non
     return None
 
 
+def find_attribute_fields(document: dict[str, Any], schema: dict[str, Any] | None) -> list[str]:
+    if not schema:
+        return []
+
+    schema = deref(document, schema)
+    if 'oneOf' in schema:
+        for candidate in schema['oneOf']:
+            fields = find_attribute_fields(document, candidate)
+            if fields:
+                return fields
+    if 'anyOf' in schema:
+        for candidate in schema['anyOf']:
+            fields = find_attribute_fields(document, candidate)
+            if fields:
+                return fields
+
+    attributes = (
+        schema.get('properties', {})
+        .get('data', {})
+        .get('properties', {})
+        .get('attributes', {})
+    )
+    attributes = deref(document, attributes) if isinstance(attributes, dict) else {}
+    if isinstance(attributes, dict) and attributes.get('properties'):
+        return sorted(attributes['properties'].keys())
+
+    if schema.get('properties'):
+        return sorted(schema['properties'].keys())
+
+    return []
+
+
+def extract_request_body_fields(document: dict[str, Any], request_body: dict[str, Any]) -> list[str]:
+    request_body = deref(document, request_body)
+    content = request_body.get('content', {})
+    for media_type in ('application/vnd.api+json', 'application/json'):
+        media = content.get(media_type)
+        if not media:
+            continue
+        fields = find_attribute_fields(document, media.get('schema'))
+        if fields:
+            return fields
+    return []
+
+
 def generate_reference(spec: dict[str, Any]) -> OrderedDict[str, Any]:
     reference: OrderedDict[str, Any] = OrderedDict()
 
@@ -194,6 +239,10 @@ def generate_reference(spec: dict[str, Any]) -> OrderedDict[str, Any]:
 
             method_spec: OrderedDict[str, Any] = OrderedDict()
             method_spec['summary'] = operation.get('summary', '')
+            if operation.get('description'):
+                method_spec['description'] = operation['description']
+            if operation.get('operationId'):
+                method_spec['operationId'] = operation['operationId']
 
             query_params: OrderedDict[str, Any] = OrderedDict()
             path_params: OrderedDict[str, Any] = OrderedDict()
@@ -245,6 +294,9 @@ def generate_reference(spec: dict[str, Any]) -> OrderedDict[str, Any]:
                 method_spec['pathParams'] = path_params
             if 'requestBody' in operation:
                 method_spec['supportsBody'] = True
+                request_body_fields = extract_request_body_fields(spec, operation['requestBody'])
+                if request_body_fields:
+                    method_spec['requestBodyFields'] = request_body_fields
 
             methods[method_name] = method_spec
 
