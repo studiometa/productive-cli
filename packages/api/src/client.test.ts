@@ -97,6 +97,55 @@ describe('ProductiveApi requests', () => {
     expect(url).toContain('page%5Bsize%5D=50');
   });
 
+  it('makes raw GET requests with query params', async () => {
+    const api = createApi();
+    const mockData = { data: [{ id: '1' }], meta: { current_page: 1 } };
+    mockFetchResponse(mockData);
+
+    const result = await api.requestRaw('/invoices', {
+      query: {
+        'filter[company_id]': 123,
+        archived: false,
+        include: 'company',
+      },
+    });
+
+    expect(result).toEqual(mockData);
+    const url = fetchSpy.mock.calls[0][0] as string;
+    expect(url).toContain('/invoices');
+    expect(url).toContain('filter%5Bcompany_id%5D=123');
+    expect(url).toContain('archived=false');
+    expect(url).toContain('include=company');
+  });
+
+  it('makes raw write requests with serialized body', async () => {
+    const api = createApi();
+    const mockData = { data: { id: '123', type: 'tasks' } };
+    mockFetchResponse(mockData);
+
+    const result = await api.requestRaw('/tasks/123', {
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'tasks',
+          id: '123',
+          attributes: { title: 'Updated title' },
+        },
+      },
+    });
+
+    expect(result).toEqual(mockData);
+    const [, options] = fetchSpy.mock.calls[0];
+    expect(options?.method).toBe('PATCH');
+    expect(JSON.parse(options?.body as string)).toEqual({
+      data: {
+        type: 'tasks',
+        id: '123',
+        attributes: { title: 'Updated title' },
+      },
+    });
+  });
+
   it('fetches projects with filters', async () => {
     const api = createApi();
     mockFetchResponse({ data: [] });

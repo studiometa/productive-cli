@@ -322,6 +322,36 @@ export const ProductiveToolInputSchema = z.object({
 
 export type ProductiveToolInput = z.infer<typeof ProductiveToolInputSchema>;
 
+/**
+ * Full input schema for the raw api_read tool.
+ */
+export const ApiReadToolInputSchema = z.object({
+  path: z.string().trim().min(1, 'Path cannot be empty').describe('Relative Productive API path'),
+  describe: z.boolean().optional(),
+  filter: FilterSchema,
+  include: ParamInclude.optional(),
+  sort: z.array(z.string().trim()).optional(),
+  page: ParamPage.optional(),
+  per_page: ParamPerPage.optional(),
+  paginate: z.boolean().optional(),
+  max_pages: z.number().int().min(1).max(50).optional(),
+});
+
+export type ApiReadToolInput = z.infer<typeof ApiReadToolInputSchema>;
+
+/**
+ * Full input schema for the raw api_write tool.
+ */
+export const ApiWriteToolInputSchema = z.object({
+  method: z.enum(['POST', 'PATCH', 'PUT', 'DELETE']),
+  path: z.string().trim().min(1, 'Path cannot be empty').describe('Relative Productive API path'),
+  body: z.record(z.string(), z.unknown()).optional(),
+  confirm: z.literal(true).describe('Must be true to enable raw write execution'),
+  dry_run: z.boolean().optional(),
+});
+
+export type ApiWriteToolInput = z.infer<typeof ApiWriteToolInputSchema>;
+
 // =============================================================================
 // Validation Helpers
 // =============================================================================
@@ -345,7 +375,9 @@ export function safeValidateToolInput(input: unknown): ZodSafeParseResult<Produc
 /**
  * Format Zod validation errors for LLM consumption
  */
-export function formatValidationErrors(error: ZodError<ProductiveToolInput>): string {
+export function formatValidationErrors(
+  error: ZodError<ProductiveToolInput | ApiReadToolInput | ApiWriteToolInput>,
+): string {
   const issues = error.issues.map((issue) => {
     const path = issue.path.length > 0 ? `${issue.path.join('.')}: ` : '';
     return `- ${path}${issue.message}`;

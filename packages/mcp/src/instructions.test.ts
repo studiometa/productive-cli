@@ -38,8 +38,8 @@ describe('instructions', () => {
     });
 
     it('should contain the productive tool section', () => {
-      expect(skillContent).toContain('## The `productive` Tool');
-      expect(INSTRUCTIONS).toContain('## The `productive` Tool');
+      expect(skillContent).toContain('### `productive`');
+      expect(INSTRUCTIONS).toContain('### `productive`');
     });
 
     it('should contain resources and actions table', () => {
