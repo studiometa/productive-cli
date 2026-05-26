@@ -29,7 +29,8 @@ ${colors.bold('DESCRIPTION:')}
 
     ${colors.cyan("import type { ScriptContext } from '@studiometa/productive-cli/script';")}
 
-    ${colors.cyan('export default async function ({ client, output, args }: ScriptContext) {')}
+    ${colors.cyan('export default async function ({ client, output, args, flags }: ScriptContext) {')}
+    ${colors.cyan('  const from = flags.from as string | undefined;')}
     ${colors.cyan('  const projects = await client.projects.list().toArray();')}
     ${colors.cyan('  output.table(projects.map(p => ({ id: p.id, name: p.attributes.name })));')}
     ${colors.cyan('}')}
@@ -42,7 +43,8 @@ ${colors.bold('DESCRIPTION:')}
 ${colors.bold('AVAILABLE GLOBALS:')}
   productive          Pre-configured Productive SDK client
   output              Output utilities (see below)
-  args                Positional arguments after the script path
+  args                Positional arguments after the script path (strings only)
+  flags               Named flags parsed from the script arguments
 
 ${colors.bold('OUTPUT UTILITIES:')}
   output.table(data)        Render an array of objects as an ASCII table
@@ -74,8 +76,8 @@ ${colors.bold('EXAMPLES:')}
   # Run a TypeScript script
   productive run ./scripts/weekly-report.ts
 
-  # Pass arguments to the script
-  productive run ./scripts/export-time.ts --from 2025-01-01 --to 2025-01-31
+  # Pass named flags (available as \`flags.from\`, \`flags.to\`, \`flags.mine\`)
+  productive run ./scripts/export-time.ts --from 2025-01-01 --to 2025-01-31 --mine
 
   # Override credentials for this run
   productive run ./scripts/audit.ts --token $TOKEN --org-id $ORG_ID

@@ -14,7 +14,7 @@ describe('generateWrapper', () => {
     const code = generateWrapper(OPTS);
     expect(typeof code).toBe('string');
     expect(code).toContain('import { Productive }');
-    expect(code).toContain('import { createScriptOutput }');
+    expect(code).toContain('import { createScriptOutput, parseScriptArgs }');
   });
 
   it('embeds the SDK URL in the Productive import', () => {
@@ -22,9 +22,11 @@ describe('generateWrapper', () => {
     expect(code).toContain(`import { Productive } from '${OPTS.sdkUrl}'`);
   });
 
-  it('embeds the scriptOutputUrl in the createScriptOutput import', () => {
+  it('embeds the scriptOutputUrl in the createScriptOutput and parseScriptArgs import', () => {
     const code = generateWrapper(OPTS);
-    expect(code).toContain(`import { createScriptOutput } from '${OPTS.scriptOutputUrl}'`);
+    expect(code).toContain(
+      `import { createScriptOutput, parseScriptArgs } from '${OPTS.scriptOutputUrl}'`,
+    );
   });
 
   it('embeds the scriptUrl in the dynamic import', () => {
@@ -46,21 +48,23 @@ describe('generateWrapper', () => {
     expect(code).toContain('PRODUCTIVE_API_TOKEN and PRODUCTIVE_ORG_ID must be set');
   });
 
-  it('sets globalThis.productive, globalThis.output, globalThis.args', () => {
+  it('sets globalThis.productive, globalThis.output, globalThis.args, globalThis.flags', () => {
     const code = generateWrapper(OPTS);
     expect(code).toContain('globalThis.productive = client');
     expect(code).toContain('globalThis.output = output');
     expect(code).toContain('globalThis.args = args');
+    expect(code).toContain('globalThis.flags = flags');
   });
 
-  it('calls the default export when it is a function (pattern A)', () => {
+  it('calls the default export when it is a function (pattern A) with flags', () => {
     const code = generateWrapper(OPTS);
     expect(code).toContain("typeof mod.default === 'function'");
-    expect(code).toContain('await mod.default({ client, output, args })');
+    expect(code).toContain('await mod.default({ client, output, args, flags })');
   });
 
-  it('includes process.argv for args', () => {
+  it('parses argv into args and flags via parseScriptArgs', () => {
     const code = generateWrapper(OPTS);
-    expect(code).toContain('process.argv.slice(2)');
+    expect(code).toContain('parseScriptArgs(process.argv.slice(2))');
+    expect(code).toContain('const { args, flags }');
   });
 });

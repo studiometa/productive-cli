@@ -22,7 +22,16 @@
  * ```
  */
 
-export type { ScriptContext, ScriptOutput, ScriptSpinner, Productive } from './types.js';
+export type {
+  ScriptContext,
+  ScriptOutput,
+  ScriptSpinner,
+  Productive,
+  FlagValue,
+  ParsedFlags,
+} from './types.js';
 export { createScriptOutput } from './output.js';
+export { parseScriptArgs } from './args.js';
+export type { ParsedScriptArgs } from './args.js';
 export { generateWrapper } from './wrapper.js';
 export type { WrapperOptions } from './wrapper.js';

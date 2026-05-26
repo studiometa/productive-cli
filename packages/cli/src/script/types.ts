@@ -12,7 +12,10 @@
 
 import type { Productive } from '@studiometa/productive-sdk';
 
+import type { FlagValue, ParsedFlags } from './args.js';
+
 export type { Productive };
+export type { FlagValue, ParsedFlags };
 
 /**
  * Spinner handle returned by `output.spinner()`.
@@ -82,7 +85,8 @@ export interface ScriptOutput {
  * ```ts
  * import type { ScriptContext } from '@studiometa/productive-cli/script';
  *
- * export default async function ({ client, output, args }: ScriptContext) {
+ * export default async function ({ client, output, args, flags }: ScriptContext) {
+ *   const from = flags.from as string | undefined;
  *   const projects = await client.projects.list().toArray();
  *   output.table(projects.map(p => ({ id: p.id, name: p.attributes.name })));
  * }
@@ -95,4 +99,17 @@ export interface ScriptContext {
   output: ScriptOutput;
   /** Positional arguments passed after the script path. */
   args: string[];
+  /**
+   * Named flags parsed from the script arguments.
+   *
+   * Supports `--flag`, `--flag value`, `--flag=value`, `--no-flag`, `-f`, `-f value`.
+   * Repeated flags produce an array: `--tag a --tag b` → `{ tag: ['a', 'b'] }`.
+   *
+   * @example
+   * ```ts
+   * // productive run ./report.ts --from 2025-01-01 --mine
+   * // → flags = { from: '2025-01-01', mine: true }
+   * ```
+   */
+  flags: ParsedFlags;
 }
