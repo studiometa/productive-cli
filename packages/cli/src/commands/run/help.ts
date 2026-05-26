@@ -64,6 +64,10 @@ ${colors.bold('TYPESCRIPT SUPPORT:')}
   generics, and type assertions. Decorators and legacy \`enum\` are also
   supported via --experimental-transform-types.
 
+  Source maps are enabled (--enable-source-maps) for all scripts so that
+  stack traces always point to the original source line, not the stripped
+  output. This applies to .js files with external source maps as well.
+
   No additional tools (tsx, ts-node, etc.) are required.
 
 ${colors.bold('OPTIONS:')}

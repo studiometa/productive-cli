@@ -90,9 +90,13 @@ export async function scriptRun(
     const wrapperContent = generateWrapper({ scriptUrl, scriptOutputUrl, sdkUrl });
     await writeFile(wrapperPath, wrapperContent, 'utf-8');
 
-    // Build node args — add TS stripping flags for .ts/.mts files
+    // Build node args — add TS stripping flags for .ts/.mts files.
+    // --enable-source-maps makes Node use the source maps produced by SWC
+    // (via --experimental-strip-types) so stack traces point to the original
+    // TypeScript line numbers rather than the stripped JS output.
     const isTs = isTypeScriptFile(scriptPath);
     const nodeArgs = [
+      '--enable-source-maps',
       ...(isTs ? ['--experimental-strip-types', '--experimental-transform-types'] : []),
       wrapperPath,
       ...scriptArgs,

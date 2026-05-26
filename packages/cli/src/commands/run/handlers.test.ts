@@ -143,6 +143,27 @@ describe('scriptRun', () => {
     expect(processExitSpy).toHaveBeenCalledWith(1);
   });
 
+  it('always includes --enable-source-maps for accurate stack traces', async () => {
+    const { spawn } = await import('node:child_process');
+    const { scriptRun } = await import('./handlers.js');
+
+    const mockChild = {
+      on: vi.fn((event: string, cb: (code: number) => void) => {
+        if (event === 'close') cb(0);
+      }),
+    };
+    vi.mocked(spawn).mockReturnValue(mockChild as never);
+
+    const ctx = makeCtx();
+    const mockResolver = vi
+      .fn()
+      .mockResolvedValue('file:///node_modules/@studiometa/productive-sdk/dist/index.js');
+
+    // Both .ts and .js files should get --enable-source-maps
+    await scriptRun(['/tmp/test-script.js'], ctx, mockResolver);
+    expect(vi.mocked(spawn).mock.calls[0][1]).toContain('--enable-source-maps');
+  });
+
   it('spawns node with TS flags for .ts files', async () => {
     const { spawn } = await import('node:child_process');
     const { scriptRun } = await import('./handlers.js');
@@ -162,6 +183,7 @@ describe('scriptRun', () => {
     await scriptRun(['/tmp/test-script.ts'], ctx, mockResolver);
 
     const spawnArgs = vi.mocked(spawn).mock.calls[0];
+    expect(spawnArgs[1]).toContain('--enable-source-maps');
     expect(spawnArgs[1]).toContain('--experimental-strip-types');
     expect(spawnArgs[1]).toContain('--experimental-transform-types');
   });
@@ -186,6 +208,7 @@ describe('scriptRun', () => {
 
     const spawnArgs = vi.mocked(spawn).mock.calls[0];
     expect(spawnArgs[1]).not.toContain('--experimental-strip-types');
+    expect(spawnArgs[1]).toContain('--enable-source-maps'); // always present
   });
 
   it('passes PRODUCTIVE_* env vars to the subprocess', async () => {
