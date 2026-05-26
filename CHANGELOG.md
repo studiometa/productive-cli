@@ -9,9 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **CLI**: Add `productive run` (alias `productive script`) command to execute JS/TS scripts with a pre-configured Productive SDK client injected automatically ([#PR])
-- **CLI**: Export `@studiometa/productive-cli/script` subpath with `ScriptContext`, `ScriptOutput`, `ScriptSpinner` types and `createScriptOutput()` factory for testing scripts in isolation
-- **CLI**: Add `@studiometa/productive-sdk` as a dependency so `productive run` can inject the SDK client into user scripts without additional installation
+- **CLI**: Add `productive run` (alias `productive script`) command to execute JS/TS scripts with a pre-configured Productive SDK client injected automatically ([ff1e486], [#173])
+- **CLI**: Export `@studiometa/productive-cli/script` subpath with `ScriptContext`, `ScriptOutput`, `ScriptSpinner` types and `createScriptOutput()` factory for testing scripts in isolation ([ff1e486], [#173])
+- **CLI**: Add `@studiometa/productive-sdk` as a dependency so `productive run` can inject the SDK client into user scripts without additional installation ([ff1e486], [#173])
+- **CLI**: Add parsed `flags` object to `ScriptContext` — named flags like `--from 2025-01-01 --mine` are parsed and available as `flags.from` and `flags.mine` alongside positional `args` ([c432a57], [#173])
+- **CLI**: Add wrap-style `output.spinner(msg, asyncFn)` overload — spinner starts and auto-stops when the async task resolves or fails ([2de17c8], [#173])
+- **CLI**: Enable `--enable-source-maps` in `productive run` subprocess so TypeScript stack traces show original line numbers from the stripped output ([f1074c2], [#173])
+- **CLI**: Add `--dry-run` flag to `productive run` — intercepts mutating API calls (POST/PATCH/PUT/DELETE) via a `globalThis.fetch` wrapper, records them without executing, and prints a summary table ([4068429], [#173])
+- **CLI**: Add `export const meta: ScriptMeta` convention and `productive run --list [dir]` for script discovery — lists `.ts`/`.js` files in a directory with name, description, and usage from each script's `meta` export ([db674cd], [#173])
+
+[ff1e486]: https://github.com/studiometa/productive-tools/commit/ff1e486
+[c432a57]: https://github.com/studiometa/productive-tools/commit/c432a57
+[2de17c8]: https://github.com/studiometa/productive-tools/commit/2de17c8
+[f1074c2]: https://github.com/studiometa/productive-tools/commit/f1074c2
+[4068429]: https://github.com/studiometa/productive-tools/commit/4068429
+[db674cd]: https://github.com/studiometa/productive-tools/commit/db674cd
+[#173]: https://github.com/studiometa/productive-tools/pull/173
 
 ## [0.10.11] - 2026.05.19
 
