@@ -30,6 +30,7 @@ export type {
   FlagValue,
   ParsedFlags,
 } from './types.js';
+export type { ScriptMeta } from './meta.js';
 export { createScriptOutput } from './output.js';
 export { parseScriptArgs } from './args.js';
 export type { ParsedScriptArgs } from './args.js';

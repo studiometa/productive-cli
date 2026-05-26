@@ -5,6 +5,10 @@ vi.mock('./handlers.js', () => ({
   scriptRun: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock('./list.js', () => ({
+  scriptList: vi.fn().mockResolvedValue(undefined),
+}));
+
 // Mock config to avoid file system access
 vi.mock('../../config.js', () => ({
   getConfig: vi.fn().mockReturnValue({
@@ -36,6 +40,7 @@ vi.mock('../../utils/cache.js', () => {
 
 describe('handleRunCommand', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -74,5 +79,25 @@ describe('handleRunCommand', () => {
     await handleRunCommand(undefined, ['./my-script.js', 'arg1'], { format: 'human' });
 
     expect(scriptRun).toHaveBeenCalledWith(['./my-script.js', 'arg1'], expect.anything());
+  });
+
+  it('calls scriptList when --list flag is present', async () => {
+    const { handleRunCommand } = await import('./command.js');
+    const { scriptList } = await import('./list.js');
+    const { scriptRun } = await import('./handlers.js');
+
+    await handleRunCommand('--list', [], { format: 'human' });
+
+    expect(scriptList).toHaveBeenCalledWith(undefined);
+    expect(scriptRun).not.toHaveBeenCalled();
+  });
+
+  it('passes a directory argument to scriptList when provided after --list', async () => {
+    const { handleRunCommand } = await import('./command.js');
+    const { scriptList } = await import('./list.js');
+
+    await handleRunCommand('--list', ['./automation'], { format: 'human' });
+
+    expect(scriptList).toHaveBeenCalledWith('./automation');
   });
 });

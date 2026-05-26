@@ -329,11 +329,17 @@ productive run ./scripts/weekly-report.ts
 # Alias: productive script
 productive script ./scripts/export-time.ts
 
-# Pass arguments to the script
-productive run ./scripts/audit.ts --from 2025-01-01 --to 2025-01-31
+# Pass arguments to the script (available as flags.from, flags.to, flags.mine)
+productive run ./scripts/audit.ts --from 2025-01-01 --to 2025-01-31 --mine
 
 # Dry-run: record mutating calls without executing them
 productive run --dry-run ./scripts/bulk-update.ts
+
+# List all scripts in ./scripts/ with metadata
+productive run --list
+
+# List scripts in a custom directory
+productive run --list ./automation
 ```
 
 Scripts can use two patterns:
@@ -341,9 +347,16 @@ Scripts can use two patterns:
 **Pattern A — default export (recommended)**:
 
 ```typescript
-import type { ScriptContext } from '@studiometa/productive-cli/script';
+import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';
 
-export default async function ({ client, output, args }: ScriptContext) {
+export const meta: ScriptMeta = {
+  name: 'My Report',
+  description: 'Short description shown by productive run --list.',
+  usage: '--from <date> --to <date>',
+};
+
+export default async function ({ client, output, args, flags }: ScriptContext) {
+  const from = flags.from as string | undefined;
   const projects = await client.projects.list().toArray();
   output.table(projects.map((p) => ({ id: p.id, name: p.attributes.name })));
 }

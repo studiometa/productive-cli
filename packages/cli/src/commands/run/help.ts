@@ -22,12 +22,22 @@ ${colors.bold('DESCRIPTION:')}
   Executes a script with credentials already loaded from the CLI config
   (keychain, config file, environment variables, or CLI flags).
 
+  Use \`--list\` to discover scripts in a directory (defaults to \`./scripts\`)
+  without running any of them. Scripts can export a \`meta\` object to provide
+  a name, description, and usage hint shown in the listing.
+
   Inside the script, you have access to a fully configured Productive SDK
   client via two patterns:
 
   ${colors.bold('Pattern A — default export')} (recommended, full type safety):
 
-    ${colors.cyan("import type { ScriptContext } from '@studiometa/productive-cli/script';")}
+    ${colors.cyan("import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';")}
+
+    ${colors.cyan('export const meta: ScriptMeta = {')}
+    ${colors.cyan("  name: 'My Report',")}
+    ${colors.cyan("  description: 'Generates a weekly summary.',")}
+    ${colors.cyan("  usage: '--from <date> --to <date>',")}
+    ${colors.cyan('};')}
 
     ${colors.cyan('export default async function ({ client, output, args, flags }: ScriptContext) {')}
     ${colors.cyan('  const from = flags.from as string | undefined;')}
@@ -76,6 +86,7 @@ ${colors.bold('OPTIONS:')}
   --user-id <id>      User ID (overrides config)
   --base-url <url>    API base URL (overrides config)
   --dry-run           Record mutating calls (POST/PATCH/DELETE) without executing them
+  --list [dir]        List scripts in [dir] (default: ./scripts) with metadata
   -h, --help          Show this help
 
 ${colors.bold('EXAMPLES:')}
@@ -90,6 +101,12 @@ ${colors.bold('EXAMPLES:')}
 
   # Test a script without making any mutating API calls
   productive run --dry-run ./scripts/bulk-update.ts
+
+  # List all scripts in ./scripts/ with their descriptions
+  productive run --list
+
+  # List scripts in a custom directory
+  productive run --list ./automation
 
   # Quick one-off with inline credentials
   productive run ./scripts/list-projects.js

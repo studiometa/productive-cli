@@ -10,6 +10,7 @@ import type { CommandOptions } from '../../context.js';
 
 import { createContext } from '../../context.js';
 import { scriptRun } from './handlers.js';
+import { scriptList } from './list.js';
 
 /**
  * Handle the `productive run` (and `productive script`) command.
@@ -28,6 +29,17 @@ export async function handleRunCommand(
   // If called as `productive run list.ts`, the subcommand IS the script path.
   // Merge subcommand back into positional if it looks like a file.
   const allArgs = _subcommand ? [_subcommand, ...positional] : positional;
+
+  // --list discovers scripts in a directory without running any
+  if (allArgs.includes('--list')) {
+    const listIndex = allArgs.indexOf('--list');
+    const dir =
+      allArgs[listIndex + 1] && !allArgs[listIndex + 1].startsWith('-')
+        ? allArgs[listIndex + 1]
+        : undefined;
+    await scriptList(dir);
+    return;
+  }
 
   await scriptRun(allArgs, ctx);
 }
