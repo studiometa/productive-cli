@@ -61,12 +61,16 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**/*.ts"],
+      "files": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**/*.ts", "**/test-utils.ts"],
       "rules": {
         "typescript/no-explicit-any": "off",
         "max-lines-per-function": "off",
         "max-nested-callbacks": "off",
-        "promise/catch-or-return": "off"
+        "promise/catch-or-return": "off",
+        "vitest/require-mock-type-parameters": "off",
+        "vitest/require-to-throw-message": "off",
+        "vitest/no-conditional-expect": "off",
+        "vitest/expect-expect": "off"
       }
     },
     {
