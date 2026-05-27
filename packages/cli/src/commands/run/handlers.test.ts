@@ -237,6 +237,8 @@ describe('scriptRun', () => {
     expect(spawnOptions.env.PRODUCTIVE_ORG_ID).toBe('my-org');
     expect(spawnOptions.env.PRODUCTIVE_USER_ID).toBe('my-user');
     expect(spawnOptions.env.PRODUCTIVE_BASE_URL).toBe('https://custom.example.com');
+    // Suppress Node.js ExperimentalWarning banners in the child process
+    expect(spawnOptions.env.NODE_NO_WARNINGS).toBe('1');
   });
 
   it('forwards the subprocess exit code', async () => {

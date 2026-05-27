@@ -107,7 +107,12 @@ export async function scriptRun(
     ];
 
     // Forward credentials via env vars (already resolved by createContext)
-    const env: Record<string, string | undefined> = { ...process.env };
+    const env: Record<string, string | undefined> = {
+      ...process.env,
+      // Suppress Node.js ExperimentalWarning banners (e.g. from --experimental-transform-types).
+      // Only affects the spawned child process — the parent CLI is unaffected.
+      NODE_NO_WARNINGS: '1',
+    };
     if (ctx.config.apiToken) env.PRODUCTIVE_API_TOKEN = ctx.config.apiToken;
     if (ctx.config.organizationId) env.PRODUCTIVE_ORG_ID = ctx.config.organizationId;
     if (ctx.config.userId) env.PRODUCTIVE_USER_ID = ctx.config.userId;
