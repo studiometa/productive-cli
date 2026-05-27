@@ -318,6 +318,92 @@ productive reports time --from 2024-01-01 --to 2024-01-31 --group person
 productive reports budget --project <id>
 ```
 
+### Run Custom Scripts
+
+`productive run` executes a JavaScript or TypeScript script with a pre-configured Productive SDK client. Credentials are loaded from the usual sources (keychain, config file, env vars, CLI flags).
+
+```bash
+# Run a TypeScript script
+productive run ./scripts/weekly-report.ts
+
+# Alias: productive script
+productive script ./scripts/export-time.ts
+
+# Pass arguments to the script (available as flags.from, flags.to, flags.mine)
+productive run ./scripts/audit.ts --from 2025-01-01 --to 2025-01-31 --mine
+
+# Dry-run: record mutating calls without executing them
+productive run --dry-run ./scripts/bulk-update.ts
+
+# List all scripts in ./scripts/ with metadata
+productive run --list
+
+# List scripts in a custom directory
+productive run --list ./automation
+```
+
+Scripts can use two patterns:
+
+**Pattern A — helpers (recommended, full type inference)**:
+
+Use `defineMeta` and `createScript` — no explicit type annotations needed, the editor infers everything:
+
+```typescript
+import { defineMeta, createScript } from '@studiometa/productive-cli/script';
+
+export const meta = defineMeta({
+  name: 'My Report',
+  description: 'Short description shown by productive run --list.',
+  usage: '--from <date> --to <date>',
+});
+
+export default createScript(async ({ client, output, flags }) => {
+  const from = flags.from as string | undefined;
+  // .all() returns AsyncPaginatedIterator with .toArray() — use this for paginated results
+  // SDK types are FlattenResource<T>: attributes are merged flat (p.name, not p.attributes.name)
+  const projects = await client.projects.all().toArray();
+  output.table(projects.map((p) => ({ id: p.id, name: p.name })));
+});
+```
+
+**Pattern A (alt) — explicit type annotations**:
+
+```typescript
+import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';
+
+export const meta: ScriptMeta = { name: 'My Report' };
+
+export default async function ({ client, output }: ScriptContext) {
+  const projects = await client.projects.all().toArray();
+  output.table(projects.map((p) => ({ id: p.id, name: p.name })));
+}
+```
+
+**Pattern B — globals (quick scripts, no imports)**:
+
+```typescript
+// .all() returns AsyncPaginatedIterator; .list() is single-page only (returns Promise, no .toArray())
+const tasks = await productive.tasks.all().toArray();
+output.json(tasks);
+```
+
+**Output utilities** available as `output.*`:
+
+| Method                         | Description                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `output.table(data)`           | ASCII table                                              |
+| `output.json(data)`            | Formatted JSON                                           |
+| `output.csv(data)`             | CSV output                                               |
+| `output.print(text)`           | Plain text                                               |
+| `output.success(msg)`          | Green ✓ message                                          |
+| `output.error(msg)`            | Red ✗ message (stderr)                                   |
+| `output.warn(msg)`             | Yellow ⚠ message                                         |
+| `output.info(msg)`             | Blue info message                                        |
+| `output.spinner(msg)`          | Start a spinner → `{ update, stop, fail }`               |
+| `output.spinner(msg, asyncFn)` | Wrap an async task — spinner auto-stops; returns Promise |
+
+TypeScript files (`.ts`, `.mts`) use Node.js built-in type stripping — no extra tools needed.
+
 ### Custom API Requests
 
 > **Prefer named commands** (`tasks list`, `time list`, etc.) over raw `api` calls — they handle filtering, formatting, and pagination automatically.
