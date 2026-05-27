@@ -344,21 +344,36 @@ productive run --list ./automation
 
 Scripts can use two patterns:
 
-**Pattern A — default export (recommended)**:
+**Pattern A — helpers (recommended, full type inference)**:
+
+Use `defineMeta` and `createScript` — no explicit type annotations needed, the editor infers everything:
+
+```typescript
+import { defineMeta, createScript } from '@studiometa/productive-cli/script';
+
+export const meta = defineMeta({
+  name: 'My Report',
+  description: 'Short description shown by productive run --list.',
+  usage: '--from <date> --to <date>',
+});
+
+export default createScript(async ({ client, output, flags }) => {
+  const from = flags.from as string | undefined;
+  // .all() returns AsyncPaginatedIterator with .toArray() — use this for paginated results
+  // SDK types are FlattenResource<T>: attributes are merged flat (p.name, not p.attributes.name)
+  const projects = await client.projects.all().toArray();
+  output.table(projects.map((p) => ({ id: p.id, name: p.name })));
+});
+```
+
+**Pattern A (alt) — explicit type annotations**:
 
 ```typescript
 import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';
 
-export const meta: ScriptMeta = {
-  name: 'My Report',
-  description: 'Short description shown by productive run --list.',
-  usage: '--from <date> --to <date>',
-};
+export const meta: ScriptMeta = { name: 'My Report' };
 
-export default async function ({ client, output, args, flags }: ScriptContext) {
-  const from = flags.from as string | undefined;
-  // .all() returns AsyncPaginatedIterator with .toArray() — use this for paginated results
-  // SDK types are FlattenResource<T>: attributes are merged flat (p.name, not p.attributes.name)
+export default async function ({ client, output }: ScriptContext) {
   const projects = await client.projects.all().toArray();
   output.table(projects.map((p) => ({ id: p.id, name: p.name })));
 }

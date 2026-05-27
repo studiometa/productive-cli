@@ -92,7 +92,7 @@ export interface ScriptOutput {
    * const projects = await output.spinner('Loading projects…', () =>
    *   client.projects.list().toArray(),
    * );
-   * output.table(projects.map(p => ({ id: p.id, name: p.attributes.name })));
+   * output.table(projects.map(p => ({ id: p.id, name: p.name })));
    * ```
    */
   spinner<T>(message: string, task: () => Promise<T>): Promise<T>;
@@ -108,7 +108,7 @@ export interface ScriptOutput {
  * export default async function ({ client, output, args, flags }: ScriptContext) {
  *   const from = flags.from as string | undefined;
  *   const projects = await client.projects.list().toArray();
- *   output.table(projects.map(p => ({ id: p.id, name: p.attributes.name })));
+ *   output.table(projects.map(p => ({ id: p.id, name: p.name })));
  * }
  * ```
  */

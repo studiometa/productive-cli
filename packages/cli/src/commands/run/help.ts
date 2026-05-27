@@ -29,21 +29,31 @@ ${colors.bold('DESCRIPTION:')}
   Inside the script, you have access to a fully configured Productive SDK
   client via two patterns:
 
-  ${colors.bold('Pattern A — default export')} (recommended, full type safety):
+  ${colors.bold('Pattern A — helpers')} (recommended, full type inference):
 
-    ${colors.cyan("import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';")}
+    ${colors.cyan("import { defineMeta, createScript } from '@studiometa/productive-cli/script';")}
 
-    ${colors.cyan('export const meta: ScriptMeta = {')}
+    ${colors.cyan('export const meta = defineMeta({')}
     ${colors.cyan("  name: 'My Report',")}
     ${colors.cyan("  description: 'Generates a weekly summary.',")}
     ${colors.cyan("  usage: '--from <date> --to <date>',")}
-    ${colors.cyan('};')}
+    ${colors.cyan('});')}
 
-    ${colors.cyan('export default async function ({ client, output, args, flags }: ScriptContext) {')}
+    ${colors.cyan('export default createScript(async ({ client, output, flags }) => {')}
     ${colors.cyan('  const from = flags.from as string | undefined;')}
-    ${colors.cyan('  // .all() returns AsyncPaginatedIterator; SDK types are flat (p.name, not p.attributes.name)')}
     ${colors.cyan('  const projects = await client.projects.all().toArray();')}
-    ${colors.cyan('  output.table(projects.map(p => ({ id: p.id, name: p.name })));')}
+    ${colors.cyan('  output.table(projects.map((p) => ({ id: p.id, name: p.name })));')}
+    ${colors.cyan('});')}
+
+  ${colors.bold('Pattern A (alt) — explicit types')} (when you prefer annotations):
+
+    ${colors.cyan("import type { ScriptContext, ScriptMeta } from '@studiometa/productive-cli/script';")}
+
+    ${colors.cyan("export const meta: ScriptMeta = { name: 'My Report' };")}
+
+    ${colors.cyan('export default async function ({ client, output }: ScriptContext) {')}
+    ${colors.cyan('  const projects = await client.projects.all().toArray();')}
+    ${colors.cyan('  output.table(projects.map((p) => ({ id: p.id, name: p.name })));')}
     ${colors.cyan('}')}
 
   ${colors.bold('Pattern B — globals')} (quick scripts, no imports):

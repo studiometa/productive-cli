@@ -7,7 +7,17 @@
  *
  * @example
  * ```ts
- * // In a script file — types only, no runtime dep:
+ * // Recommended: use helpers for full type inference without annotations
+ * import { defineMeta, createScript } from '@studiometa/productive-cli/script';
+ *
+ * export const meta = defineMeta({ name: 'My Script' });
+ *
+ * export default createScript(async ({ client, output }) => { ... });
+ * ```
+ *
+ * @example
+ * ```ts
+ * // Alternative: explicit type annotation
  * import type { ScriptContext } from '@studiometa/productive-cli/script';
  *
  * export default async function ({ client, output }: ScriptContext) { ... }
@@ -31,6 +41,7 @@ export type {
   ParsedFlags,
 } from './types.js';
 export type { ScriptMeta } from './meta.js';
+export { defineMeta, createScript } from './helpers.js';
 export { createScriptOutput } from './output.js';
 export { parseScriptArgs } from './args.js';
 export type { ParsedScriptArgs } from './args.js';
